@@ -88,25 +88,21 @@
 
                 if (window.innerWidth <= 768) {
                     category.addEventListener('click', function (event) {
+                        event.preventDefault();
                         var link = event.currentTarget.querySelector('a');
-
                         if (link) {
                             var href = link.getAttribute('href');
-
+                        }
+                        
+                       
                         if (subMenu) {
-                            event.preventDefault();
+                            subMenu.style.display = 'flex';
+                        } else {
+                            window.location.href = href;
                         }
 
-                        // Если подменю уже отображено и пользователь кликает на подкатегорию,
-                        // перенаправляем его по ссылке этой подкатегории
-                        if (subMenu && subMenu.style.display === 'flex') {
-                            return;
-                        }
-
-                        // Если подменю скрыто или отсутствует, осуществляем переход по ссылке
-                        window.location.href = href;
+                         
                     });
-
                 } else {
                     // Для десктопных устройств сохраняем текущий функционал
                     category.addEventListener('mouseenter', function () {
