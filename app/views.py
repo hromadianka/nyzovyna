@@ -89,7 +89,7 @@ def user_login(request):
             messages.error(request, 'Неправильний логін або пароль')
     return render(request, 'login.html')
 
-@login_required
+@login_required(login_url='/login')
 def editor_cabinet(request):
     articles = Article.objects.all()
     
@@ -98,7 +98,7 @@ def editor_cabinet(request):
     }
     return render(request, 'editor-cabinet.html', context)
 
-@login_required
+@login_required(login_url='/login')
 def publish(request):
 
     if request.method == 'POST':
@@ -141,14 +141,14 @@ def publish(request):
 
     return render(request, 'editor-cabinet.html')
 
-@login_required
+@login_required(login_url='/login')
 def delete_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
     if request.method == 'GET':
         article.delete()
         return JsonResponse({'success': True})
 
-@login_required
+@login_required(login_url='/login')
 def create_category(request):
     if request.method == 'POST':
         category_name = request.POST.get('category')
@@ -157,7 +157,7 @@ def create_category(request):
             return JsonResponse({'success': True})
     return render(request, 'editor-cabinet.html')
 
-@login_required
+@login_required(login_url='/login')
 def edit_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
 
