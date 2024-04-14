@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-5m)2!aqsq-exanwdv5c2+x@%z-n90_*qqw^noaacc_hy$e@!j7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['nyzovyna-e468a704bfb3.herokuapp.com']
 
 
 # Application definition
@@ -85,13 +85,26 @@ WSGI_APPLICATION = 'anarchia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+DATABASES = {  
+    'default': {  
+        'ENGINE': 'django.db.backends.mysql',  
+        'NAME': 'bk25axpoodm6e690',  
+        'USER': 'rftx4ja0vervvc0f',  
+        'PASSWORD': 'gh0efmmwjsa590ve',  
+        'HOST': 'wyqk6x041tfxg39e.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',  
+        'PORT': '3306',  
+        'OPTIONS': {  
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
+        }  
+    }  
+}  
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
