@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import authenticate, login as auth_login
+
 
 
 
@@ -79,11 +81,11 @@ def comment(request):
 
 def user_login(request):
     if request.method == 'POST':
-        login = request.POST.get('login')
+        login_username = request.POST.get('login')
         password = request.POST.get('password')
-        user = authenticate(request, username=login, password=password)
+        user = authenticate(request, username=login_username, password=password)
         if user is not None:
-            login(request, user)
+            auth_login(request, user)
             return redirect('editor_cabinet')
         else:
             messages.error(request, 'Неправильний логін або пароль')
