@@ -154,8 +154,8 @@ django_heroku.settings(locals())
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'YOUR_CLOUD_NAME',
-    'API_KEY': 'YOUR_API_KEY',
-    'API_SECRET': 'YOUR_API_SECRET',
+    'CLOUD_NAME': 'hiep0qnnm',
+    'API_KEY': '711931388182932',
+    'API_SECRET': 'CJ_IgS1QKAOSnE0HY6e12eVzltM',
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
