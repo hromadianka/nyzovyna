@@ -114,7 +114,7 @@ header {
         position: static;
         padding-left: 0;
         gap: 30px;
-        padding-top: 40px;
+        padding-top: 30px;
         padding-bottom: 0;
     }
 
@@ -421,6 +421,7 @@ header {
         border: 0;
         display: flex;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
     .form .btn {

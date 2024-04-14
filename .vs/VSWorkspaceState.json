@@ -1,11 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\anarchia",
     "\\app",
-    "\\app\\migrations",
     "\\app\\templatetags",
+    "\\locale",
+    "\\locale\\en",
+    "\\locale\\en\\LC_MESSAGES",
+    "\\locale\\ua",
+    "\\locale\\ua\\LC_MESSAGES",
+    "\\static",
     "\\templates"
   ],
+  "SelectedNode": "\\anarchia\\settings.py",
   "PreviewInSolutionExplorer": false
 }

@@ -87,13 +87,20 @@
                 const subMenu = category.querySelector('.sub-menu');
 
                 if (window.innerWidth <= 768) {
-                    // Добавляем обработчик клика для показа и скрытия подменю на мобильных устройствах
                     category.addEventListener('click', function (event) {
                         event.preventDefault(); // Предотвращаем переход по ссылке
-                        if (subMenu.style.display === 'flex') {
-                            subMenu.style.display = 'none';
+
+                        // Проверяем, есть ли у текущего пункта меню подменю
+                        if (subMenu) {
+                            // Если подменю есть, то отображаем или скрываем его
+                            if (subMenu.style.display === 'flex') {
+                                subMenu.style.display = 'none';
+                            } else {
+                                subMenu.style.display = 'flex';
+                            }
                         } else {
-                            subMenu.style.display = 'flex';
+                            // Если подменю отсутствует, то осуществляем переход по ссылке
+                            window.location.href = category.href;
                         }
                     });
                 } else {
