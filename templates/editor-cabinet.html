@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Кабінет редактора</h1>
+
+<h2 style="margin-bottom: 24px">Опублікувати статтю</h2>
+
+<form method="POST" action="{% url 'publish' %}" enctype="multipart/form-data" class="form">
+    {% csrf_token %}
+    <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required />
+    <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form"></textarea>
+    <input type="file" name="article_image" accept="image/*" class="form" />
+    <fieldset class="form">
+        <label class="form">
+            <input type="radio" name="language" value="ua" checked>
+            <span class="form">Українська</span>
+        </label>
+        <label class="form">
+            <input type="radio" name="language" value="en">
+            <span class="form">Англійська</span>
+        </label>
+    </fieldset>
+    <fieldset class="form">
+        {% for category in categories %}
+        <label>
+            <input type="checkbox" name="categories" value="{{ category.id }}">
+            <span class="form">{{ category.name_ua }}</span>
+        </label>
+        {% endfor %}
+    </fieldset>
+    <button type="submit" class="btn">Опублікувати</button>
+</form>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#article_text'), {
+            toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote']
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+
+<h2 style="margin-top: 30px; margin-bottom: 24px">Категорії</h2>
+
+<div class="categories">
+    <div class="categories-list">
+        {% for category in categories %}
+        <p>{{ category.name_ua }}</p>
+        {% endfor %}
+    </div>
+    <form id="createCategoryForm">
+        {% csrf_token %}
+        <input type="text" class="form" placeholder="Нова категорія..." name="category" id="categoryInput" />
+        <button type="submit" class="btn">+</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById('createCategoryForm');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        fetch("{% url 'create_category' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const newCategoryName = formData.get('category');
+                const newCategoryElement = document.createElement('p');
+                newCategoryElement.textContent = newCategoryName;
+                document.querySelector('.categories-list').appendChild(newCategoryElement);
+                document.getElementById('categoryInput').value = '';
+            } else {
+                alert('Ошибка при добавлении категории');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при отправке запроса');
+        });
+    });
+});
+</script>
+
+<h2 style="margin-top: 30px; margin-bottom: 24px">Опубліковані статті</h2>
+
+<div class="articles-container">
+
+    {% for article in articles reversed %}
+
+    <div class="article-card" id="article-{{article.id}}">
+        <div class="card-content">
+            <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
+                {% for category in article.categories.all %}
+                <p>{{ category.name_ua }}</p>
+                {% endfor %}
+            </div>
+            <div class="card-text">
+                <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
+                <p>{% autoescape off %}{{ article.text|linebreaks|truncatechars:160 }}{% endautoescape %}</p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <p style="margin-bottom: 10px"><a href="{% url 'edit' article.id %}">Редагувати статтю</a></p>
+            <p><a href="#" onclick="confirmDelete(event, '{{ article.id }}')" style="color: red;">Видалити статтю</a></p>
+        </div>
+    </div>
+
+
+    {% endfor %}
+
+</div>
+
+<script>
+    function confirmDelete(event, articleId) {
+        event.preventDefault();
+        if (confirm('Ви впевнені, що хочете видалити статтю?')) {
+            fetch('/article/' + articleId + '/delete/')
+                .then(response => {
+                    if (response.ok) {
+                        const articleElement = document.getElementById('article-' + articleId);
+                        if (articleElement) {
+                            articleElement.remove();
+                        }
+                    } else {
+                        throw new Error('Помилка видалення статті');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Помилка видалення статті');
+                });
+        }
+    }
+
+
+
+</script>
+
+{% endblock %}

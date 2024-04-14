@@ -1,0 +1,451 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Хедер */
+
+header {
+    background-color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 120px;
+}
+
+.logo {
+    height: 60px;
+    width: auto;
+}
+
+.menu {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+}
+
+.menu-link {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.burger-menu {
+    display: flex;
+    align-items: center;
+}
+
+.burger-icon {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.bar {
+    width: 40px;
+    height: 2px;
+    background-color: white;
+    margin: 5px 0;
+    border-radius: 3px;
+}
+
+
+@media screen and (max-width: 1000px) {
+
+    header {
+        padding: 10px 5%;
+    }
+
+    .burger-icon {
+        display: flex;
+        order: 1;
+    }
+
+    .menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        gap: 30px;
+        height: 100%;
+        padding-left: 5%;
+        padding-top: 200px;
+        background-color: black;
+    }
+
+        .menu.active {
+            display: flex;
+        }
+}
+
+.parent-category {
+    position: relative;
+}
+
+.sub-menu {
+    background: black;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    position: absolute;
+    top: 37px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+}
+
+    .sub-menu.iteration {
+        top: 40%;
+        left: 160px;
+    }
+
+@media screen and (max-width: 1000px) {
+
+    .sub-menu {
+        transform: none;
+        position: static;
+        padding-left: 0;
+        gap: 30px;
+        padding-top: 40px;
+        padding-bottom: 0;
+    }
+
+}
+
+    /* Стили для выпадающего меню */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: black;
+        min-width: 160px;
+        z-index: 1;
+        color: white;
+    }
+
+        .dropdown-content button {
+            background-color: black;
+            color: white;
+            width: 100%;
+            border: none;
+            padding: 12px 16px;
+            display: block;
+            cursor: pointer;
+            text-align: left;
+        }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropbtn {
+        background-color: black;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        font-family: 'SF Pro Display', sans-serif;
+    }
+
+
+    /* Шрифты */
+    h1, h2, h3, p, li, a, .form {
+        color: black;
+        font-family: 'SF Pro Display', sans-serif;
+    }
+
+    @media screen and (min-width: 1000px) {
+
+        h1 {
+            font-size: 34px;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        h3, h3 a {
+            font-size: 22px;
+        }
+
+        p, li, a, .form {
+            font-size: 16px;
+        }
+    }
+
+
+
+    /* Паддинги */
+
+    @media screen and (min-width: 1000px) {
+
+        main {
+            padding: 60px 120px;
+        }
+    }
+
+    @media screen and (max-width: 1000px) {
+
+        main {
+            padding: 40px 5%;
+        }
+    }
+
+    h1 {
+        margin-bottom: 30px;
+    }
+
+    /* Поддержите нас */
+
+    .support-us {
+        background: url('/static/img/bg1.png') no-repeat;
+        background-size: cover;
+    }
+
+        .support-us h1, .support-us a {
+            color: white;
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .support-us h1 {
+            font-size: 45px;
+        }
+
+    @media screen and (min-width: 1000px) {
+        .support-us {
+            padding: 100px 120px;
+            padding-right: 30%;
+        }
+
+            .support-us h1 {
+                margin-bottom: 50px;
+            }
+    }
+
+    @media screen and (max-width: 1000px) {
+
+        .support-us {
+            padding: 57px 5%;
+            padding-right: 21%;
+            background: url('/static/img/bg1-mobile.png') no-repeat;
+            background-size: cover;
+        }
+    }
+
+    /* Карточки статей */
+
+    .articles-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: stretch;
+    }
+
+    .article-card {
+        box-shadow: 0px 2px 11.6px rgba(0, 0, 0, 0.1);
+    }
+
+    @media screen and (min-width: 1000px) {
+        .article-card {
+            width: calc(50% - 20px);
+        }
+
+        .card-image {
+            padding: 14px 16px;
+        }
+
+        .card-footer, .card-text {
+            padding: 15px 17px;
+        }
+
+            .card-text h3 {
+                margin-bottom: 8px;
+            }
+    }
+
+    @media screen and (max-width: 1000px) {
+
+        .article-card {
+            width: 100%;
+        }
+
+        .card-image {
+            padding: 17px 8px;
+        }
+
+        .card-footer, .card-text {
+            padding: 15px 17px;
+        }
+
+            .card-text h3 {
+                margin-bottom: 8px;
+            }
+    }
+
+    .card-image {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        height: 231px;
+    }
+
+        .card-image p {
+            padding: 4px;
+            background: white;
+            height: fit-content;
+        }
+
+    .article-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-content {
+        flex-grow: 1;
+    }
+
+    .card-footer {
+        margin-top: auto;
+    }
+
+    /* Кнопка */
+
+    .btn {
+        background-color: black;
+        color: white;
+        padding: 10px 15px;
+        text-decoration: none;
+        cursor: pointer;
+        display: block;
+        width: fit-content;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    /* Детальный вид статьи */
+
+    @media screen and (min-width: 1000px) {
+
+        .article-text {
+            padding-right: 600px;
+        }
+    }
+
+    .article-image {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        height: 360px;
+    }
+
+        .article-image p {
+            padding: 4px;
+            background: white;
+            height: fit-content;
+        }
+
+    @media screen and (min-width: 1000px) {
+
+        .article {
+            padding: 60px 120px;
+        }
+
+        .article-image {
+            padding: 40px 120px;
+        }
+
+        .comments {
+            padding-top: 60px;
+        }
+    }
+
+    @media screen and (max-width: 1000px) {
+
+        .article {
+            padding: 40px 5%;
+        }
+
+        .article-image {
+            margin: 0 8px;
+            padding: 17px 0;
+        }
+
+        .comments {
+            padding-top: 40px;
+        }
+    }
+
+    .comments form.form {
+        gap: 10px;
+    }
+
+        .comments form.form .btn {
+            margin-top: 10px;
+        }
+
+    .comment {
+        padding: 15px 17px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+    }
+
+    /* Формы */
+
+    input.form, textarea.form {
+        padding: 10px 15px;
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    form.form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    fieldset.form {
+        border: 0;
+        display: flex;
+        gap: 10px;
+    }
+
+    .form .btn {
+        margin-top: 10px;
+    }
+
+    /* Кабинет редактора */
+
+    .categories, .categories-list, .sub-categories {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+        .categories p {
+            padding: 5px 13px;
+            background: #F5F5DC;
+            width: fit-content;
+            height: fit-content;
+        }
+
+        .categories form {
+            display: flex;
+        }
+
+            .categories form input {
+                width: 139px;
+            }

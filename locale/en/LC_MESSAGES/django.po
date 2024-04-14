@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-14 03:44+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\anarchia\settings.py:114
+msgid "English"
+msgstr "English"
+
+#: .\anarchia\settings.py:115
+msgid "Ukrainian"
+msgstr "Ukrainian"
+
+#: .\anarchia\base.html
+msgid "Головна"
+msgstr "Home"
+
+#: .\anarchia\base.html
+msgid "Про нас"
+msgstr "About us"
+
+#: .\anarchia\article.html
+msgid "Коментарі"
+msgstr "Comments"
+
+#: .\anarchia\article.html
+msgid "Введіть ім'я"
+msgstr "Your name"
+
+#: .\anarchia\article.html
+msgid "Введіть коментар"
+msgstr "Your comment..."
+
+#: .\anarchia\article.html
+msgid "Залишити коментар"
+msgstr "Comment"
+
+#: .\anarchia\article.html
+msgid "Відповісти"
+msgstr "Reply"
+
+#: .\anarchia\index.html
+msgid "Українська анархічна думка сучасності"
+msgstr "Modern Ukrainian anarchist thought"
+
+#: .\anarchia\index.html
+msgid "підтримати проєкт"
+msgstr "support the project"
+
+#: .\anarchia\index.html
+msgid "Останні статті"
+msgstr "Last articles"
+
+#: .\anarchia\index.html
+msgid "Дивитись всі статті"
+msgstr "All articles"
+
+#: .\anarchia\category.html
+msgid "Всі статті"
+msgstr "All articles"

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% load app_tags %}
+
+{% block content %}
+
+<style>
+    main {
+        padding: 0;
+    }
+</style>
+
+<div class="article-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
+    {% for category in article.categories.all %}
+    {% if current_language == "en" %}
+    <p>{{ category.name_en }}</p>
+    {% else %}
+    <p>{{ category.name_ua }}</p>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<div class="article">
+    <div class="article-text">
+        <h1>{{ article.name }}</h1>
+        <p>{% autoescape off %}{{ article.text }}{% endautoescape %}</p>
+    </div>
+
+    <style>
+        .comment {
+            margin-top: 20px;
+        }
+    </style>
+
+    <div class="comments">
+        <h1>{% trans "Коментарі" %}</h1>
+        <form class="form" method="POST" action="{% url 'comment' %}">
+            {% csrf_token %}
+            <input hidden value="{{article.id}}" name="article_id" />
+            <input class="form" placeholder="{{ translate.enter_name }}" required name="author" />
+            <textarea class="form" placeholder="{{ translate.enter_comment }}" required name="text"></textarea>
+            <button class="btn" type="submit">{% trans "Залишити коментар" %}</button>
+        </form>
+        {% for comment in comments reversed %}
+        {% if not comment.parent_comment %}
+        <div class="comment">
+            <p style="margin-bottom: 15px; font-weight: bold">{{ comment.author }}</p>
+            <p style="margin-bottom: 15px;">{{ comment.text }}</p>
+            <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ comment.id }}')">
+                <span style="font-size: 1.4em">&#x21A9;</span>
+                {{ translate.reply }}
+            </a>
+        </div>
+        <div class="reply-form" id="reply-form-{{ comment.id }}" style="display: none; margin-left: 100px; margin-top: 20px;">
+            <form action="{% url 'comment' %}" method="POST" class="form">
+                {% csrf_token %}
+                <input hidden value="{{ comment.id }}" name="parent_comment_id">
+                <input hidden value="{{article.id}}" name="article_id" />
+                <input class="form" type="text" placeholder="{{ translate.enter_name }}" required name="author" />
+                <textarea class="form" placeholder="{{ translate.enter_comment }}" required name="text">{{ comment.author }}, </textarea>
+                <button class="btn" type="submit">{{ translate.reply }}</button>
+            </form>
+        </div>
+        {% include 'comment.html' with comment=comment %}
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function toggleReplyForm(commentId) {
+        var replyForm = document.getElementById('reply-form-' + commentId);
+        if (replyForm.style.display === 'none') {
+            replyForm.style.display = 'block';
+        } else {
+            replyForm.style.display = 'none';
+        }
+    }
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.form').submit(function (event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (data) {
+                    if (form.find('[name="parent_comment_id"]').length > 0) {
+                        var replyFormId = form.find('[name="parent_comment_id"]').val();
+                        var marginLeft = data.depth * 100;
+                        $('#reply-form-' + replyFormId).hide();
+                        $('<div class="comment" style="margin-left: 60px">' +
+                            '<p style="margin-bottom: 15px; font-weight: bold">' +
+                            data.author + '</p><p style="margin-bottom: 15px;">' +
+                            data.text + '</p>' +
+                            '<a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm(' + data.id + ')">' +
+                            '<span style="font-size: 1.4em">&#x21A9;</span> {% trans "Відповісти" %}</a>' +
+                            '</div>').insertAfter('#reply-form-' + replyFormId);
+                    } else {
+                        $('<div class="comment">' +
+                            '<p style="margin-bottom: 15px; font-weight: bold">' +
+                            data.author + '</p><p style="margin-bottom: 15px;">' +
+                            data.text + '</p>' +
+                            '<a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm(' + data.id + ')">' +
+                            '<span style="font-size: 1.4em">&#x21A9;</span> {% trans "Відповісти" %}</a>' +
+                            '</div>').insertAfter(form);
+                    }
+                    form.trigger('reset');
+                    location.reload();
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    });
+
+</script>
+
+
+
+{% endblock %}

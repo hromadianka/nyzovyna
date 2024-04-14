@@ -1,0 +1,25 @@
+{% load app_tags %}
+{% load i18n %}
+
+
+{% for reply in comment.replies.all reversed %}
+<div class="comment" style="margin-left: 60px;">
+    <p style="margin-bottom: 15px; font-weight: bold">{{ reply.author }}</p>
+    <p style="margin-bottom: 15px;">{{ reply.text }}</p>
+    <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ reply.id }}')">
+        <span style="font-size: 1.4em">&#x21A9;</span>
+        {{ translate.reply }}
+    </a>
+</div>
+<div class="reply-form" id="reply-form-{{ reply.id }}" style="display: none; margin-top: 20px; margin-left: 60px;">
+    <form action="{% url 'comment' %}" method="POST" class="form">
+        {% csrf_token %}
+        <input hidden value="{{ reply.id }}" name="parent_comment_id">
+        <input hidden value="{{article.id}}" name="article_id" />
+        <input class="form" type="text" placeholder="{{ translate.enter_name }}" required name="author" />
+        <textarea class="form" placeholder="{{ translate.enter_comment }}" required name="text">{{ reply.author }}, </textarea>
+        <button class="btn" type="submit">{{ translate.reply }}</button>
+    </form>
+</div>
+{% include 'comment.html' with comment=reply %}
+{% endfor %}

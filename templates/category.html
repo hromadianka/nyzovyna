@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+
+{% block content %}
+
+{% if this_category %}
+    {% if current_language == "en" %}
+    <h1>{{ this_category.name_en }}</h1>
+    {% else %}
+    <h1>{{ this_category.name_ua }}</h1>
+    {% endif %}
+{% else %}
+<h1>{% trans "Всі статті" %}</h1>
+{% endif %}
+
+<div class="articles-container">
+
+    {% for article in articles reversed %}
+
+    <div class="article-card">
+        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
+            {% for category in article.categories.all %}
+            {% if current_language == "en" %}
+            <p>{{ category.name_en }}</p>
+            {% else %}
+            <p>{{ category.name_ua }}</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="card-text">
+            <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
+            <p>{% autoescape off %}{{ article.text|linebreaks|truncatechars:160 }}{% endautoescape %}</p>
+        </div>
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

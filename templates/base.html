@@ -1,0 +1,138 @@
+﻿{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Низовина</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+</head>
+<body>
+    <header>
+        <img class="logo" src="{% static 'img/logo.jpg' %}" />
+        <div class="burger-menu">
+            <div class="burger-icon">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <ul class="menu">
+                <li><a href="{% url 'home' %}" class="menu-link">{% trans "Головна" %}</a></li>
+                {% for category in categories %}
+                {% if not category.parent %}
+                <li class="parent-category">
+                    {% if current_language == "en" %}
+                    <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_en }}</a>
+                    {% else %}
+                    <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_ua }}</a>
+                    {% endif %}
+                    {% if category.children.all %}
+                    <ul class="sub-menu">
+                        {% include 'recursive_menu.html' with category=category %}
+                    </ul>
+                    {% endif %}
+                </li>
+                {% endif %}
+                {% endfor %}
+                <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
+            </ul>
+            <form action="{% url 'set_language' %}" method="post" class="language-form">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.path }}">
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        {% if current_language == "en" %}
+                        English
+                        {% else %}
+                        Ukrainian
+                        {% endif %}
+                        ᨆ
+                    </button>
+                    <div class="dropdown-content">
+                        <button type="submit" name="language" value="en">English</button>
+                        <button type="submit" name="language" value="ua">Українська</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+
+    </header>
+    {% block support_us %}{% endblock %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const burgerIcon = document.querySelector(".burger-icon");
+            const menu = document.querySelector(".menu");
+
+            burgerIcon.addEventListener("click", function () {
+                menu.classList.toggle("active");
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const parentCategories = document.querySelectorAll('.parent-category');
+            let subMenuTimeout;
+
+            parentCategories.forEach(function (category) {
+                const subMenu = category.querySelector('.sub-menu');
+
+                if (window.innerWidth <= 768) {
+                    // Добавляем обработчик клика для показа и скрытия подменю на мобильных устройствах
+                    category.addEventListener('click', function (event) {
+                        event.preventDefault(); // Предотвращаем переход по ссылке
+                        if (subMenu.style.display === 'flex') {
+                            subMenu.style.display = 'none';
+                        } else {
+                            subMenu.style.display = 'flex';
+                        }
+                    });
+                } else {
+                    // Для десктопных устройств сохраняем текущий функционал
+                    category.addEventListener('mouseenter', function () {
+                        if (subMenu) {
+                            clearTimeout(subMenuTimeout);
+                            subMenu.style.display = 'flex';
+                        }
+                    });
+
+                    category.addEventListener('mouseleave', function () {
+                        subMenuTimeout = setTimeout(function () {
+                            subMenu.style.display = 'none';
+                        }, 400);
+                    });
+
+                    if (subMenu) {
+                        subMenu.addEventListener('mouseenter', function () {
+                            clearTimeout(subMenuTimeout);
+                        });
+
+                        subMenu.addEventListener('mouseleave', function () {
+                            subMenu.style.display = 'none';
+                        });
+                    }
+                }
+            });
+        });
+
+
+
+    </script>
+
+    <style>
+        .sub-menu {
+            display: none;
+        }
+    </style>
+
+</body>
+</html>

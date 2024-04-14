@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Редагувати статтю</h1>
+
+
+<form method="POST" action="{% url 'edit' article.id %}" enctype="multipart/form-data" class="form">
+    {% csrf_token %}
+    <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required value="{{article.name}}" />
+    <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form">{{article.text}}</textarea>
+    {% if article.image %}
+    <img src="{{ article.image.url }}" alt="" style="max-width: 200px;">
+    {% endif %}
+    <input type="file" name="article_image" accept="image/*" class="form" value="article.image" />
+    <fieldset class="form">
+        <label class="form">
+            <input type="radio" name="language" value="ua" {% if article.language == "ua" %} checked {% endif %}>
+            <span class="form">Українська</span>
+        </label>
+        <label class="form">
+            <input type="radio" name="language" value="en" {% if article.language == "en" %} checked {% endif %}>
+            <span class="form">Англійська</span>
+        </label>
+    </fieldset>
+    <fieldset class="form">
+        {% for category in categories %}
+        <label>
+            <input type="checkbox" name="categories" value="{{ category.id }}" {% if category in article.categories.all %} checked {% endif %}>
+            <span class="form">{{ category.name_ua }}</span>
+        </label>
+        {% endfor %}
+    </fieldset>
+    <button type="submit" class="btn">Зберегти</button>
+</form>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#article_text'), {
+            toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote']
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+
+{%endblock %}
