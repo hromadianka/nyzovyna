@@ -88,23 +88,24 @@
 
                 if (window.innerWidth <= 768) {
                     category.addEventListener('click', function (event) {
-                        // Поиск ссылки внутри текущего элемента <li>
                         var link = event.currentTarget.querySelector('a');
 
-                        // Если ссылка найдена, получаем ее href
                         if (link) {
                             var href = link.getAttribute('href');
 
-                            // Если есть подменю и оно уже отображено, завершаем обработчик события
-                            if (subMenu && subMenu.style.display === 'flex') {
-                                return;
-                            }
-
-                            // Если подменю скрыто или отсутствует, осуществляем переход по ссылке
-                            window.location.href = href;
+                        if (subMenu) {
+                            event.preventDefault();
                         }
-                    });
 
+                        // Если подменю уже отображено и пользователь кликает на подкатегорию,
+                        // перенаправляем его по ссылке этой подкатегории
+                        if (subMenu && subMenu.style.display === 'flex') {
+                            return;
+                        }
+
+                        // Если подменю скрыто или отсутствует, осуществляем переход по ссылке
+                        window.location.href = href;
+                    });
 
                 } else {
                     // Для десктопных устройств сохраняем текущий функционал
