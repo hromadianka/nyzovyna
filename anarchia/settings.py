@@ -92,6 +92,8 @@ WSGI_APPLICATION = 'anarchia.wsgi.application'
 #     }
 # }
 
+DATABASE_URL = os.environ['DATABASE_URL']
+
 DATABASES = {  
     'default': {  
         'ENGINE': 'django.db.backends.mysql',  
