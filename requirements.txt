@@ -59,3 +59,4 @@ whitenoise==6.5.0
 wrapt==1.15.0
 cloudinary
 django-cloudinary-storage
+mysqlclient
