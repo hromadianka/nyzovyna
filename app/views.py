@@ -159,10 +159,10 @@ def create_category(request):
         if parent_id:
             parent = get_object_or_404(Category, pk=parent_id)
             new_category = Category.objects.create(name_ua=name_ua, name_en=name_en, parent=parent)
-            return JsonResponse({'success': True})
+            return render(request, 'editor-cabinet.html')
         else:
             new_category = Category.objects.create(name_ua=name_ua, name_en=name_en)
-            return JsonResponse({'success': True})
+            return render(request, 'editor-cabinet.html')
     return render(request, 'editor-cabinet.html')
 
 @login_required(login_url='/login')
