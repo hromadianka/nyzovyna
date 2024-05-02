@@ -193,6 +193,7 @@ footer {
 
 .footer-row2 {
     display: flex;
+    flex-wrap: wrap;
     gap: 20%;
 }
 
@@ -201,6 +202,12 @@ footer a {
     text-decoration: none;
 }
 
+@media screen and (max-width: 1000px) {
+
+    footer {
+        padding: 30px 5%;
+    }
+}
 
     /* Шрифты */
     h1, h2, h3, p, li, a, .form {
