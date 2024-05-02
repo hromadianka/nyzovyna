@@ -15,7 +15,7 @@ header {
 }
 
 .logo {
-    width: 202px;
+    width: 10%;
 }
 
 .menu {
@@ -158,6 +158,13 @@ header {
         cursor: pointer;
         font-family: 'SF Pro Display', sans-serif;
     }
+
+    /* Футер */
+
+footer {
+    padding: 78px 120px;
+    background-color: #1D1B1B;
+}
 
 
     /* Шрифты */
