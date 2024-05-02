@@ -10,6 +10,10 @@ main {
     color: white;
 }
 
+main a {
+    color: white;
+}
+
 /* Хедер */
 
 header {
@@ -175,7 +179,6 @@ footer {
 
     /* Шрифты */
     h1, h2, h3, p, li, a, .form {
-        color: black;
         font-family: 'SF Pro Display', sans-serif;
     }
 
