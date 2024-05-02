@@ -237,7 +237,7 @@ footer a {
         font-family: 'SF Pro Display', sans-serif;
     }
 
-    @media screen and (min-width: 1000px) {
+    @media screen {
 
         h1 {
             font-size: 34px;
