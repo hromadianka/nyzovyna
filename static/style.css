@@ -233,7 +233,7 @@ footer a {
 }
 
     /* Шрифты */
-    h1, h2, h3, p, li, a, .form {
+    h1, h2, h3, p, li, a, .form, summary, details {
         font-family: 'SF Pro Display', sans-serif;
     }
 
@@ -251,7 +251,7 @@ footer a {
             font-size: 22px;
         }
 
-        p, li, a, .form {
+        p, li, a, .form, summary, details {
             font-size: 16px;
         }
     }
