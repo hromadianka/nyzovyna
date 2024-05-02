@@ -67,6 +67,16 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+    <footer>
+        <div class="footer-row1">
+            <img class="logo" src="{% static 'img/logo.png' %}" />
+            <div>
+                <a href="">Інстаграм</a>
+                <a href="">Телеграм</a>
+                <a href="">Тікток</a>
+            </div>
+        </div>
+    </footer>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const burgerIcon = document.querySelector(".burger-icon");
