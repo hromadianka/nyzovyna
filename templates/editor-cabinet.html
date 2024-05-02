@@ -78,7 +78,7 @@
                 <button type="submit" class="btn">Створити</button>
             </form>
             <ul class="toggle">
-                
+                {% include 'recursive_list.html' with categories=category.children.all %}
             </ul>
         </details>
     </li>
