@@ -523,3 +523,18 @@ details {
             margin-left: -1.1em;
         }
 
+form.categories-form {
+    flex-direction: row;
+    gap: 0;
+}
+
+    form.categories-form input {
+        height: fit-content;
+        width: fit-content;
+        padding: 4px;
+    }
+
+    form.categories-form .btn {
+        margin-top: 0;
+        padding: 4px;
+    }

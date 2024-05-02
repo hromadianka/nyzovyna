@@ -56,7 +56,7 @@
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Категорії</h2>
 
-<form class="form" method="POST" action="{% url 'create_category' %}">
+<form class="form categories-form" method="POST" action="{% url 'create_category' %}">
     {% csrf_token %}
     <input type="text" name="name_ua" placeholder="Назва українською" class="form" required />
     <input type="text" name="name_en" placeholder="Назва англійською" class="form" required />
