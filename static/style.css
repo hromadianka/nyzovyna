@@ -21,7 +21,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 120px;
+    padding: 12px 19%;
 }
 
 .logo {
@@ -172,7 +172,7 @@ header {
     /* Футер */
 
 footer {
-    padding: 78px 120px;
+    padding: 78px 19%;
     background-color: #1D1B1B;
 }
 
@@ -208,7 +208,7 @@ footer {
     @media screen and (min-width: 1000px) {
 
         main {
-            padding: 60px 120px;
+            padding: 60px 19%;
         }
     }
 
