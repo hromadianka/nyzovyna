@@ -2,6 +2,14 @@
 <li>
     <details>
         <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
+        <button onclick="toggleForm('{{ category.id }}')">+</button>
+        <form id="form_{{ category.id }}" class="form categories-form" method="POST" action="{% url 'create_category' %}" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="parent_id" value="{{ category.id }}">
+            <input type="text" name="name_ua" placeholder="Назва українською" class="form" required>
+            <input type="text" name="name_en" placeholder="Назва англійською" class="form" required>
+            <button type="submit" class="btn">Створити</button>
+        </form>
         <ul class="toggle">
             {% include 'recursive_list.html' with categories=category.children.all %}
         </ul>
