@@ -58,7 +58,7 @@
 
 {% for category in categories %}
   {% if not category.parent %}
-<details>
+<details class="nested-details">
     <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
     {% include 'recursive_list.html' with categories=category.children.all %}
 </details>

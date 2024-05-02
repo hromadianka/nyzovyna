@@ -1,10 +1,10 @@
     {% for category in categories %}
-        {% if category.children.all %}
-        <details>
-            <summary>{{ category.name_ua }}  ({{ category.name_en }})</summary>
-            {% include 'recursive_list.html' with categories=category.children.all %}
-        </details>
-        {% else %}
-        {{ category.name_ua }}  ({{ category.name_en }})
-        {% endif %}
-    {% endfor %}
+  {% if category.children.all %}
+<details class="nested-details">
+    <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
+    {% include 'recursive_list.html' with categories=category.children.all %}
+</details>
+  {% else %}
+{{ category.name_ua }} ({{ category.name_en }})
+  {% endif %}
+{% endfor %}
