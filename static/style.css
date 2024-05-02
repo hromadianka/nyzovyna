@@ -176,6 +176,22 @@ footer {
     background-color: #1D1B1B;
 }
 
+.footer-row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-row1 > div {
+    display: flex;
+    gap: 94px;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
 
     /* Шрифты */
     h1, h2, h3, p, li, a, .form {
