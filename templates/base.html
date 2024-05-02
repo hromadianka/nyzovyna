@@ -76,6 +76,16 @@
                 <a href="">Тікток</a>
             </div>
         </div>
+        <div class="footer-row2">
+            {% for category in categories %}
+            {% if not category.parent %}
+                {% if current_language == "en" %}
+                <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_en }}</a>
+                {% else %}
+                <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_ua }}</a>
+                {% endif %}
+            {% endif %}
+        </div>
         <div class="footer-row3">
             <p>Всі права збережені</p>
         </div>

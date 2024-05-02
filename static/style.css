@@ -191,6 +191,11 @@ footer {
     gap: 20%;
 }
 
+.footer-row2 {
+    display: flex;
+    gap: 20%;
+}
+
 footer a {
     color: white;
     text-decoration: none;
