@@ -444,12 +444,12 @@ footer a {
 
     @media screen and (min-width: 1000px) {
 
-        .article {
-            padding: 60px 120px;
+        .article, .theme-switcher {
+            padding: 60px 19%;
         }
 
         .article-image {
-            padding: 40px 120px;
+            padding: 40px 19%;
         }
 
         .comments {
@@ -459,7 +459,7 @@ footer a {
 
     @media screen and (max-width: 1000px) {
 
-        .article {
+        .article, .theme-switcher {
             padding: 40px 5%;
         }
 
