@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+main {
+    background: url('/static/img/bg.png') no-repeat;
+    background-size: cover;
+}
+
 /* Хедер */
 
 header {
