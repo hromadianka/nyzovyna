@@ -69,7 +69,7 @@
     <li>
         <details>
             <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
-            <button onclick="toggleForm('{{ category.id }}')" class="btn" style="color: black; background-color: white; border: none; margin-top: 8px">+ Додати підкатегорію</button>
+            <button onclick="toggleForm('{{ category.id }}')" class="btn" style="color: black; background-color: white; border: none; margin-top: 8px; font-size: 14px">+ Додати підкатегорію</button>
             <form id="form_{{ category.id }}" class="form categories-form" method="POST" action="{% url 'create_category' %}" style="display: none; margin-top: 8px">
                 {% csrf_token %}
                 <input type="hidden" name="parent_id" value="{{ category.id }}">
