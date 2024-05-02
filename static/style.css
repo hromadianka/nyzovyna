@@ -222,13 +222,11 @@ footer a {
 
     .footer-row1 > div {
         display: flex;
-        gap: 10%;
     }
 
     .footer-row2 {
         display: flex;
         flex-wrap: wrap;
-        gap: 10%;
     }
 }
 
