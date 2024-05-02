@@ -506,23 +506,5 @@ footer a {
 
     /* Кабинет редактора */
 
-    .categories, .categories-list, .sub-categories {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
+    
 
-        .categories p {
-            padding: 5px 13px;
-            background: #F5F5DC;
-            width: fit-content;
-            height: fit-content;
-        }
-
-        .categories form {
-            display: flex;
-        }
-
-            .categories form input {
-                width: 139px;
-            }

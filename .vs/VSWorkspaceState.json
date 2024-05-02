@@ -1,6 +1,7 @@
 {
   "ExpandedNodes": [
     "",
+    "\\anarchia",
     "\\app",
     "\\app\\templatetags",
     "\\locale",
@@ -11,6 +12,6 @@
     "\\static",
     "\\templates"
   ],
-  "SelectedNode": "\\anarchia\\settings.py",
+  "SelectedNode": "\\app\\models.py",
   "PreviewInSolutionExplorer": false
 }

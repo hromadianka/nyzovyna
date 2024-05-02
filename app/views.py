@@ -153,9 +153,15 @@ def delete_article(request, article_id):
 @login_required(login_url='/login')
 def create_category(request):
     if request.method == 'POST':
-        category_name = request.POST.get('category')
-        if category_name:
-            new_category = Category.objects.create(name_ua=category_name, name_en=category_name)
+        name_ua = request.POST.get('name_ua')
+        name_en = request.POST.get('name_en')
+        parent_id =  request.POST.get('parent_id')
+        if parent_id:
+            parent = get_object_or_404(Category, pk=parent_id)
+            new_category = Category.objects.create(name_ua=name_ua, name_en=name_en, parent=parent)
+            return JsonResponse({'success': True})
+        else:
+            new_category = Category.objects.create(name_ua=name_ua, name_en=name_en)
             return JsonResponse({'success': True})
     return render(request, 'editor-cabinet.html')
 

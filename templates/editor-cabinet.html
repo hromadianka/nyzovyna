@@ -56,51 +56,9 @@
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Категорії</h2>
 
-<div class="categories">
-    <div class="categories-list">
-        {% for category in categories %}
-        <p>{{ category.name_ua }}</p>
-        {% endfor %}
-    </div>
-    <form id="createCategoryForm">
-        {% csrf_token %}
-        <input type="text" class="form" placeholder="Нова категорія..." name="category" id="categoryInput" />
-        <button type="submit" class="btn">+</button>
-    </form>
-</div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const form = document.getElementById('createCategoryForm');
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(form);
-        fetch("{% url 'create_category' %}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const newCategoryName = formData.get('category');
-                const newCategoryElement = document.createElement('p');
-                newCategoryElement.textContent = newCategoryName;
-                document.querySelector('.categories-list').appendChild(newCategoryElement);
-                document.getElementById('categoryInput').value = '';
-            } else {
-                alert('Ошибка при добавлении категории');
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            alert('Произошла ошибка при отправке запроса');
-        });
-    });
-});
-</script>
+
+
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Опубліковані статті</h2>
 

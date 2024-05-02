@@ -38,7 +38,6 @@ urlpatterns = [
     path('article/<uuid:article_id>/delete/', views.delete_article, name='delete'),
     path('article/<uuid:article_id>/edit/', views.edit_article, name='edit'),
     path('create-category/', views.create_category, name='create_category'),
-
 ]
 
 if settings.DEBUG:
