@@ -193,13 +193,13 @@ footer {
 
 .footer-row1 > div {
     display: flex;
-    gap: 20%;
+    gap: 30px;
 }
 
 .footer-row2 {
     display: flex;
     flex-wrap: wrap;
-    gap: 20%;
+    gap: 30px;
 }
 
 footer a {
