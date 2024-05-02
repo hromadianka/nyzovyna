@@ -12,7 +12,7 @@ main {
 /* Хедер */
 
 header {
-    background-color: #1D1B1B;
+    background-color: #282828;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -20,7 +20,7 @@ header {
 }
 
 .logo {
-    width: 12%;
+    width: 11%;
 }
 
 .menu {
