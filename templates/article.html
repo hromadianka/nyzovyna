@@ -21,6 +21,9 @@
     {% endfor %}
 </div>
 
+<input type="checkbox" id="themeToggle">
+<label for="themeToggle">💡</label>
+
 <div class="article">
     <div class="article-text">
         <h1>{{ article.name }}</h1>
@@ -121,6 +124,19 @@
         });
     });
 
+</script>
+
+<script>
+    const mainElement = document.querySelector('main');
+    const themeToggle = document.getElementById('themeToggle');
+
+    themeToggle.addEventListener('change', () => {
+        if (themeToggle.checked) {
+            mainElement.classList.add('light');
+        } else {
+            mainElement.classList.remove('light');
+        }
+    });
 </script>
 
 

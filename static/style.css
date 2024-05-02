@@ -14,6 +14,15 @@ main a {
     color: white;
 }
 
+main.light {
+    background: none;
+    color: black;
+}
+
+    main.light a {
+        color: black;
+    }
+
 /* Хедер */
 
 header {
