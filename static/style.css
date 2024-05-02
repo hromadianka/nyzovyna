@@ -68,6 +68,10 @@ header {
         padding: 10px 5%;
     }
 
+    .logo {
+        width: 25%;
+    }
+
     .burger-icon {
         display: flex;
         order: 1;
@@ -182,6 +186,7 @@ footer {
 
 .footer-row1 {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
 }
@@ -206,6 +211,17 @@ footer a {
 
     footer {
         padding: 30px 5%;
+    }
+
+    .footer-row1 > div {
+        display: flex;
+        gap: 10%;
+    }
+
+    .footer-row2 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10%;
     }
 }
 
