@@ -59,7 +59,7 @@
 {% for category in categories %}
   {% if not category.parent %}
 <details>
-    <summary>{{ category.name_ua }}</summary>
+    <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
     {% include 'recursive_list.html' with categories=category.children.all %}
 </details>
   {% endif %}
