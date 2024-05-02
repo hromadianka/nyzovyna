@@ -323,10 +323,11 @@ footer {
     }
 
         .card-image p {
-            padding: 4px;
+            padding: 8px;
             background: white;
             height: fit-content;
             color: black;
+            border-radius: 10px;
         }
 
     .article-card {
