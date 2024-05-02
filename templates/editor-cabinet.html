@@ -69,7 +69,7 @@
     <li>
         <details>
             <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
-            <button onclick="toggleForm('{{ category.id }}')">+</button>
+            <button onclick="toggleForm('{{ category.id }}')" class="btn" style="padding: 4px">Додати підкатегорію</button>
             <form id="form_{{ category.id }}" class="form categories-form" method="POST" action="{% url 'create_category' %}" style="display: none;">
                 {% csrf_token %}
                 <input type="hidden" name="parent_id" value="{{ category.id }}">
@@ -90,7 +90,7 @@
 <script>
     function toggleForm(categoryId) {
         var form = document.getElementById('form_' + categoryId);
-        form.style.display = (form.style.display === 'none' ? 'block' : 'none');
+        form.style.display = (form.style.display === 'none' ? 'flex' : 'none');
     }
 </script>
 
