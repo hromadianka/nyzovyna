@@ -506,17 +506,5 @@ footer a {
 
     /* Кабинет редактора */
 
-.toggle {
-    padding-inline-start: 0em;
-    list-style-type: none;
-}
-
-    /* Indent toggle children */
-    .toggle > li > details {
-        padding-left: 1.7em;
-    }
-
-        .toggle > li > details > summary {
-            margin-left: -1.1em;
-        }
+    
 
