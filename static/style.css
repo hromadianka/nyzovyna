@@ -135,17 +135,17 @@ header {
         display: inline-block;
     }
 
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: black;
-        min-width: 160px;
-        z-index: 1;
-        color: white;
-    }
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #282828;
+    min-width: 160px;
+    z-index: 1;
+    color: white;
+}
 
         .dropdown-content button {
-            background-color: black;
+            background-color: #282828;
             color: white;
             width: 100%;
             border: none;
@@ -159,15 +159,15 @@ header {
         display: block;
     }
 
-    .dropbtn {
-        background-color: black;
-        color: white;
-        padding: 16px;
-        font-size: 16px;
-        border: none;
-        cursor: pointer;
-        font-family: 'SF Pro Display', sans-serif;
-    }
+.dropbtn {
+    background-color: #282828;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    font-family: 'SF Pro Display', sans-serif;
+}
 
     /* Футер */
 
