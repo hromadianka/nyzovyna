@@ -1,6 +1,4 @@
-<ul>
     {% for category in categories %}
-    <li>
         {% if category.children.all %}
         <details>
             <summary>{{ category.name_ua }}  ({{ category.name_en }})</summary>
@@ -9,6 +7,4 @@
         {% else %}
         {{ category.name_ua }}  ({{ category.name_en }})
         {% endif %}
-    </li>
     {% endfor %}
-</ul>
