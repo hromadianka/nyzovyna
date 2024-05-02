@@ -184,7 +184,7 @@ footer {
 
 .footer-row1 > div {
     display: flex;
-    gap: 94px;
+    gap: 5%;
 }
 
 footer a {
