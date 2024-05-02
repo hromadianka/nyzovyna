@@ -213,6 +213,10 @@ footer a {
         padding: 30px 5%;
     }
 
+    .footer-row1 {
+        flex-direction: column;
+    }
+
     .footer-row1 > div {
         display: flex;
         gap: 10%;
