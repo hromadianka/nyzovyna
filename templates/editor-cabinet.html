@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
             <div class="card-text">
                 <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
-                <p>{% autoescape off %}{{ article.text|linebreaks|truncatechars:160 }}{% endautoescape %}</p>
+                <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
             </div>
         </div>
         <div class="card-footer">
