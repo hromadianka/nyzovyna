@@ -444,8 +444,14 @@ footer a {
 
     @media screen and (min-width: 1000px) {
 
-        .article, .theme-switcher {
+        .article {
             padding: 60px 19%;
+            padding-top: 20px;
+        }
+
+        .theme-switcher {
+            margin-left: 19%;
+            margin-top: 60px;
         }
 
         .article-image {
@@ -459,8 +465,14 @@ footer a {
 
     @media screen and (max-width: 1000px) {
 
-        .article, .theme-switcher {
+        .article {
             padding: 40px 5%;
+            padding-top: 15px;
+        }
+
+        .theme-switcher {
+            margin-left: 5%;
+            margin-top: 40px;
         }
 
         .article-image {
