@@ -271,6 +271,10 @@ footer {
         box-shadow: 0px 2px 11.6px rgba(0, 0, 0, 0.1);
     }
 
+    .card-text p {
+        opacity: 50%;
+    }
+
     @media screen and (min-width: 1000px) {
         .article-card {
             width: calc(50% - 20px);
@@ -319,6 +323,7 @@ footer {
             padding: 4px;
             background: white;
             height: fit-content;
+            color: black;
         }
 
     .article-card {
