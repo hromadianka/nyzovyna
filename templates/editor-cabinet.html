@@ -21,6 +21,7 @@
 <form method="POST" action="{% url 'publish' %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
     <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required />
+    <input type="text" name="article_author" placeholder="Автор статті" class="form" required />
     <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form"></textarea>
     <input type="file" name="article_image" accept="image/*" class="form" />
     <fieldset class="form">

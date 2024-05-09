@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login as auth_login
 
 
 
-from .models import Editor, Category, Article, Comment
+from .models import Editor, Author, Category, Article, Comment
 
 # Create your views here.
 

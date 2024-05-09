@@ -330,6 +330,7 @@ footer a {
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: stretch;
+        gap: 20px;
     }
 
     .article-card {
@@ -341,8 +342,12 @@ footer a {
     }
 
     @media screen and (min-width: 1000px) {
+        .article-card:nth-child(1) {
+            width: calc(66% - 40px);
+        }
+
         .article-card {
-            width: calc(50% - 20px);
+            width: calc(33% - 20px);
         }
 
         .card-image {

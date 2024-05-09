@@ -11,6 +11,13 @@ class Editor(models.Model):
     def __str__(self):
         return self.user.username
 
+class Author(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name_en = models.TextField()
+    description_en = models.TextField()
+    name_ua = models.TextField()
+    description_ua = models.TextField()
+
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name_ua = models.CharField(max_length=100)
@@ -22,12 +29,15 @@ class Category(models.Model):
 
 class Article(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, blank=True, related_name='articles')
     name = models.TextField()
     text = models.TextField()
     image = models.ImageField(upload_to='images/', default='card-example.png')
     categories = models.ManyToManyField(Category, related_name='categories')
     language = models.CharField(max_length=2, choices=(('ua', 'Українська'), ('en', 'Англійська')), default='ua')
     created_at = models.DateTimeField(auto_now_add=True)
+    views = models.IntegerField(default=0)
+    reactions = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
