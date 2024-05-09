@@ -255,11 +255,15 @@ footer a {
         }
 
         h3, h3 a {
-            font-size: 22px;
+            font-size: 24px;
         }
 
         p, li, a, .form, summary, details {
             font-size: 16px;
+        }
+
+        .card-text p {
+            font-size: 14px;
         }
     }
 
@@ -285,44 +289,7 @@ footer a {
         margin-bottom: 30px;
     }
 
-    /* Поддержите нас */
-
-    .support-us {
-        background: url('/static/img/bg1.png') no-repeat;
-        background-size: cover;
-    }
-
-        .support-us h1, .support-us a {
-            color: white;
-            text-transform: uppercase;
-            font-weight: 900;
-        }
-
-        .support-us h1 {
-            font-size: 45px;
-        }
-
-    @media screen and (min-width: 1000px) {
-        .support-us {
-            padding: 100px 120px;
-            padding-right: 30%;
-        }
-
-            .support-us h1 {
-                margin-bottom: 50px;
-            }
-    }
-
-    @media screen and (max-width: 1000px) {
-
-        .support-us {
-            padding: 57px 5%;
-            padding-right: 21%;
-            background: url('/static/img/bg1-mobile.png') no-repeat;
-            background-size: cover;
-        }
-    }
-
+   
     /* Карточки статей */
 
     .articles-container {
