@@ -270,7 +270,7 @@ footer a {
     @media screen and (min-width: 1000px) {
 
         main {
-            padding: 60px 19%;
+            padding: 30px 19% 50px 19%;
         }
     }
 
@@ -328,7 +328,6 @@ footer a {
     .articles-container {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
         align-items: stretch;
         gap: 20px;
     }
@@ -343,11 +342,11 @@ footer a {
 
     @media screen and (min-width: 1000px) {
         .article-card:nth-child(1) {
-            width: calc(66% - 40px);
+            width: calc(((100% - 40px) / 3 * 2) + 20px);
         }
 
         .article-card {
-            width: calc(33% - 20px);
+            width: calc((100% - 40px) / 3);
         }
 
         .card-image {
