@@ -591,7 +591,8 @@ footer a {
         }
 
     .article-text, .comments {
-        padding: 0 11%;
+        padding-left: 11%;
+        padding-right: 11%;
     }
 
     }
