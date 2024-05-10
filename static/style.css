@@ -495,10 +495,6 @@ footer a {
     background: #1D1B1B;
 }
 
-.article-text, .comments {
-    padding: 0 11%;
-}
-
 .article-container {
     border-radius: 10px 10px 0 0;
 }
@@ -594,6 +590,10 @@ footer a {
             padding: 16px 15px;
         }
 
+    .article-text, .comments {
+        padding: 0 11%;
+    }
+
     }
 
     @media screen and (max-width: 1000px) {
@@ -606,6 +606,10 @@ footer a {
         .article-image {
             margin: 0 8px;
             padding: 17px 0;
+        }
+
+        .article-features {
+            margin-bottom: 50px;
         }
 
     }
