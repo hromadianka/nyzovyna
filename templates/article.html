@@ -11,67 +11,112 @@
     }
 </style>
 
-<div class="article-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
-    {% for category in article.categories.all %}
-    {% if current_language == "en" %}
-    <p>{{ category.name_en }}</p>
-    {% else %}
-    <p>{{ category.name_ua }}</p>
-    {% endif %}
-    {% endfor %}
-</div>
 
-<div class="theme-switcher">
-    <input type="checkbox" id="themeToggle" hidden>
-    <label for="themeToggle" style="font-size: 40px">💡</label>
-</div>
 
-<div class="article">
-    <div class="article-text">
-        <h1>{{ article.name }}</h1>
-        <p>{% autoescape off %}{{ article.text }}{% endautoescape %}</p>
+<div class="article-wrapper">
+
+    <div class="article-features">
+        <div class="theme-switcher">
+            <input type="checkbox" id="themeToggle" hidden>
+            <label for="themeToggle" style="font-size: 40px"></label>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="">
+                <g clip-path="url(#clip0_155_265)">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.67581 8.58329L0.563062 14.8601C0.205437 15.1368 0 15.557 0 16C0 16.4429 0.205438 16.8632 0.563125 17.1399C2.0555 18.2945 5.47594 20.9409 8.67581 23.4167C12.9578 26.7295 19.0422 26.7295 23.3242 23.4167C26.5241 20.9409 29.9445 18.2945 31.4369 17.1399C31.7946 16.8632 32 16.4429 32 16C32 15.557 31.7946 15.1368 31.4369 14.8601C29.9445 13.7054 26.5241 11.059 23.3242 8.58329C19.0422 5.27041 12.9578 5.27041 8.67581 8.58329ZM16.0006 9.2146C12.2406 9.2146 9.18781 12.2674 9.18781 16.0276C9.18781 19.7877 12.2406 22.8405 16.0006 22.8405C19.7607 22.8405 22.8135 19.7877 22.8135 16.0276C22.8135 12.2674 19.7607 9.2146 16.0006 9.2146Z" fill="#FDFBEE" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0006 12.2773C13.9307 12.2773 12.2502 13.9578 12.2502 16.0278C12.2502 18.0977 13.9307 19.7782 16.0006 19.7782C18.0705 19.7782 19.7509 18.0977 19.7509 16.0278C19.7509 13.9578 18.0705 12.2773 16.0006 12.2773Z" fill="#FDFBEE" />
+                </g>
+                <defs>
+                    <clipPath id="clip0_155_265">
+                        <rect width="32" height="32" fill="white" />
+                    </clipPath>
+                </defs>
+            </svg>
+            <p>{{ article.views }}</p>
+        </div>
+        <a href="#comments" style="text-decoration: none">
+            <div style="display: flex; flex-direction: column; align-items: center; text-align: center">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_155_271)">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.7392 1.67236C20.0429 1.67236 23.9485 2.96623 26.7834 5.05289C29.6697 7.18073 31.4543 10.1323 31.4543 13.4064C31.4494 14.2191 31.3339 15.0272 31.1111 15.8088C31.0356 16.0788 30.9487 16.3453 30.8503 16.6084C30.5207 16.2808 30.1674 15.978 29.7932 15.7024C27.6468 14.1938 25.0789 13.4011 22.4556 13.4373C19.8323 13.4011 17.2644 14.1938 15.118 15.7024C13.1755 17.1438 11.8027 19.2579 11.8027 21.7324C11.8045 22.8454 12.0816 23.9407 12.6092 24.9208C12.0097 24.8315 11.424 24.7171 10.852 24.5776C9.85517 24.3412 8.87945 24.0232 7.93479 23.6269L1.84642 27.3849C1.67465 27.4943 1.45817 27.5057 1.27593 27.4147C0.989275 27.2717 0.872844 26.9234 1.01587 26.6368L3.72372 21.0151C2.63586 20.0766 1.7317 18.9443 1.05706 17.6758C0.367139 16.3667 0.0043758 14.9101 0 13.4304C0 10.1631 1.78807 7.20475 4.67439 5.07691C7.50579 2.98682 11.4354 1.67236 15.7392 1.67236ZM31.3445 24.3647C30.9618 25.0898 30.4555 25.7425 29.8482 26.2934L31.372 29.4886C31.4628 29.6708 31.4516 29.8874 31.3422 30.0591C31.1702 30.3293 30.8116 30.4089 30.5414 30.2368L27.0373 28.0747C26.3721 28.3481 25.6827 28.5584 24.9781 28.7027C24.1469 28.8723 23.3006 28.9575 22.4522 28.9567C20.0633 28.9922 17.7245 28.2715 15.7701 26.8975C13.9992 25.5865 12.9044 23.7778 12.9044 21.7495C12.9044 19.7212 13.9992 17.9056 15.7701 16.6015C17.7245 15.2275 20.0633 14.5067 22.4522 14.5423C24.841 14.5067 27.1799 15.2275 29.1343 16.6015C30.9052 17.9056 32 19.7246 32 21.7426C31.9963 22.6567 31.7715 23.5563 31.3445 24.3647Z" fill="#FDFBEE" />
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_155_271">
+                            <rect width="32" height="32" fill="white" />
+                        </clipPath>
+                    </defs>
+                </svg>
+
+                <p>{{comments.count}}</p>
+            </div>
+        </a>
+        
     </div>
 
-    <style>
-        .comment {
-            margin-top: 20px;
-        }
-    </style>
+    <div class="article-container">
+        <div class="article-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
+            {% for category in article.categories.all %}
+            {% if current_language == "en" %}
+            <p>{{ category.name_en }}</p>
+            {% else %}
+            <p>{{ category.name_ua }}</p>
+            {% endif %}
+            {% endfor %}
+        </div>
 
-    <div class="comments">
-        <h1>{% trans "Коментарі" %}</h1>
-        <form class="form" method="POST" action="{% url 'comment' %}">
-            {% csrf_token %}
-            <input hidden value="{{article.id}}" name="article_id" />
-            <input class="form" placeholder="{{ translate.enter_name }}" required name="author" />
-            <textarea class="form" placeholder="{{ translate.enter_comment }}" required name="text"></textarea>
-            <button class="btn" type="submit">{% trans "Залишити коментар" %}</button>
-        </form>
-        {% for comment in comments reversed %}
-        {% if not comment.parent_comment %}
-        <div class="comment">
-            <p style="margin-bottom: 15px; font-weight: bold">{{ comment.author }}</p>
-            <p style="margin-bottom: 15px;">{{ comment.text }}</p>
-            <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ comment.id }}')">
-                <span style="font-size: 1.4em">&#x21A9;</span>
-                {{ translate.reply }}
-            </a>
+        <div class="article">
+            <div class="article-text">
+                <h1>{{ article.name }}</h1>
+                <p>{% autoescape off %}{{ article.text }}{% endautoescape %}</p>
+            </div>
+
+
+            <div class="comments" id="comments">
+                <h2>{% trans "Коментарі" %}</h2>
+                {% for comment in comments reversed %}
+                {% if not comment.parent_comment %}
+                <div class="comment">
+                    <div style="display: flex; align-items: center; gap: 32px">
+                        <p style="font-weight: bold">{{ comment.author }}</p>
+                        <p style="font-size: 16px; color: #828282">{{ comment.created_at|date:"d.m.Y" }}</p>
+                    </div>
+                    <p style="font-size: 16px; margin: 10px 0;">{{ comment.text }}</p>
+                    <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ comment.id }}')">
+                        <span style="font-size: 1.4em">&#x21A9;</span>
+                        {{ translate.reply }}
+                    </a>
+                </div>
+                <div class="comment-form reply-form" id="reply-form-{{ comment.id }}" style="display: none; margin-left: 100px; margin-top: 20px;">
+                    <form action="{% url 'comment' %}" method="POST" class="comment-form">
+                        {% csrf_token %}
+                        <input hidden value="{{ comment.id }}" name="parent_comment_id">
+                        <input hidden value="{{article.id}}" name="article_id" />
+                        <input class="comment-input-name" type="text" placeholder="{{ translate.enter_name }}" required name="author" />
+                        <textarea class="comment-input-text" placeholder="{{ translate.enter_comment }}" required name="text">{{ comment.author }}, </textarea>
+                        <button class="comment-btn" type="submit">{{ translate.reply }}</button>
+                    </form>
+                </div>
+                {% include 'comment.html' with comment=comment %}
+                {% endif %}
+                {% endfor %}
+                <p style="font-weight: 500; width: 50%; font-size: 26px; line-height: 140%; margin-top: 30px; margin-bottom: 20px">
+                    Залишились питання або хочете щось сказати?
+                    —  Напишіть коментар!
+                </p>
+                <form class="comment-form" method="POST" action="{% url 'comment' %}">
+                    {% csrf_token %}
+                    <input hidden value="{{article.id}}" name="article_id" />
+                    <input class="comment-input-name" placeholder="{{ translate.enter_name }}" required name="author" />
+                    <textarea class="comment-input-text" placeholder="{{ translate.enter_comment }}" required name="text"></textarea>
+                    <button class="comment-btn" type="submit">{% trans "Залишити коментар" %}</button>
+                </form>
+            </div>
         </div>
-        <div class="reply-form" id="reply-form-{{ comment.id }}" style="display: none; margin-left: 100px; margin-top: 20px;">
-            <form action="{% url 'comment' %}" method="POST" class="form">
-                {% csrf_token %}
-                <input hidden value="{{ comment.id }}" name="parent_comment_id">
-                <input hidden value="{{article.id}}" name="article_id" />
-                <input class="form" type="text" placeholder="{{ translate.enter_name }}" required name="author" />
-                <textarea class="form" placeholder="{{ translate.enter_comment }}" required name="text">{{ comment.author }}, </textarea>
-                <button class="btn" type="submit">{{ translate.reply }}</button>
-            </form>
-        </div>
-        {% include 'comment.html' with comment=comment %}
-        {% endif %}
-        {% endfor %}
     </div>
+
 </div>
+
+
 
 <script>
     function toggleReplyForm(commentId) {

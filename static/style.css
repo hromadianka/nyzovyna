@@ -5,21 +5,57 @@
 }
 
 main {
-    background: url('/static/img/bg.png') no-repeat;
-    background-size: cover;
     color: white;
+    background: #282828;
+}
+
+.theme-switcher {
+    margin-top: 50px;
+}
+
+.theme-switcher label {
+    width: 80px;
+    display: block;
+    height: 32px;
+    background: url('img/dark-theme-icon.svg') no-repeat;
+    background-size: contain;
 }
 
 main a {
     color: white;
 }
 
-main.light {
-    background: none;
-    color: black;
-}
+    main.light {
+        background: #FDFBEE;
+        color: black;
+    }
+
+        main.light svg, main.light path {
+            fill: #1D1B1B !important;
+        }
+
+        main.light .theme-switcher label {
+            background: url('img/light-theme-icon.svg') no-repeat;
+        }
+
+        main.light .article-container {
+            box-shadow: 0 0 25.3px 0 rgba(0, 0, 0, 0.1);
+        }
 
     main.light a {
+        color: black;
+    }
+
+    main.light .article {
+        background: #FDFBEE;
+    }
+
+
+        main.light .comments {
+            border-top: 1px solid #1D1B1B;
+        }
+
+    main.light .comment-input-name, main.light .comment-input-text {
         color: black;
     }
 
@@ -30,11 +66,11 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 21px 19%;
+    padding: 1vh 19%;
 }
 
 .logo {
-    width: 14%;
+    width: 16%;
 }
 
 .menu {
@@ -190,7 +226,11 @@ header {
     overflow: hidden;
     background: url(img/gradient.png) no-repeat;
     background-size: cover;
-    padding: 11px 0;
+    padding: 0.8vh 0;
+}
+
+.ticker * {
+    cursor: pointer;
 }
 
 .ticker__wrapper {
@@ -224,7 +264,7 @@ header {
  /* Футер */
 
 footer {
-    padding: 78px 19%;
+    padding: 9vh 19%;
     background-color: #1D1B1B;
     color: white;
     gap: 48px;
@@ -258,7 +298,7 @@ footer a {
 @media screen and (max-width: 1000px) {
 
     footer {
-        padding: 50px 5%;
+        padding: 3vh 5%;
         gap: 30px;
     }
 
@@ -280,18 +320,26 @@ footer a {
 
 /* Шрифты */
 
-    h1, h2, h3, p, li, a, .form, summary, details {
+    * {
         font-family: 'SF Pro Display', sans-serif;
     }
 
     @media screen {
 
         h1 {
-            font-size: 34px;
+            font-size: 32px;
         }
 
-        h1 {
-            font-size: 2rem;
+        .article p, .article a {
+            font-size: 18px;
+        }
+
+        .article h2 {
+            font-size: 28px;
+        }
+
+        .article h3 {
+            font-size: 22px;
         }
 
         h3, h3 a {
@@ -395,9 +443,9 @@ footer a {
         height: 231px;
     }
 
-        .card-image p {
-            padding: 8px;
-            background: white;
+        .card-image p, .article-image p {
+            padding: 7px 8px;
+            background: #FDFBEE;
             height: fit-content;
             color: black;
             border-radius: 10px;
@@ -433,45 +481,119 @@ footer a {
 
     /* Детальный вид статьи */
 
-    @media screen and (min-width: 1000px) {
-
-        .article-text {
-            padding-right: 600px;
-        }
-    }
 
     .article-image {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         height: 360px;
+        border-radius: 10px;
     }
 
-        .article-image p {
-            padding: 4px;
-            background: white;
-            height: fit-content;
+.article {
+    padding: 50px 0;
+    background: #1D1B1B;
+}
+
+.article-text, .comments {
+    padding: 0 11%;
+}
+
+.article-container {
+    border-radius: 10px 10px 0 0;
+}
+
+.article-features {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+}
+
+.comments {
+    padding-top: 30px;
+    border-top: 1px solid #828282;
+}
+
+.article-text {
+    padding-bottom: 30px;
+}
+
+.comment {
+    padding-top: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #4F4F4F;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-btn {
+    color: white;
+    background: #EB5757;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    line-height: 140%;
+    font-size: 18px;
+    width: fit-content;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.comment-input-name {
+    width: 220px;
+    line-height: 140%;
+    font-size: 18px;
+    padding: 8px;
+    background: none;
+    border: 1px solid #828282;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+    .comment-input-name::placeholder {
+        color: #828282;
+    }
+
+.comment-input-text {
+    color: white;
+    line-height: 140%;
+    font-size: 18px;
+    padding: 8px;
+    background: none;
+    border: 1px solid #828282;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.comment-input-text::placeholder {
+    color: #828282;
+}
+
+
+@media screen and (min-width: 1000px) {
+    .article-wrapper {
+            display: flex;
+            padding-left: 24%;
+            padding-right: 24%;
+            padding-top: 30px;
+            padding-bottom: 50px;
+            gap: 20px;
         }
 
-    @media screen and (min-width: 1000px) {
-
-        .article {
-            padding: 60px 19%;
-            padding-top: 20px;
+        .article-container {
+            flex-grow: 1;
         }
 
-        .theme-switcher {
-            margin-left: 19%;
-            margin-top: 60px;
-        }
 
         .article-image {
-            padding: 40px 19%;
+            padding: 16px 15px;
         }
 
-        .comments {
-            padding-top: 60px;
-        }
     }
 
     @media screen and (max-width: 1000px) {
@@ -481,19 +603,11 @@ footer a {
             padding-top: 15px;
         }
 
-        .theme-switcher {
-            margin-left: 5%;
-            margin-top: 40px;
-        }
-
         .article-image {
             margin: 0 8px;
             padding: 17px 0;
         }
 
-        .comments {
-            padding-top: 40px;
-        }
     }
 
     .comments form.form {
@@ -504,11 +618,7 @@ footer a {
             margin-top: 10px;
         }
 
-    .comment {
-        padding: 15px 17px;
-        border: 2px solid rgba(0, 0, 0, 0.1);
-        margin-top: 30px;
-    }
+
 
     /* Формы */
 
@@ -570,3 +680,4 @@ form.categories-form {
         margin-top: 0;
         padding: 4px;
     }
+

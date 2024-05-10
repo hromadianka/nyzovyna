@@ -36,13 +36,16 @@ def all_articles(request):
 
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
+    article.views += 1
+    article.save()
     comments = Comment.objects.filter(article=article)
+    comments_count = article.comments.count()
     translate = {
         'reply': _('Відповісти'),
         'enter_name': _('Введіть ім\'я'),
         'enter_comment': _('Введіть коментар')
     }
-    return render(request, 'article.html', {'article': article, 'comments': comments, 'translate': translate})
+    return render(request, 'article.html', {'article': article, 'comments': comments, 'translate': translate, 'comments_count': comments_count})
 
 def comment(request):
 

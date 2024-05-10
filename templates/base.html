@@ -63,7 +63,7 @@
 
 
     </header>
-    <div class="ticker">
+    <div class="ticker" id="ticker">
         <div class="ticker__wrapper">
             <div class="ticker__item">
                 <span>\\</span>
@@ -127,6 +127,12 @@
             burgerIcon.addEventListener("click", function () {
                 menu.classList.toggle("active");
             });
+        });
+    </script>
+
+    <script>
+        document.getElementById("ticker").addEventListener("click", function () {
+            window.location.href = "https://send.monobank.ua/jar/2M6tkLVTVW";
         });
     </script>
 
