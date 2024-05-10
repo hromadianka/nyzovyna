@@ -63,6 +63,34 @@
 
 
     </header>
+    <div class="ticker">
+        <div class="ticker__wrapper">
+            <div class="ticker__item">
+                <span>\\</span>
+                <span>підтримай анархістську думку сучасності</span>
+                <span>\\</span>
+                <span>НИЗОВИНА.</span>
+            </div>
+            <div class="ticker__item">
+                <span>\\</span>
+                <span>підтримай анархістську думку сучасності</span>
+                <span>\\</span>
+                <span>НИЗОВИНА.</span>
+            </div>
+            <div class="ticker__item">
+                <span>\\</span>
+                <span>підтримай анархістську думку сучасності</span>
+                <span>\\</span>
+                <span>НИЗОВИНА.</span>
+            </div>
+            <div class="ticker__item">
+                <span>\\</span>
+                <span>підтримай анархістську думку сучасності</span>
+                <span>\\</span>
+                <span>НИЗОВИНА.</span>
+            </div>
+        </div>
+    </div>
     {% block support_us %}{% endblock %}
     <main>
         {% block content %}{% endblock %}
@@ -102,62 +130,8 @@
         });
     </script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const parentCategories = document.querySelectorAll('.parent-category');
-            let subMenuTimeout;
-
-            parentCategories.forEach(function (category) {
-                const subMenu = category.querySelector('.sub-menu');
-
-                if (window.innerWidth <= 768) {
-                    category.addEventListener('click', function (event) {
-                        event.preventDefault();
-                        var link = event.currentTarget.querySelector('a');
-                        if (link) {
-                            var href = link.getAttribute('href');
-                        }
-                        
-                       
-                        if (subMenu) {
-                            subMenu.style.display = 'flex';
-                        } else {
-                            window.location.href = href;
-                        }
-
-                         
-                    });
-                } else {
-                    // Для десктопных устройств сохраняем текущий функционал
-                    category.addEventListener('mouseenter', function () {
-                        if (subMenu) {
-                            clearTimeout(subMenuTimeout);
-                            subMenu.style.display = 'flex';
-                        }
-                    });
-
-                    category.addEventListener('mouseleave', function () {
-                        subMenuTimeout = setTimeout(function () {
-                            subMenu.style.display = 'none';
-                        }, 400);
-                    });
-
-                    if (subMenu) {
-                        subMenu.addEventListener('mouseenter', function () {
-                            clearTimeout(subMenuTimeout);
-                        });
-
-                        subMenu.addEventListener('mouseleave', function () {
-                            subMenu.style.display = 'none';
-                        });
-                    }
-                }
-            });
-        });
 
 
-
-    </script>
 
     <style>
         .sub-menu {

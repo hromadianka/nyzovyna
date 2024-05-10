@@ -30,7 +30,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 19%;
+    padding: 21px 19%;
 }
 
 .logo {
@@ -142,7 +142,8 @@ header {
 
 }
 
-    /* Стили для выпадающего меню */
+ /* Стили для выпадающего меню */
+
     .dropdown {
         position: relative;
         display: inline-block;
@@ -182,10 +183,48 @@ header {
     font-family: 'SF Pro Display', sans-serif;
 }
 
-    /* Футер */
+/* Бегущая строчка */
+
+.ticker {
+    position: relative;
+    overflow: hidden;
+    background: url(img/gradient.png) no-repeat;
+    background-size: cover;
+    padding: 11px 0;
+}
+
+.ticker__wrapper {
+    display: flex;
+    gap: 16px;
+}
+
+.ticker__item {
+    font-family: 'SF Pro Display', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: white;
+    animation: ticker 5s linear infinite;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex;
+    gap: 16px;
+}
+
+@keyframes ticker {
+    0% {
+        transform: translateZ(0);
+    }
+
+    to {
+        transform: translate3d(-100%, 0, 0);
+    }
+}
+
+
+ /* Футер */
 
 footer {
-    padding: 48px 19%;
+    padding: 78px 19%;
     background-color: #1D1B1B;
     color: white;
     gap: 48px;
@@ -239,7 +278,8 @@ footer a {
     }
 }
 
-    /* Шрифты */
+/* Шрифты */
+
     h1, h2, h3, p, li, a, .form, summary, details {
         font-family: 'SF Pro Display', sans-serif;
     }
