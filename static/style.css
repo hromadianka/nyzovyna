@@ -243,7 +243,7 @@ header {
     font-size: 22px;
     font-weight: 500;
     color: white;
-    animation: ticker 5s linear infinite;
+    animation: ticker 10s linear infinite;
     white-space: nowrap;
     flex-shrink: 0;
     display: flex;
