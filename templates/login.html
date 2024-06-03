@@ -2,6 +2,18 @@
 
 {% block content %}
 
+<style>
+    main {
+        background: none;
+        color: black;
+    }
+
+
+        main a {
+            color: black;
+        }
+</style>
+
 <form class="form" method="POST" action="{% url 'login' %}">
     {% csrf_token %}
     <input type="text" name="login" placeholder="Логін" class="form" required />
