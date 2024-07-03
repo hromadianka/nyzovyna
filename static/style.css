@@ -66,7 +66,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1vh 19%;
+    padding: 1vh 0;
 }
 
 .logo {
@@ -264,7 +264,7 @@ header {
  /* Футер */
 
 footer {
-    padding: 9vh 19%;
+    padding: 9vh 0;
     background-color: #1D1B1B;
     color: white;
     gap: 48px;
@@ -362,7 +362,13 @@ footer a {
     @media screen and (min-width: 1000px) {
 
         main {
-            padding: 30px 19% 50px 19%;
+            padding: 30px 0 50px 0;
+        }
+
+        .container {
+            width: 61.5%;
+            max-width: 1200px;
+            margin: auto;
         }
     }
 
