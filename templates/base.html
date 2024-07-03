@@ -13,6 +13,7 @@
 </head>
 <body>
     <header>
+        <div class="container">
         <img class="logo" src="{% static 'img/logo.png' %}" />
         <div class="burger-menu">
             <div class="burger-icon">
@@ -61,7 +62,7 @@
 
         </div>
 
-
+    </div>
     </header>
     <div class="ticker" id="ticker">
         <div class="ticker__wrapper">
@@ -93,9 +94,12 @@
     </div>
     {% block support_us %}{% endblock %}
     <main>
+        <div class="container">
         {% block content %}{% endblock %}
+        </div>
     </main>
     <footer>
+        <div class="container">
         <div class="footer-row1">
             <img class="logo" src="{% static 'img/logo.png' %}" />
             <div>
@@ -118,6 +122,7 @@
         <div class="footer-row3">
             <p>Всі права збережені</p>
         </div>
+    </div>
     </footer>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
