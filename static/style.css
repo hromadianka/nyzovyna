@@ -61,7 +61,7 @@ main a {
 
 /* Хедер */
 
-header {
+header .container {
     background-color: #282828;
     display: flex;
     justify-content: space-between;
@@ -263,7 +263,7 @@ header {
 
  /* Футер */
 
-footer {
+footer .container {
     padding: 9vh 0;
     background-color: #1D1B1B;
     color: white;
@@ -297,7 +297,7 @@ footer a {
 
 @media screen and (max-width: 1000px) {
 
-    footer {
+    footer .container {
         padding: 3vh 5%;
         gap: 30px;
     }
