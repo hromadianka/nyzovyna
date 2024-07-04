@@ -113,11 +113,11 @@ header .container {
 @media screen and (max-width: 1000px) {
 
     header {
-        padding: 10px 5%;
+        padding: 2px 5%;
     }
 
     .logo {
-        width: 25%;
+        width: 32%;
     }
 
     .burger-icon {
@@ -177,6 +177,10 @@ header .container {
         gap: 30px;
         padding-top: 30px;
         padding-bottom: 0;
+    }
+
+    .burger-menu form {
+        margin-right: 9px;
     }
 
 }
@@ -304,7 +308,7 @@ footer a {
 @media screen and (max-width: 1000px) {
 
     footer .container {
-        padding: 3vh 5%;
+        padding: 2vh 5%;
         gap: 30px;
     }
 
@@ -637,7 +641,7 @@ footer a {
         }
 
         .article-features {
-            margin-bottom: 7px;
+            margin-bottom: 10px;
             gap: 15px;
         }
 
