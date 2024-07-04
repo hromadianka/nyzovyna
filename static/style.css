@@ -641,15 +641,18 @@ footer a {
         }
 
         .article-features {
-            margin-bottom: 12px;
-            margin-top: 12px;
+            margin-bottom: 30px;
+            margin-top: 30px;
             gap: 15px;
             border: 1px solid #828282;
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
-            padding-bottom: 12px;
-            padding-top: 12px;
+            padding: 20px 12px;
+        }
+
+        .theme-switcher {
+            margin-top: 0;
         }
         
 
