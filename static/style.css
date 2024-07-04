@@ -308,7 +308,7 @@ footer a {
 @media screen and (max-width: 1000px) {
 
     footer .container {
-        padding: 2vh 5%;
+        padding: 3vh 5%;
         gap: 30px;
     }
 
