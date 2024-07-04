@@ -100,8 +100,7 @@
                 {% endif %}
                 {% endfor %}
                 <p class="comment-description">
-                    Залишились питання або хочете щось сказати?
-                    —  Напишіть коментар!
+                    {% trans "Залишились питання або хочете щось сказати? —  Напишіть коментар!" %}
                 </p>
                 <form class="comment-form" method="POST" action="{% url 'comment' %}">
                     {% csrf_token %}
