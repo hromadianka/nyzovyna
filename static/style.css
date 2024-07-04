@@ -266,7 +266,7 @@ header .container {
 
  /* Футер */
 
- header {
+ footer {
     background-color: #282828;
 }
 
@@ -637,11 +637,11 @@ footer a {
         }
 
         .article-features {
-            margin-bottom: 8px;
+            margin-bottom: 7px;
+            gap: 15px;
         }
 
         .theme-switcher {
-            gap: 13px;
             margin-top: 18px;
         }
         
