@@ -38,7 +38,7 @@ def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     article.views += 1
     article.save()
-    comments = Comment.objects.filter(article=article)
+    comments = Comment.objects.filter(article=article).order_by('-created_at')
     comments_count = article.comments.count()
     translate = {
         'reply': _('Відповісти'),
