@@ -67,7 +67,7 @@
 
             <div class="comments" id="comments">
                 <h2>{% trans "Коментарі" %}</h2>
-                {% for comment in comments reversed %}
+                {% for comment in comments %}
                 {% if not comment.parent_comment %}
                 <div class="comment">
                     <div style="display: flex; align-items: center; gap: 32px">
