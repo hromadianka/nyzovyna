@@ -120,50 +120,6 @@
     }
 </script>
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('.form').submit(function (event) {
-            event.preventDefault();
-            var form = $(this);
-            $.ajax({
-                type: form.attr('method'),
-                url: form.attr('action'),
-                data: form.serialize(),
-                success: function (data) {
-                    if (form.find('[name="parent_comment_id"]').length > 0) {
-                        var replyFormId = form.find('[name="parent_comment_id"]').val();
-                        var marginLeft = data.depth * 100;
-                        $('#reply-form-' + replyFormId).hide();
-                        $('<div class="comment" style="margin-left: 60px">' +
-                            '<p style="margin-bottom: 15px; font-weight: bold">' +
-                            data.author + '</p><p style="margin-bottom: 15px;">' +
-                            data.text + '</p>' +
-                            '<a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm(' + data.id + ')">' +
-                            '<span style="font-size: 1.4em">&#x21A9;</span> {% trans "Відповісти" %}</a>' +
-                            '</div>').insertAfter('#reply-form-' + replyFormId);
-                    } else {
-                        $('<div class="comment">' +
-                            '<p style="margin-bottom: 15px; font-weight: bold">' +
-                            data.author + '</p><p style="margin-bottom: 15px;">' +
-                            data.text + '</p>' +
-                            '<a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm(' + data.id + ')">' +
-                            '<span style="font-size: 1.4em">&#x21A9;</span> {% trans "Відповісти" %}</a>' +
-                            '</div>').insertAfter(form);
-                    }
-                    form.trigger('reset');
-                    location.reload();
-                },
-                error: function (xhr, errmsg, err) {
-                    console.log(xhr.status + ": " + xhr.responseText);
-                }
-            });
-        });
-    });
-
-</script>
-
 <script>
     const mainElement = document.querySelector('main');
 	const bodyElement = document.querySelector('body');
