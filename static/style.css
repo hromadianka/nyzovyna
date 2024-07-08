@@ -59,9 +59,17 @@ main a {
         color: black;
     }
 
-/* Хедер */
+body {
+    background: #282828;
+}
 
-header {
+body.light {
+    background: #FDFBEE;
+}
+
+    /* Хедер */
+
+    header {
     background-color: #282828;
 }
 

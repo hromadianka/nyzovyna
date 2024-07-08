@@ -166,13 +166,16 @@
 
 <script>
     const mainElement = document.querySelector('main');
+	const bodyElement = document.querySelector('body');
     const themeToggle = document.getElementById('themeToggle');
 
     themeToggle.addEventListener('change', () => {
         if (themeToggle.checked) {
             mainElement.classList.add('light');
+			bodyElement.classList.add('light');
         } else {
             mainElement.classList.remove('light');
+			bodyElement.classList.remove('light');
         }
     });
 </script>
