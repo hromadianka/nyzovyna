@@ -77,8 +77,7 @@ def comment(request):
             depth += 1
             comment = comment.parent_comment
 
-        if comment:
-            return JsonResponse({'author': author, 'text': text, 'depth': depth})
+        return redirect('article', article_id=article_id)
 
 #Виды редактора
 
