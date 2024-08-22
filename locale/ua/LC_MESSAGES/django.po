@@ -32,6 +32,22 @@ msgstr "Головна"
 msgid "Про нас"
 msgstr "Про нас"
 
+#: .\anarchia\base.html
+msgid "Інстаграм"
+msgstr "Інстаграм"
+
+#: .\anarchia\base.html
+msgid "Телеграм"
+msgstr "Телеграм"
+
+#: .\anarchia\base.html
+msgid "НИЗОВИНА"
+msgstr "НИЗОВИНА"
+
+#: .\anarchia\base.html
+msgid "підтримай анархістську думку сучасності"
+msgstr "підтримай анархістську думку сучасності"
+
 #: .\anarchia\article.html
 msgid "Коментарі"
 msgstr "Коментарі"

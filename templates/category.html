@@ -26,14 +26,7 @@
     {% for article in articles reversed %}
 
     <div class="article-card">
-        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
-            {% for category in article.categories.all %}
-            {% if current_language == "en" %}
-            <p>{{ category.name_en }}</p>
-            {% else %}
-            <p>{{ category.name_ua }}</p>
-            {% endif %}
-            {% endfor %}
+        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
         </div>
         <div class="card-text">
             <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:130 }}</a></h3>

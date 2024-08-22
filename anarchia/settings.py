@@ -28,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5m)2!aqsq-exanwdv5c2+x@%z-n90_*qqw^noaacc_hy$e@!j7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['nyzovyna-e468a704bfb3.herokuapp.com', 'nyzovyna.com', 'www.nyzovyna.com']
+ALLOWED_HOSTS = ['nyzovyna-e468a704bfb3.herokuapp.com', 'nyzovyna.com', 'www.nyzovyna.com', '127.0.0.1']
 
 
 # Application definition
@@ -85,12 +85,12 @@ WSGI_APPLICATION = 'anarchia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
@@ -99,7 +99,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  
         'NAME': 'bk25axpoodm6e690',  
         'USER': 'rftx4ja0vervvc0f',  
-        'PASSWORD': 'gh0efmmwjsa590ve',  
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],  
         'HOST': 'wyqk6x041tfxg39e.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',  
         'PORT': '3306',  
         'OPTIONS': {  
@@ -166,12 +166,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 django_heroku.settings(locals())
-del DATABASES['default']['OPTIONS']['sslmode']
+del DATABASES['default']['options']['sslmode']
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'hiep0qnnm',
     'API_KEY': '711931388182932',
-    'API_SECRET': 'CJ_IgS1QKAOSnE0HY6e12eVzltM',
+    'API_SECRET': os.environ['CLOUDINARY_SECRET'],
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

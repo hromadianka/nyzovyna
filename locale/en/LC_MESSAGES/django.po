@@ -33,6 +33,22 @@ msgstr "Home"
 msgid "Про нас"
 msgstr "About us"
 
+#: .\anarchia\base.html
+msgid "Інстаграм"
+msgstr "Instagram"
+
+#: .\anarchia\base.html
+msgid "Телеграм"
+msgstr "Telegram"
+
+#: .\anarchia\base.html
+msgid "НИЗОВИНА"
+msgstr "NYZOVYNA"
+
+#: .\anarchia\base.html
+msgid "підтримай анархістську думку сучасності"
+msgstr "support modern anarchist thought"
+
 #: .\anarchia\article.html
 msgid "Коментарі"
 msgstr "Comments"

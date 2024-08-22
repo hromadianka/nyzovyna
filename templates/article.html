@@ -48,7 +48,7 @@
     </div>
 
     <div class="article-container">
-        <div class="article-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
+        <div class="article-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
             {% for category in article.categories.all %}
             {% if current_language == "en" %}
             <p>{{ category.name_en }}</p>
@@ -118,22 +118,6 @@
             replyForm.style.display = 'none';
         }
     }
-</script>
-
-<script>
-    const mainElement = document.querySelector('main');
-	const bodyElement = document.querySelector('body');
-    const themeToggle = document.getElementById('themeToggle');
-
-    themeToggle.addEventListener('change', () => {
-        if (themeToggle.checked) {
-            mainElement.classList.add('light');
-			bodyElement.classList.add('light');
-        } else {
-            mainElement.classList.remove('light');
-			bodyElement.classList.remove('light');
-        }
-    });
 </script>
 
 <script>

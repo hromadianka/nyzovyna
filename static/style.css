@@ -2,11 +2,16 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow-wrap: break-word;
 }
 
 main {
     color: white;
     background: #282828;
+}
+
+.overflow-hidden {
+    overflow-y: hidden;
 }
 
 .theme-switcher {
@@ -59,7 +64,7 @@ main a {
         color: black;
     }
 
-body {
+body { 
     background: #282828;
 }
 
@@ -144,7 +149,7 @@ header .container {
         gap: 30px;
         height: 100%;
         padding-left: 5%;
-        padding-top: 200px;
+        padding-top: 120px;
         background-color: black;
     }
 
@@ -283,7 +288,7 @@ header .container {
 }
 
 footer .container {
-    padding: 9vh 0;
+    padding: 7vh 0;
     color: white;
     gap: 48px;
     display: flex;
@@ -739,4 +744,14 @@ form.categories-form {
 
 .article-main {
     padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
 }
