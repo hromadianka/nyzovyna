@@ -393,6 +393,10 @@ footer a {
             max-width: 1200px;
             margin: auto;
         }
+
+        .menu {
+            align-items: center;
+        }
     }
 
     @media screen and (max-width: 1000px) {

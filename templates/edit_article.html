@@ -2,13 +2,12 @@
 
 {% block content %}
 
-<h1>Редагувати статтю</h1>
-
-<p><a href="{% url 'editor_cabinet' %}">Назад до кабінету редактора</a></p>
-
 <style>
-    main {
+    main, body {
         background: none;
+    }
+
+    main {
         color: black;
     }
 
@@ -18,6 +17,7 @@
         }
 </style>
 
+<h1>Редагувати статтю</h1>
 
 <form method="POST" action="{% url 'edit' article.id %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
@@ -29,11 +29,11 @@
     <input type="file" name="article_image" accept="image/*" class="form" value="article.image" />
     <fieldset class="form">
         <label class="form">
-            <input type="radio" name="language" value="ua" {% if article.language == "ua" %} checked {% endif %}>
+            <input type="radio" name="language" value="ua" {% if article.language= ="ua" %} checked {% endif %}>
             <span class="form">Українська</span>
         </label>
         <label class="form">
-            <input type="radio" name="language" value="en" {% if article.language == "en" %} checked {% endif %}>
+            <input type="radio" name="language" value="en" {% if article.language= ="en" %} checked {% endif %}>
             <span class="form">Англійська</span>
         </label>
     </fieldset>
@@ -47,6 +47,8 @@
     </fieldset>
     <button type="submit" class="btn">Зберегти</button>
 </form>
+
+<p style="margin-top: 20px"><a href="{% url 'editor_cabinet' %}">Назад до кабінету редактора</a></p>
 
 <script>
     ClassicEditor
