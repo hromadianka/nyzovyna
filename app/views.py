@@ -141,7 +141,7 @@ def publish(request):
                 language=language
             )
             article.categories.add(*all_categories)
-            return redirect('article', article_id=article.pk)
+            return redirect('editor_cabinet')
 
     return render(request, 'editor-cabinet.html')
 
@@ -207,6 +207,6 @@ def edit_article(request, article_id):
             article.categories.clear()
             article.categories.add(*all_categories)
             article.save()
-            return redirect('article', article_id=article.pk)
+            return redirect('editor_cabinet')
 
     return render(request, 'edit_article.html', {'article': article})
