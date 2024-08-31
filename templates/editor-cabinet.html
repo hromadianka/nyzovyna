@@ -96,8 +96,11 @@
     {% for category in categories %}
     {% if not category.parent %}
     <li>
-        <details>
-            <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
+        <details id="category-{{category.id}}">
+            <summary>
+                <span>{{ category.name_ua }} ({{ category.name_en }})</span>
+                <span style="margin-left: 8px"><a style="color: red" href="#" onclick="confirmDeleteCategory(event, '{{ category.id }}')">Видалити</a></span>
+            </summary>
             <button onclick="toggleForm('{{ category.id }}')" class="btn" style="color: black; background-color: white; border: none; margin-top: 8px; font-size: 14px">+ Додати підкатегорію</button>
             <form id="form_{{ category.id }}" class="form categories-form" method="POST" action="{% url 'create_category' %}" style="display: none; margin-top: 8px">
                 {% csrf_token %}
@@ -154,6 +157,27 @@
 </div>
 
 <script>
+    function confirmDeleteCategory(event, categoryId) {
+        event.preventDefault();
+        if (confirm('Ви впевнені, що хочете видалити категорію?')) {
+            fetch('/category/' + categoryId + '/delete/')
+                .then(response => {
+                    if (response.ok) {
+                        const categoryElement = document.getElementById('category-' + categoryId);
+                        if (categoryElement) {
+                            categoryElement.remove();
+                        }
+                    } else {
+                        throw new Error('Помилка видалення категорії');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Помилка видалення категорії');
+                });
+        }
+    }
+
     function confirmDelete(event, articleId) {
         event.preventDefault();
         if (confirm('Ви впевнені, що хочете видалити статтю?')) {
