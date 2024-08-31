@@ -98,7 +98,7 @@ def editor_cabinet(request):
     
     context = {
         'articles': articles,
-        'about_us_text': about_us_text;
+        'about_us_text': about_us_text,
     }
     return render(request, 'editor-cabinet.html', context)
 
