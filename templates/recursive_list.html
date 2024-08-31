@@ -1,7 +1,10 @@
     {% for category in categories %}
 <li>
-    <details>
-        <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
+    <details id="category-{{category.id}}">
+        <summary style="display: flex; justify-content: space-between; width: 100%">
+            <span>{{ category.name_ua }} ({{ category.name_en }})</span>
+            <span><a href="#" onclick="confirmDeleteCategory(event, '{{ category.id }}')" style="color: red;">Видалити</a></span>
+        </summary>
         <button onclick="toggleForm('{{ category.id }}')" class="btn" style="color: black; background-color: white; border: none; margin-top: 8px; font-size: 14px">+ Додати підкатегорію</button>
         <form id="form_{{ category.id }}" class="form categories-form" method="POST" action="{% url 'create_category' %}" style="display: none; margin-top: 8px">
             {% csrf_token %}
