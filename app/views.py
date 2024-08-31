@@ -18,7 +18,7 @@ def index(request):
     return render(request, 'index.html', {'latest_articles': latest_articles})
 
 def about_us(request):
-    about_us_text = AboutUsText.objects.get_or_create(pk=1)
+    about_us_text = AboutUsText.objects.get(pk=1)
     return render(request, 'about-us.html', {'about_us_text': about_us_text})
 
 def category_articles(request, category_id):
@@ -94,7 +94,7 @@ def user_login(request):
 @login_required(login_url='/login')
 def editor_cabinet(request):
     articles = Article.objects.all()
-    about_us_text = AboutUsText.objects.get_or_create(pk=1)
+    about_us_text = AboutUsText.objects.get(pk=1)
     
     context = {
         'articles': articles,
@@ -223,7 +223,7 @@ def about_us_edit(request):
     if request.method == 'POST':
         new_text_ua = request.POST.get('new_text_ua')
         new_text_en = request.POST.get('new_text_en')
-        about_us_text = AboutUsText.objects.get_or_create(pk=1)
+        about_us_text = AboutUsText.objects.get(pk=1)
         about_us_text.text_ua = new_text_ua
         about_us_text.text_en = new_text_en
         about_us_text.save()
