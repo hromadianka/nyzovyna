@@ -752,6 +752,16 @@ form.categories-form {
         padding: 4px;
     }
 
+@media screen and (max-width: 1000px) {
+    form.categories-form {
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 25px;
+    }
+}
+
+
+
 .article-main {
     padding: 0;
 }
