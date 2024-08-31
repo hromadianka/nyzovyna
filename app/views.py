@@ -173,6 +173,7 @@ def delete_category(request, category_id):
     if request.method == 'GET':
         category.delete()
         return JsonResponse({'success': True})
+        print JsonResponse({'success': True})
 
 @login_required(login_url='/login')
 def edit_article(request, article_id):
