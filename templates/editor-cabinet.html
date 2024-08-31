@@ -23,8 +23,8 @@
 
 <form method="POST" action="{% url 'about_us_edit' %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
-    <textarea name="new_text_ua" id="about_us_text" class="form">{{ about_us_text.text_ua }}</textarea>
-    <textarea name="new_text_en" id="about_us_text" class="form">{{ about_us_text.text_en }}</textarea>
+    <textarea name="new_text_ua" id="about_us_text_ua" class="form">{{ about_us_text.text_ua }}</textarea>
+    <textarea name="new_text_en" id="about_us_text_en" class="form">{{ about_us_text.text_en }}</textarea>
     <button type="submit" class="btn">Зберегти</button>
 </form>
 
@@ -59,7 +59,15 @@
 
 <script>
     ClassicEditor
-        .create(document.querySelector('#about_us_text'), {
+        .create(document.querySelector('#about_us_text_ua'), {
+            toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote']
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    ClassicEditor
+        .create(document.querySelector('#about_us_text_en'), {
             toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote']
         })
         .catch(error => {
