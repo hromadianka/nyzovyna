@@ -8,10 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate, login as auth_login
 
 
-
-
-
-from .models import Editor, Author, Category, Article, Comment
+from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
 
 # Create your views here.
 
@@ -21,7 +18,8 @@ def index(request):
     return render(request, 'index.html', {'latest_articles': latest_articles})
 
 def about_us(request):
-    return render(request, 'about-us.html')
+    about_us_text = AboutUsText.objects.get_or_create(pk=1)
+    return render(request, 'about-us.html', {'about_us_text': about_us_text})
 
 def category_articles(request, category_id):
     current_language = get_language()
@@ -96,9 +94,11 @@ def user_login(request):
 @login_required(login_url='/login')
 def editor_cabinet(request):
     articles = Article.objects.all()
+    about_us_text = AboutUsText.objects.get_or_create(pk=1)
     
     context = {
         'articles': articles,
+        'about_us_text': about_us_text;
     }
     return render(request, 'editor-cabinet.html', context)
 
@@ -168,6 +168,13 @@ def create_category(request):
     return render(request, 'editor-cabinet.html')
 
 @login_required(login_url='/login')
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    if request.method == 'GET':
+        category.delete()
+        return JsonResponse({'success': True})
+
+@login_required(login_url='/login')
 def edit_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
 
@@ -210,3 +217,15 @@ def edit_article(request, article_id):
             return redirect('editor_cabinet')
 
     return render(request, 'edit_article.html', {'article': article})
+
+@login_required(login_url='/login')
+def about_us_edit(request):
+    if request.method == 'POST':
+        new_text_ua = request.POST.get('new_text_ua')
+        new_text_en = request.POST.get('new_text_en')
+        about_us_text = AboutUsText.objects.get_or_create(pk=1)
+        about_us_text.text_ua = new_text_ua
+        about_us_text.text_en = new_text_en
+        about_us_text.save()
+
+        return redirect('editor_cabinet')

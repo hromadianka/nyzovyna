@@ -3,5 +3,14 @@
 
 
 {% block content %}
+
 <h1>{% trans "Про нас" %}</h1>
+
+{% if current_language == "ua" %}
+<p>{% autoescape off %}{{ about_us_text.text_ua }}{% endautoescape %}</p>
+{% else %}
+<p>{% autoescape off %}{{ about_us_text.text_en }}{% endautoescape %}</p>
+{% endif %}
+
+
 {% endblock %}

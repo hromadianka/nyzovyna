@@ -22,7 +22,7 @@
                     <div class="bar"></div>
                 </div>
                 <ul class="menu">
-                    <li><a href="{% url 'home' %}" class="menu-link">{% trans "Головна" %}</a></li>
+                    <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
                     {% for category in categories %}
                     {% if not category.parent %}
                     <li class="parent-category">
@@ -39,7 +39,6 @@
                     </li>
                     {% endif %}
                     {% endfor %}
-                    <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
                 </ul>
                 <form action="{% url 'set_language' %}" method="post" class="language-form">
                     {% csrf_token %}

@@ -30,6 +30,7 @@ urlpatterns = [
     path('about-us', views.about_us, name='about_us'),
     path('all', views.all_articles, name='all_articles'),
     path('category/<uuid:category_id>/', views.category_articles, name='category_articles'),
+    path('category/<uuid:category_id>/delete', views.category_articles, name='delete_category'),
     path('article/<uuid:article_id>/', views.article_detail, name='article'),
     path('comment', views.comment, name='comment'),
     path('login/', views.user_login, name='login'),
@@ -38,6 +39,7 @@ urlpatterns = [
     path('article/<uuid:article_id>/delete/', views.delete_article, name='delete'),
     path('article/<uuid:article_id>/edit/', views.edit_article, name='edit'),
     path('create-category/', views.create_category, name='create_category'),
+    path('about-us-edit', views.about_us_edit, name='about_us_edit'),
 ]
 
 if settings.DEBUG:

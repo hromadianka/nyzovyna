@@ -13,9 +13,10 @@ class Editor(models.Model):
 
 class Author(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    name_en = models.TextField()
+    image = models.ImageField(upload_to='images/', default='card-example.png')
+    name_en = models.CharField(max_length=100)
     description_en = models.TextField()
-    name_ua = models.TextField()
+    name_ua = models.CharField(max_length=100)
     description_ua = models.TextField()
 
 class Category(models.Model):
@@ -49,3 +50,7 @@ class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
     created_at = models.DateTimeField(auto_now_add=True)
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+
+class AboutUsText(models.Model):
+    text_ua = models.TextField(default='')
+    text_en = models.TextField(default='')
