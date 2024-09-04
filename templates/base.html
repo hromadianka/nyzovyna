@@ -45,7 +45,7 @@
                     {% csrf_token %}
                     <input name="next" type="hidden" value="{{ request.path }}">
                     <div class="dropdown">
-                        <button class="dropbtn">
+                        <button type="button" class="dropbtn">
                             {% if current_language == "en" %}
                             ENG
                             {% else %}
@@ -179,7 +179,6 @@
 
                     });
                 } else {
-                    // Для десктопных устройств сохраняем текущий функционал
                     category.addEventListener('mouseenter', function () {
                         if (subMenu) {
                             clearTimeout(subMenuTimeout);
@@ -217,6 +216,42 @@
             z-index: 3;
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropbtn = document.querySelector('.dropbtn');
+            const dropdownContent = document.querySelector('.dropdown-content');
+
+            dropbtn.addEventListener('click', function () {
+                dropdownContent.classList.toggle('show');
+            });
+
+            dropbtn.addEventListener('mouseenter', function () {
+                dropdownContent.classList.add('show');
+            });
+
+            dropbtn.addEventListener('mouseleave', function (event) {
+                if (!dropdownContent.contains(event.relatedTarget)) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+
+            dropdownContent.addEventListener('mouseleave', function (event) {
+                if (!dropbtn.contains(event.relatedTarget)) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+
+            // Закрытие дропдауна при клике вне его
+            window.addEventListener('click', function (event) {
+                if (!dropbtn.contains(event.target) && !dropdownContent.contains(event.target)) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+        });
+
+
+    </script>
 
 </body>
 </html>

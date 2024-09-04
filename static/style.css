@@ -215,6 +215,10 @@ header .container {
     color: white;
 }
 
+.dropdown .show {
+    display: block;
+}
+
         .dropdown-content button {
             background-color: #282828;
             color: white;
@@ -226,9 +230,6 @@ header .container {
             text-align: left;
         }
 
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
 
 .dropbtn {
     background-color: #282828;
