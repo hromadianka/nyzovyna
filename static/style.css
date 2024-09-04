@@ -311,7 +311,6 @@ footer .container {
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
-    justify-content: space-between;
 }
 
 footer a {
