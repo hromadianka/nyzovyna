@@ -345,6 +345,7 @@ footer a {
 
     * {
         font-family: 'SF Pro Display', sans-serif;
+        line-height: 140%;
     }
 
     @media screen {
@@ -458,6 +459,8 @@ footer a {
 
         .article-card {
             width: 100%;
+            background-color: rgba(29, 27, 27, 0.5);
+            border-radius: 10px;
         }
 
         .card-image {
