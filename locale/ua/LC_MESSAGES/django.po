@@ -33,12 +33,12 @@ msgid "Про нас"
 msgstr "Про нас"
 
 #: .\anarchia\base.html
-msgid "Інстаграм"
-msgstr "Інстаграм"
+msgid "Instagram"
+msgstr "Instagram"
 
 #: .\anarchia\base.html
-msgid "Телеграм"
-msgstr "Телеграм"
+msgid "Telegram"
+msgstr "Telegram"
 
 #: .\anarchia\base.html
 msgid "НИЗОВИНА"

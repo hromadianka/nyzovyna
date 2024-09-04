@@ -34,11 +34,11 @@ msgid "Про нас"
 msgstr "About us"
 
 #: .\anarchia\base.html
-msgid "Інстаграм"
+msgid "Instagram"
 msgstr "Instagram"
 
 #: .\anarchia\base.html
-msgid "Телеграм"
+msgid "Telegram"
 msgstr "Telegram"
 
 #: .\anarchia\base.html
