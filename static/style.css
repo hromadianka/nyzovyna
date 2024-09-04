@@ -86,7 +86,8 @@ header .container {
 }
 
 .logo {
-    width: 7%;
+    width: 10%;
+    line-height: 100%;
 }
 
 .menu {
@@ -130,7 +131,7 @@ header .container {
     }
 
     .logo {
-        width: 15%;
+        width: 23%;
     }
 
     .burger-icon {
