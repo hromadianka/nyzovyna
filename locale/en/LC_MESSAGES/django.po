@@ -46,8 +46,8 @@ msgid "НИЗОВИНА"
 msgstr "NYZOVYNA"
 
 #: .\anarchia\base.html
-msgid "підтримай анархістську думку сучасності"
-msgstr "support modern anarchist thought"
+msgid "журнал сучасної лібертарної думки"
+msgstr "a journal of modern libertarian thought"
 
 #: .\anarchia\article.html
 msgid "Коментарі"
