@@ -21,6 +21,10 @@ def about_us(request):
     about_us_text = AboutUsText.objects.get(pk=1)
     return render(request, 'about-us.html', {'about_us_text': about_us_text})
 
+def authors(request):
+    about_us_text = AboutUsText.objects.get(pk=1)
+    return render(request, 'about-us.html', {'about_us_text': about_us_text})
+
 def category_articles(request, category_id):
     current_language = get_language()
     category = get_object_or_404(Category, pk=category_id)
