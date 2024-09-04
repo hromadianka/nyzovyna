@@ -14,7 +14,7 @@
 <body>
     <header>
         <div class="container">
-            <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.png' %}" /></a>
+            <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.svg' %}" /></a>
             <div class="burger-menu">
                 <div class="burger-icon">
                     <div class="bar"></div>
@@ -23,6 +23,7 @@
                 </div>
                 <ul class="menu">
                     <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
+                    <li><a href="{% url 'authors' %}" class="menu-link">{% trans "Автори" %}</a></li>
                     {% for category in categories %}
                     {% if not category.parent %}
                     <li class="parent-category">
@@ -100,7 +101,7 @@
     <footer>
         <div class="container">
             <div class="footer-row1">
-                <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.png' %}" /></a>
+                <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.svg' %}" /></a>
                 <div>
                     <a href="">{% trans "Instagram" %}</a>
                     <a href="https://t.me/magazine_Nyzovyna">{% trans "Telegram" %}</a>
