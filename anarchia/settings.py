@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5m)2!aqsq-exanwdv5c2+x@%z-n90_*qqw^noaacc_hy$e@!j7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['nyzovyna-e468a704bfb3.herokuapp.com', 'nyzovyna.com', 'www.nyzovyna.com', '127.0.0.1']
 
@@ -175,4 +175,12 @@ CLOUDINARY_STORAGE = {
     'API_KEY': '711931388182932',
     'API_SECRET': os.environ['CLOUDINARY_SECRET'],
 }
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+SECURE_SSL_REDIRECT = True
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31536000 
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
