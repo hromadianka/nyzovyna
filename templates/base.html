@@ -23,7 +23,6 @@
                 </div>
                 <ul class="menu">
                     <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
-                    <li><a href="{% url 'authors' %}" class="menu-link">{% trans "Автори" %}</a></li>
                     {% for category in categories %}
                     {% if not category.parent %}
                     <li class="parent-category">
