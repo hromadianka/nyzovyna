@@ -24,9 +24,13 @@ class Category(models.Model):
     name_ua = models.CharField(max_length=100)
     name_en = models.CharField(max_length=100)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name_ua
+
+    class Meta:
+        ordering = ['order']
 
 class Article(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
