@@ -69,25 +69,25 @@
                 <span>\\</span>
                 <span>{% trans "журнал сучасної лібертарної думки" %}</span>
                 <span>\\</span>
-                <span>{% trans "НИЗОВИНА" %}.</span>
+                <span>{% trans "НИЗОВИНА" %}</span>
             </div>
             <div class="ticker__item">
                 <span>\\</span>
                 <span>{% trans "журнал сучасної лібертарної думки" %}</span>
                 <span>\\</span>
-                <span>{% trans "НИЗОВИНА" %}.</span>
+                <span>{% trans "НИЗОВИНА" %}</span>
             </div>
             <div class="ticker__item">
                 <span>\\</span>
                 <span>{% trans "журнал сучасної лібертарної думки" %}</span>
                 <span>\\</span>
-                <span>{% trans "НИЗОВИНА" %}.</span>
+                <span>{% trans "НИЗОВИНА" %}</span>
             </div>
             <div class="ticker__item">
                 <span>\\</span>
                 <span>{% trans "журнал сучасної лібертарної думки" %}</span>
                 <span>\\</span>
-                <span>{% trans "НИЗОВИНА" %}.</span>
+                <span>{% trans "НИЗОВИНА" %}</span>
             </div>
         </div>
     </div>
@@ -102,7 +102,7 @@
             <div class="footer-row1">
                 <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.svg' %}" /></a>
                 <div>
-                    <a href="">{% trans "Instagram" %}</a>
+                    <a href="https://www.instagram.com/magazine_nyzovyna?igsh=MWgwZHB2cWFucXZ5eg==">{% trans "Instagram" %}</a>
                     <a href="https://t.me/magazine_Nyzovyna">{% trans "Telegram" %}</a>
                 </div>
             </div>
@@ -148,7 +148,7 @@
 
     <script>
         document.getElementById("ticker").addEventListener("click", function () {
-            window.location.href = "https://send.monobank.ua/jar/2M6tkLVTVW";
+            window.location.href = "{% url 'home' %}";
         });
     </script>
 
