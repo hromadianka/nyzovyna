@@ -425,6 +425,7 @@ footer a {
 
     .article-card {
         box-shadow: 0px 2px 11.6px rgba(0, 0, 0, 0.1);
+        background-color: #1D1B1B;
     }
 
     .card-text p {
@@ -461,7 +462,6 @@ footer a {
 
         .article-card {
             width: 100%;
-            background-color: rgba(29, 27, 27, 0.5);
             border-radius: 10px;
         }
 
