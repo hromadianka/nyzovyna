@@ -204,8 +204,17 @@
             });
         });
 
+    </script>
 
-
+    <script>
+        function updateHeaderMargin() {
+            const header = document.querySelector('header');
+            const headerHeight = header.offsetHeight;
+            header.style.marginBottom = headerHeight + 'px';
+        }
+        
+        window.addEventListener('load', updateHeaderMargin);
+        window.addEventListener('resize', updateHeaderMargin);
     </script>
 
 
