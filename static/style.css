@@ -791,7 +791,7 @@ main p {
     margin-bottom: 5px;
 }
 
-.article-card {
+.article-card, .card-image {
     border-radius: 10px;
 }
 

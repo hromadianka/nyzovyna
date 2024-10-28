@@ -30,7 +30,7 @@
         </div>
         <div class="card-text">
             <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:130 }}</a></h3>
-            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:500 }}{% endautoescape %}</p>
+            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:700 }}{% endautoescape %}</p>
         </div>
     </div>
     {% else %}
