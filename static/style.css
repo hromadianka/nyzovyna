@@ -804,3 +804,8 @@ main p {
 h2 {
     margin-bottom: 15px;
 }
+
+header {
+    position: fixed;
+    width: 100%;
+}
