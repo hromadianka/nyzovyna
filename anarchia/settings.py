@@ -57,7 +57,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'app.middleware.ForceDefaultLanguageMiddleware'
 ]
 
 ROOT_URLCONF = 'anarchia.urls'
