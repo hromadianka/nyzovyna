@@ -209,8 +209,9 @@
     <script>
         function updateHeaderMargin() {
             const header = document.querySelector('header');
+            const ticker = document.querySelector('.ticker');
             const headerHeight = header.offsetHeight;
-            header.style.marginBottom = headerHeight + 'px';
+            ticker.style.marginTop = headerHeight + 'px';
         }
         
         window.addEventListener('load', updateHeaderMargin);
