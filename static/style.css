@@ -811,12 +811,3 @@ header {
     z-index: 2;
 }
 
-@media screen and (min-width: 1000px) {
-   .article-features {
-    position: fixed;
-}
-
-.article-container {
-    margin-right: 100px;
-}
-}
