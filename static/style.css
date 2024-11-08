@@ -819,38 +819,3 @@ header {
     margin-left: 100px;
 }
 }
-
-/* Hover and active states */
-
-.article-card .card-image {
-    transform: scale(1);
-    transition: scale 300ms ease-out;
-}
-
-.article-card h3, .article-card p {
-    transition: scale 300ms ease-out;
-}
-
-.article-card:hover p {
-    color: #FFFFFF;
-}
-
-.article-card:hover h3 {
-    color: #CE5050;
-}
-
-.article-card:hover .card-image {
-    transform: scale(1.04);
-}
-
-.article-card:active .card-image {
-    transform: scale(1.18);
-}
-
-.article-card:active p {
-    color: rgba(255, 255, 255, 0.1);
-}
-
-.article-card:active h3 {
-    color: #702B2B;
-}
