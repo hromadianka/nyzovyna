@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy, reverse
 from django.contrib.syndication.views import Feed
 from .models import Article
+from . import views
 from django.utils.translation import get_language
 
 class LatestPostsFeed(Feed):
