@@ -1,4 +1,4 @@
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.syndication.views import Feed
 from .models import Article
 from django.utils.translation import get_language
