@@ -20,3 +20,6 @@ class LatestPostsFeed(Feed):
 
     def item_pubdate(self, item):
         return item.created_at
+
+    def item_link(self, item):
+        return reverse('article_detail', args=[str(item.id)])
