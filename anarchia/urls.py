@@ -20,7 +20,7 @@ from app import views
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.i18n import set_language
-
+from app.feeds import LatestPostsFeed
 
 
 urlpatterns = [
@@ -41,6 +41,7 @@ urlpatterns = [
     path('article/<uuid:article_id>/edit/', views.edit_article, name='edit'),
     path('create-category/', views.create_category, name='create_category'),
     path('about-us-edit', views.about_us_edit, name='about_us_edit'),
+    path('feed/', LatestPostsFeed(), name='post_feed'),
 ]
 
 if settings.DEBUG:
