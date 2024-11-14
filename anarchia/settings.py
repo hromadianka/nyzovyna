@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
     'ckeditor',
-    'ckeditor_uploader',
     'app'
 ]
 
