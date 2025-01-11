@@ -99,10 +99,12 @@ def user_login(request):
 def editor_cabinet(request):
     articles = Article.objects.all()
     about_us_text = AboutUsText.objects.get(pk=1)
+    authors = Author.objects.all()
     
     context = {
         'articles': articles,
         'about_us_text': about_us_text,
+        'authors': authors
     }
     return render(request, 'editor-cabinet.html', context)
 
@@ -115,6 +117,8 @@ def publish(request):
         article_image = request.FILES.get('article_image')
         language = request.POST.get('language')
         categories = request.POST.getlist('categories')
+        author_id = request.POST.get('article_author')
+        author = Author.objects.get(id=author_id)
 
         all_categories = []
 
@@ -132,7 +136,8 @@ def publish(request):
                     name=article_name,
                     text=article_text,
                     image=article_image,
-                    language=language
+                    language=language,
+                    author = author
                 )
                 article.categories.add(*all_categories)
                 return redirect('article', article_id=article.pk)
@@ -142,7 +147,8 @@ def publish(request):
             article = Article.objects.create(
                 name=article_name,
                 text=article_text,
-                language=language
+                language=language,
+                author=author
             )
             article.categories.add(*all_categories)
             return redirect('editor_cabinet')

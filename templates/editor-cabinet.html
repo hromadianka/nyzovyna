@@ -33,7 +33,12 @@
 <form method="POST" action="{% url 'publish' %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
     <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required />
-    <input type="text" name="article_author" placeholder="Автор статті" class="form" required />
+    <select name="article_author" class="form" required>
+        <option value="" disabled selected>Виберіть автора</option>
+        {% for author in authors %}
+        <option value="{{ author.id }}">{{ author.name_ua }}</option>
+        {% endfor %}
+    </select>
     <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form"></textarea>
     <input type="file" name="article_image" accept="image/*" class="form" />
     <fieldset class="form">
@@ -133,7 +138,7 @@
 
     {% for article in articles reversed %}
 
-    <div class="article-card" id="article-{{article.id}}">
+    <div class="article-card" id="article-{{article.id}}" style="background: white">
         <div class="card-content">
             <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
                 {% for category in article.categories.all %}
