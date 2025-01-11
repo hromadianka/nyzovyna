@@ -244,11 +244,21 @@ header .container {
 /* Бегущая строчка */
 
 .ticker {
-    position: relative;
     overflow: hidden;
     background: url(img/gradient.png) no-repeat;
     background-size: cover;
     padding: 0.8vh 0;
+    position: fixed;
+    height: fit-content;
+    width: 100%;
+}
+
+@media screen and (min-width: 1000px) {
+    .ticker {
+        position: fixed;
+        height: fit-content;
+        width: 100%;
+    }
 }
 
 .ticker * {
@@ -545,7 +555,6 @@ footer a {
 
 .article-features {
     display: flex;
-    flex-direction: column;
     gap: 30px;
     align-items: center;
 }
@@ -556,7 +565,7 @@ footer a {
 }
 
 .article-text {
-    padding-bottom: 30px;
+    padding-bottom: 40px;
 }
 
 .comment {
@@ -646,6 +655,10 @@ footer a {
         padding-right: 11%;
     }
 
+    .article-features {
+        flex-direction: column;
+    }
+
     }
 
     @media screen and (max-width: 1000px) {
@@ -662,6 +675,7 @@ footer a {
 
         .article-features {
             margin-bottom: 50px;
+            justify-content: space-between;
         }
 
         .comment-description {
@@ -674,9 +688,10 @@ footer a {
             gap: 15px;
             border: 1px solid #828282;
             width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
+            margin-left: 5%;
+            margin-right: 5%;
             padding: 20px 12px;
+            width: 90%;
         }
 
         .theme-switcher {
@@ -814,9 +829,38 @@ header {
 
 @media screen and (min-width: 1000px) {
    .article-features {
-    position: fixed;
+        position: fixed;
+    }
+    .article-container {
+        margin-left: 100px;
+    }
 }
-.article-container {
-    margin-left: 100px;
+
+/*
+    Author blocks
+*/
+
+.article-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 35px;
 }
+
+.author-img-overlay {
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+}
+
+.article {
+    display: flex;
+    flex-direction: column;
+}
+
+.article-author {
+    align-self: center;
 }

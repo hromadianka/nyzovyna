@@ -208,15 +208,20 @@
     </script>
 
     <script>
+
         function updateHeaderMargin() {
             const header = document.querySelector('header');
             const ticker = document.querySelector('.ticker');
             const headerHeight = header.offsetHeight;
             ticker.style.marginTop = headerHeight + 'px';
+            const main = document.querySelector('main');
+            const height = ticker.offsetHeight + header.offsetHeight;
+            main.style.marginTop = `${height}px`;
         }
         
         window.addEventListener('load', updateHeaderMargin);
         window.addEventListener('resize', updateHeaderMargin);
+
     </script>
 
 
@@ -252,7 +257,6 @@
                 }
             });
 
-            // Закрытие дропдауна при клике вне его
             window.addEventListener('click', function (event) {
                 if (!dropbtn.contains(event.target) && !dropdownContent.contains(event.target)) {
                     dropdownContent.classList.remove('show');
