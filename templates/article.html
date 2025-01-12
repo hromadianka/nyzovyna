@@ -80,6 +80,31 @@
                 {% endif %}
             </div>
 
+            <!--<div class="recommendated-articles">
+                <div class="articles-container">
+
+                    {% for article in recommended_articles %}
+
+                    <div class="article-card">
+                        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+                            {% for category in article.categories.all %}
+                            {% if current_language == "en" %}
+                            <p>{{ category.name_en }}</p>
+                            {% else %}
+                            <p>{{ category.name_ua }}</p>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="card-text">
+                            <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:80 }}</a></h3>
+                            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+                        </div>
+                    </div>
+
+            {% empty %}
+            {% endfor %}
+            </div>-->
+
 
             <div class="comments" id="comments">
                 <h2>{% trans "Коментарі" %}</h2>

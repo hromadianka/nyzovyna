@@ -43,6 +43,7 @@ urlpatterns = [
     path('create-category/', views.create_category, name='create_category'),
     path('about-us-edit', views.about_us_edit, name='about_us_edit'),
     path('feed/', LatestPostsFeed(), name='post_feed'),
+    path('create_new_author/', views.create_new_author, name='create_new_author')
 ]
 
 if settings.DEBUG:

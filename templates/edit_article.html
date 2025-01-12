@@ -19,9 +19,20 @@
 
 <h1>Редагувати статтю</h1>
 
+{% if error_message %}
+<div class="error">{{ error_message }}</div>
+{% endif %}
+
+
 <form method="POST" action="{% url 'edit' article.id %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
     <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required value="{{article.name}}" />
+    <select name="article_author" class="form" required>
+        <option value="" disabled>Виберіть автора</option>
+        {% for new_author in authors %}
+        <option value="{{ new_author.id }}" {% if article.author == new_author %} selected {% endif %}>{{ new_author.name_ua }}</option>
+        {% endfor %}
+    </select>
     <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form">{{article.text}}</textarea>
     {% if article.image %}
     <img src="{{ article.image.url }}" alt="" style="max-width: 200px;">

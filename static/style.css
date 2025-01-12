@@ -375,7 +375,7 @@ footer a {
             font-size: 28px;
         }
 
-        .article h3 {
+        .article-author h3, .article-author h3 a {
             font-size: 22px;
         }
 

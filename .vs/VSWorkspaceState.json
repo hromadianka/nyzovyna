@@ -1,16 +1,9 @@
 {
   "ExpandedNodes": [
-    "",
     "\\app",
-    "\\app\\templatetags",
     "\\locale",
-    "\\locale\\en",
-    "\\locale\\en\\LC_MESSAGES",
-    "\\locale\\ua",
-    "\\locale\\ua\\LC_MESSAGES",
     "\\static",
     "\\templates"
   ],
-  "SelectedNode": "\\app\\views.py",
   "PreviewInSolutionExplorer": false
 }

@@ -33,14 +33,18 @@
 <form method="POST" action="{% url 'publish' %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
     <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required />
+
     <select name="article_author" class="form" required>
         <option value="" disabled selected>Виберіть автора</option>
-        {% for author in authors %}
-        <option value="{{ author.id }}">{{ author.name_ua }}</option>
+        {% for new_author in authors %}
+        <option value="{{ new_author.id }}">{{ new_author.name_ua }}</option>
         {% endfor %}
     </select>
+
     <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form"></textarea>
+
     <input type="file" name="article_image" accept="image/*" class="form" />
+
     <fieldset class="form">
         <label class="form">
             <input type="radio" name="language" value="ua" checked>
@@ -51,6 +55,7 @@
             <span class="form">Англійська</span>
         </label>
     </fieldset>
+
     <fieldset class="form">
         {% for category in categories %}
         <label>
@@ -59,8 +64,10 @@
         </label>
         {% endfor %}
     </fieldset>
+
     <button type="submit" class="btn">Опублікувати</button>
 </form>
+
 
 <script>
     ClassicEditor
@@ -130,6 +137,35 @@
         form.style.display = (form.style.display === 'none' ? 'flex' : 'none');
     }
 </script>
+
+<h2 style="margin-top: 30px; margin-bottom: 24px">Автори </h2>
+
+<form class="form" method="POST" action="{% url 'create_new_author' %}">
+    {% csrf_token %}
+    <input type="text" name="author_name_ua" placeholder="Ім'я українською" class="form" required />
+    <input type="text" name="author_name_en" placeholder="Ім'я англійською" class="form" required />
+    <textarea name="author_description_ua" placeholder="Опис українською" class="form"></textarea>
+    <textarea name="author_description_en" placeholder="Опис англійською" class="form"></textarea>
+    <button type="submit" class="btn" style="margin-bottom: 15px">Додати автора</button>
+</form>
+
+{% for author in authors %}
+<div class="article-author" style="margin-top: 30px">
+    <div class="author-img-overlay" style="background: url('{{ author.image.url }}') no-repeat; background-size: cover; background-position: center">
+    </div>
+    {% if current_language == "en" %}
+    <div>
+        <h3><a style="text-decoration: none; line-height: 100%">{{ author.name_en }}</a></h3>
+        <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ author.description_en|linebreaks|striptags|truncatechars:12 }}</p>
+    </div>
+    {% else %}
+    <div>
+        <h3><a style="text-decoration: none; line-height: 100%">{{ author.name_ua }}</a></h3>
+        <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ author.description_ua|linebreaks|striptags|truncatechars:12 }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
 
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Опубліковані статті</h2>

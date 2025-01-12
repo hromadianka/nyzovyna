@@ -110,50 +110,72 @@ def editor_cabinet(request):
 
 @login_required(login_url='/login')
 def publish(request):
+    authors = Author.objects.all()
+    categories = Category.objects.all()  # Передамо категорії у шаблон
 
     if request.method == 'POST':
+        # Збираємо дані з форми
         article_name = request.POST.get('article_name')
         article_text = request.POST.get('article_text')
         article_image = request.FILES.get('article_image')
         language = request.POST.get('language')
-        categories = request.POST.getlist('categories')
+        category_ids = request.POST.getlist('categories')
         author_id = request.POST.get('article_author')
-        author = Author.objects.get(id=author_id)
+
+        try:
+            # Знаходимо автора
+            author = Author.objects.get(id=author_id)
+        except Author.DoesNotExist:
+            return render(request, 'editor-cabinet.html', {
+                'error_message': 'Автор не знайдений.',
+                'authors': authors,
+                'categories': categories,
+            })
 
         all_categories = []
-
-        for category_id in categories:
-            category = Category.objects.get(id=category_id)
-            all_categories.append(category)
-
-            while category.parent:
-                category = category.parent
+        for category_id in category_ids:
+            try:
+                category = Category.objects.get(id=category_id)
                 all_categories.append(category)
 
+                # Додаємо батьківські категорії
+                while category.parent:
+                    category = category.parent
+                    all_categories.append(category)
+            except Category.DoesNotExist:
+                continue
+
+        # Створення статті
+        article = Article.objects.create(
+            name=article_name,
+            text=article_text,
+            language=language,
+            author=author,
+        )
+
+        # Додаємо категорії
+        article.categories.add(*all_categories)
+
+        # Додаємо зображення, якщо є
         if article_image:
             if article_image.content_type.startswith('image'):
-                article = Article.objects.create(
-                    name=article_name,
-                    text=article_text,
-                    image=article_image,
-                    language=language,
-                    author = author
-                )
-                article.categories.add(*all_categories)
-                return redirect('article', article_id=article.pk)
+                article.image = article_image
+                article.save()
             else:
-                return render(request, 'error.html', {'message': 'Неправильний файл.'})
-        else:
-            article = Article.objects.create(
-                name=article_name,
-                text=article_text,
-                language=language,
-                author=author
-            )
-            article.categories.add(*all_categories)
-            return redirect('editor_cabinet')
+                return render(request, 'editor-cabinet.html', {
+                    'error_message': 'Неправильний формат файлу.',
+                    'authors': authors,
+                    'categories': categories,
+                })
 
-    return render(request, 'editor-cabinet.html')
+        # Редірект на сторінку статті
+        return redirect('article', article_id=article.pk)
+
+    return render(request, 'editor-cabinet.html', {
+        'authors': authors,
+        'categories': categories,
+    })
+
 
 @login_required(login_url='/login')
 def delete_article(request, article_id):
@@ -187,46 +209,71 @@ def delete_category(request, category_id):
 @login_required(login_url='/login')
 def edit_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
+    authors = Author.objects.all()
+    categories = Category.objects.all()  # Передамо категорії у шаблон
 
     if request.method == 'POST':
         article_name = request.POST.get('article_name')
         article_text = request.POST.get('article_text')
         article_image = request.FILES.get('article_image')
+        author_id = request.POST.get('article_author')
+
+        try:
+            author = Author.objects.get(id=author_id)
+        except Author.DoesNotExist:
+            return render(request, 'edit_article.html', {
+                'article': article,
+                'authors': authors,
+                'categories': categories,
+                'error_message': 'Автор не знайдений.'
+            })
+
         language = request.POST.get('language')
-        categories = request.POST.getlist('categories')
+        category_ids = request.POST.getlist('categories')
 
         all_categories = []
-
-        for category_id in categories:
-            category = Category.objects.get(id=category_id)
-            all_categories.append(category)
-
-            while category.parent:
-                category = category.parent
+        for category_id in category_ids:
+            try:
+                category = Category.objects.get(id=category_id)
                 all_categories.append(category)
+
+                # Додати батьківські категорії
+                while category.parent:
+                    category = category.parent
+                    all_categories.append(category)
+            except Category.DoesNotExist:
+                continue
+
+        # Оновлення статті
+        article.name = article_name
+        article.text = article_text
+        article.language = language
+        article.author = author
+        article.categories.clear()
+        article.categories.add(*all_categories)
 
         if article_image:
             if article_image.content_type.startswith('image'):
-                article.name = article_name
-                article.text = article_text
                 article.image = article_image
-                article.language = language
-                article.categories.clear()
-                article.categories.add(*all_categories)
-                article.save()
-                return redirect('article', article_id=article.pk)
             else:
-                return render(request, 'error.html', {'message': 'Неправильний файл.'})
-        else:
-            article.name = article_name
-            article.text = article_text
-            article.language = language
-            article.categories.clear()
-            article.categories.add(*all_categories)
-            article.save()
-            return redirect('editor_cabinet')
+                return render(request, 'edit_article.html', {
+                    'article': article,
+                    'authors': authors,
+                    'categories': categories,
+                    'error_message': 'Неправильний формат файлу.'
+                })
 
-    return render(request, 'edit_article.html', {'article': article})
+        article.save()
+
+        # Завжди редіректимо на сторінку статті
+        return redirect('article', article_id=article.pk)
+
+    return render(request, 'edit_article.html', {
+        'article': article,
+        'authors': authors,
+        'categories': categories
+    })
+
 
 @login_required(login_url='/login')
 def about_us_edit(request):
@@ -239,3 +286,16 @@ def about_us_edit(request):
         about_us_text.save()
 
         return redirect('editor_cabinet')
+
+@login_required(login_url='/login')
+def create_new_author(request):
+    if request.method == 'POST':
+        name_ua = request.POST.get('author_name_ua')
+        name_en = request.POST.get('author_name_en')
+        description_ua = request.POST.get('author_description_ua')
+        description_en = request.POST.get('author_description_en')
+
+        new_author = Author.objects.create(name_ua=name_ua, name_en=name_en, description_ua=description_ua, description_en=description_en)
+        
+        return redirect('editor_cabinet')
+    return render(request, 'editor-cabinet.html')
