@@ -40,14 +40,31 @@ def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     article.views += 1
     article.save()
+    all_articles = (
+            Article.objects.all()
+            .exclude(pk=article.pk)
+            .order_by('-views')[:2]
+        )
     comments = Comment.objects.filter(article=article).order_by('-created_at')
     comments_count = article.comments.count()
+    parent_category = None
+    if article.categories.exists():
+        parent_category = article.categories.first()
+        while parent_category.parent:
+            parent_category = parent_category.parent
+    recommended_articles = []
+    if parent_category:
+        recommended_articles = (
+            Article.objects.filter(categories=parent_category)
+            .exclude(pk=article.pk)
+            .order_by('-views')[:2]
+        )
     translate = {
         'reply': _('Відповісти'),
         'enter_name': _('Введіть ім\'я'),
         'enter_comment': _('Введіть коментар')
     }
-    return render(request, 'article.html', {'article': article, 'comments': comments, 'translate': translate, 'comments_count': comments_count})
+    return render(request, 'article.html', {'article': article, 'comments': comments, 'translate': translate, 'comments_count': comments_count, 'recommended_articles': recommended_articles, 'all_articles': all_articles})
 
 def comment(request):
 

@@ -80,30 +80,34 @@
                 {% endif %}
             </div>
 
-            <!--<div class="recommendated-articles">
+            <div class="recommended-articles" style="padding-bottom: 40px; margin-top: 30px ">
+                <h2 style="margin-bottom: 25px">{% trans "Рекомендовані статті " %}</h2>
+
                 <div class="articles-container">
-
                     {% for article in recommended_articles %}
-
-                    <div class="article-card">
+                    <div class="article-card recommended" style="background-color: #FDFBEE; color: black">
                         <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
-                            {% for category in article.categories.all %}
-                            {% if current_language == "en" %}
-                            <p>{{ category.name_en }}</p>
-                            {% else %}
-                            <p>{{ category.name_ua }}</p>
-                            {% endif %}
-                            {% endfor %}
                         </div>
-                        <div class="card-text">
-                            <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:80 }}</a></h3>
+                        <div class="card-text" style="background-color: #FDFBEE; color: black">
+                            <h3><a href="{% url 'article' article.id %}" style="text-decoration: none; color: black">{{ article.name|striptags|truncatechars:80 }}</a></h3>
                             <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
                         </div>
                     </div>
 
-            {% empty %}
-            {% endfor %}
-            </div>-->
+                    {% empty %}
+                    {% for any_article in all_articles %}
+                    <div class="article-card recommended" style="background-color: #FDFBEE; color: black">
+                        <div class="card-image" style="background: url('{{ any_article.image.url }}') no-repeat; background-size: cover; background-position: center">
+                        </div>
+                        <div class="card-text" style="background-color: #FDFBEE; color: black">
+                            <h3><a href="{% url 'article' any_article.id %}" style="text-decoration: none; color: black">{{ any_article.name|striptags|truncatechars:80 }}</a></h3>
+                            <p>{% autoescape off %}{{ any_article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
 
 
             <div class="comments" id="comments">

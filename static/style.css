@@ -448,9 +448,13 @@ footer a {
             width: calc(((100% - 40px) / 3 * 2) + 20px);
         }
 
-            .article-card {
-                width: calc((100% - 40px) / 3);
-            }
+        .article-card {
+            width: calc((100% - 40px) / 3);
+        }
+
+        .recommended.article-card {
+            width: calc((100% - 20px) / 2) !important;
+        }
 
         .card-image {
             padding: 14px 16px;
@@ -651,7 +655,7 @@ footer a {
             padding: 16px 15px;
         }
 
-    .article-text, .comments {
+    .article-text, .comments, .recommended-articles {
         padding-left: 11%;
         padding-right: 11%;
     }
