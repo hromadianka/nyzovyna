@@ -140,10 +140,11 @@
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Автори </h2>
 
-<form class="form" method="POST" action="{% url 'create_new_author' %}">
+<form class="form" method="POST" action="{% url 'create_new_author' %}" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="text" name="author_name_ua" placeholder="Ім'я українською" class="form" required />
     <input type="text" name="author_name_en" placeholder="Ім'я англійською" class="form" required />
+    <input type="file" name="author_image" accept="image/*" class="form" />
     <textarea name="author_description_ua" placeholder="Опис українською" class="form"></textarea>
     <textarea name="author_description_en" placeholder="Опис англійською" class="form"></textarea>
     <button type="submit" class="btn" style="margin-bottom: 15px">Додати автора</button>

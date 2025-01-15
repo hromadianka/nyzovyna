@@ -30,6 +30,7 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('about-us', views.about_us, name='about_us'),
     path('authors', views.authors, name='authors'),
+    path('authors/<uuid:author_id>', views.author_detail, name='author_detail'),
     path('all', views.all_articles, name='all_articles'),
     path('category/<uuid:category_id>/', views.category_articles, name='category_articles'),
     path('category/<uuid:category_id>/delete/', views.delete_category, name='delete_category'),

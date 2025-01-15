@@ -311,8 +311,20 @@ def create_new_author(request):
         name_en = request.POST.get('author_name_en')
         description_ua = request.POST.get('author_description_ua')
         description_en = request.POST.get('author_description_en')
+        author_image = request.FILES.get('author_image') 
 
-        new_author = Author.objects.create(name_ua=name_ua, name_en=name_en, description_ua=description_ua, description_en=description_en)
-        
+        new_author = Author.objects.create(
+            name_ua=name_ua,
+            name_en=name_en,
+            description_ua=description_ua,
+            description_en=description_en,
+            image=author_image
+        )
+
         return redirect('editor_cabinet')
     return render(request, 'editor-cabinet.html')
+
+def author_detail(request, author_id):
+       author = get_object_or_404(Author, id=author_id)
+       author_articles = Article.objects.filter(author=author)
+       return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})

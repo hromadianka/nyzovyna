@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<style>
+    @media (min-width: 1000px) {
+        .author_full_description {
+            width: 60%;
+        }
+
+        .article-card:nth-child(1) {
+            width: calc((100% - 40px) / 3);
+        }
+    }
+</style>
+
+<div style="background: url('{{ author.image.url }}') no-repeat; background-size: cover; background-position: center; width: 120px; height: 120px; margin-left: auto; margin-right: auto; border-radius: 150px">
+</div>
+{% if current_language == "en" %}
+<h1 style="margin-left: auto; margin-right: auto; width: fit-content; margin-top: 15px; margin-bottom: 0">{{ author.name_en }}</h1>
+<p style="margin-left: auto; margin-right: auto; text-align: center; margin-top: 15px" class="author_full_description">{{ author.description_en }}</p>
+{% else %}
+<h1 style="margin-left: auto; margin-right: auto; width: fit-content; margin-top: 15px">{{ author.name_ua }}</h1>
+<p style="margin-left: auto; margin-right: auto; text-align: center; margin-top: 15px" class="author_full_description">{{ author.description_ua }}</p>
+{% endif %}
+<div class="articles-container" style="margin-top: 25px">
+
+    {% for article in author_articles reversed %}
+
+    <div class="article-card">
+        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+        </div>
+        <div class="card-text">
+            <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:130 }}</a></h3>
+            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+        </div>
+    </div>
+
+    {% endfor %}
+
+</div>
+{% endblock %}
