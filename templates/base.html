@@ -38,6 +38,7 @@
                     </li>
                     {% endif %}
                     {% endfor %}
+                    <li><a href="{% url 'authors' %}" class="menu-link">{% trans "Автори" %}</a></li>
                     <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
                 </ul>
                 <form action="{% url 'set_language' %}" method="post" class="language-form">

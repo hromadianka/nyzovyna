@@ -22,8 +22,8 @@ def about_us(request):
     return render(request, 'about-us.html', {'about_us_text': about_us_text})
 
 def authors(request):
-    about_us_text = AboutUsText.objects.get(pk=1)
-    return render(request, 'about-us.html', {'about_us_text': about_us_text})
+    authors = Author.objects.all()
+    return render(request, 'authors.html', {'authors': authors})
 
 def category_articles(request, category_id):
     current_language = get_language()
