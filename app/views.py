@@ -328,3 +328,23 @@ def author_detail(request, author_id):
        author = get_object_or_404(Author, id=author_id)
        author_articles = Article.objects.filter(author=author)
        return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
+
+@login_required(login_url='/login')
+def edit_author(request, author_id):
+       author = get_object_or_404(Author, id=author_id)
+       if request.method == 'POST':
+           name_ua = request.POST.get('name_ua')
+           name_en = request.POST.get('name_en')
+           description_ua = request.POST.get('description_ua')
+           description_en = request.POST.get('description_en')
+           author_image = request.FILES.get('author_image')
+
+           author.name_ua = name_ua
+           author.name_en = name_en
+           author.description_en = description_en
+           author.description_ua = description_ua
+           if author_image:
+               author.image = author_image
+           author.save()
+           return redirect('author_detail', author_id = author.id)
+       return render(request, 'edit_author.html', {'author': author})

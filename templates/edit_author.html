@@ -1,0 +1,38 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    main, body {
+        background: none;
+    }
+
+    main {
+        color: black;
+    }
+
+
+        main a {
+            color: black;
+        }
+</style>
+
+<h1>Редагувати інформацію про автора</h1>
+
+
+<form method="POST" action="{% url 'edit_author' author.id %}" enctype="multipart/form-data" class="form">
+    {% csrf_token %}
+    <input type="text" name="name_ua" placeholder="Ім'я українською" class="form" required value="{{author.name_ua}}" />
+    <textarea name="description_ua" placeholder="Опис українською" class="form">{{author.description_ua}}</textarea>
+    <input type="text" name="name_en" placeholder="Ім'я англійською" class="form" required value="{{author.name_en}}" />
+    <textarea name="description_en" placeholder="Опис англійською" class="form">{{author.description_en}}</textarea>
+    {% if author.image %}
+    <img src="{{ author.image.url }}" alt="" style="max-width: 120px;">
+    {% endif %}
+    <input type="file" name="author_image" accept="image/*" class="form" value="author.image" />
+    <button type="submit" class="btn">Зберегти</button>
+</form>
+
+<p style="margin-top: 20px"><a href="{% url 'editor_cabinet' %}">Назад до кабінету редактора</a></p>
+
+{%endblock %}
