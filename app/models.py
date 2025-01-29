@@ -1,8 +1,6 @@
 ﻿from django.contrib.auth.models import User
 from django.db import models
 import uuid
-from django.utils.timezone import now
-
 
 # Create your models here.
 
@@ -43,16 +41,11 @@ class Article(models.Model):
     categories = models.ManyToManyField(Category, related_name='categories')
     language = models.CharField(max_length=2, choices=(('ua', 'Українська'), ('en', 'Англійська')), default='ua')
     created_at = models.DateTimeField(auto_now_add=True)
-    publish_at = models.DateTimeField(default=now, blank=True, null=True)
-    is_published = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
     reactions = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
-
-    def should_be_published(self):
-        return self.publish_at and self.publish_at <= now()
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
