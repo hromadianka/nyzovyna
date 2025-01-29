@@ -1,9 +1,16 @@
 {
   "ExpandedNodes": [
+    "",
+    "\\anarchia",
+    "\\anarchia\\settings",
+    "\\anarchia\\settings\\__pycache__",
     "\\app",
+    "\\app\\templatetags",
+    "\\app\\__pycache__",
     "\\locale",
     "\\static",
     "\\templates"
   ],
+  "SelectedNode": "\\anarchia\\settings",
   "PreviewInSolutionExplorer": false
 }
