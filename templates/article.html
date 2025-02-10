@@ -48,7 +48,7 @@
     </div>
 
     <div class="article-container">
-        <div class="article-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+        <div class="article-image {% if not article.is_published %}unpublished{% endif %}" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
             {% for category in article.categories.all %}
             {% if current_language == "en" %}
             <p>{{ category.name_en }}</p>

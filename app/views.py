@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate, login as auth_login
+from django.utils.timezone import now
+from django.utils.timezone import make_aware
+from datetime import datetime
 
 
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
@@ -14,7 +17,11 @@ from .models import AboutUsText, Editor, Author, Category, Article, Comment, Abo
 
 def index(request):
     current_language = get_language()
-    latest_articles = Article.objects.filter(language=current_language).order_by('-created_at')[:5]
+    latest_articles = Article.objects.filter(
+        language = current_language, 
+        is_published = True, 
+    ).order_by('-publish_at')[:5]
+
     return render(request, 'index.html', {'latest_articles': latest_articles})
 
 def about_us(request):
@@ -28,12 +35,19 @@ def authors(request):
 def category_articles(request, category_id):
     current_language = get_language()
     category = get_object_or_404(Category, pk=category_id)
-    articles = Article.objects.filter(categories=category, language=current_language)
+    articles = Article.objects.filter(
+        language = current_language, 
+        categories__in = [category],
+        is_published = True, 
+    )
     return render(request, 'category.html', {'this_category': category, 'articles': articles})
 
 def all_articles(request):
     language = get_language()
-    articles = Article.objects.filter(language=language)
+    articles = Article.objects.filter(
+        language=language,
+        is_published=True,
+    )
     return render(request, 'category.html', {'articles': articles})
 
 def article_detail(request, article_id):
@@ -41,10 +55,10 @@ def article_detail(request, article_id):
     article.views += 1
     article.save()
     all_articles = (
-            Article.objects.all()
-            .exclude(pk=article.pk)
-            .order_by('-views')[:2]
-        )
+        Article.objects.filter(is_published=True)
+        .exclude(pk=article.pk)
+        .order_by('-views')[:2]
+    )
     comments = Comment.objects.filter(article=article).order_by('-created_at')
     comments_count = article.comments.count()
     parent_category = None
@@ -55,7 +69,10 @@ def article_detail(request, article_id):
     recommended_articles = []
     if parent_category:
         recommended_articles = (
-            Article.objects.filter(categories=parent_category)
+            Article.objects.filter(
+            categories=parent_category,
+            is_published=True,
+            )
             .exclude(pk=article.pk)
             .order_by('-views')[:2]
         )
@@ -114,12 +131,14 @@ def user_login(request):
 
 @login_required(login_url='/login')
 def editor_cabinet(request):
-    articles = Article.objects.all()
+    articles = Article.objects.filter(is_published = True)
+    unpublished_articles = Article.objects.filter(is_published = False)
     about_us_text = AboutUsText.objects.get(pk=1)
     authors = Author.objects.all()
     
     context = {
         'articles': articles,
+        'unpublished_articles': unpublished_articles,
         'about_us_text': about_us_text,
         'authors': authors
     }
@@ -128,19 +147,19 @@ def editor_cabinet(request):
 @login_required(login_url='/login')
 def publish(request):
     authors = Author.objects.all()
-    categories = Category.objects.all()  # Передамо категорії у шаблон
+    categories = Category.objects.all()
 
     if request.method == 'POST':
-        # Збираємо дані з форми
         article_name = request.POST.get('article_name')
         article_text = request.POST.get('article_text')
         article_image = request.FILES.get('article_image')
         language = request.POST.get('language')
         category_ids = request.POST.getlist('categories')
         author_id = request.POST.get('article_author')
+        publish_option = request.POST.get('publish_option')
+        publish_datetime = request.POST.get('publish_datetime')
 
         try:
-            # Знаходимо автора
             author = Author.objects.get(id=author_id)
         except Author.DoesNotExist:
             return render(request, 'editor-cabinet.html', {
@@ -155,25 +174,31 @@ def publish(request):
                 category = Category.objects.get(id=category_id)
                 all_categories.append(category)
 
-                # Додаємо батьківські категорії
                 while category.parent:
                     category = category.parent
                     all_categories.append(category)
             except Category.DoesNotExist:
                 continue
 
-        # Створення статті
+        # Визначаємо дату публікації
+        if publish_option == "schedule" and publish_datetime:
+            is_published = False
+            publish_date = make_aware(datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M"))
+        else:
+            publish_date = now()
+            is_published = True
+
         article = Article.objects.create(
             name=article_name,
             text=article_text,
             language=language,
             author=author,
+            publish_at=publish_date,
+            is_published = is_published
         )
 
-        # Додаємо категорії
         article.categories.add(*all_categories)
 
-        # Додаємо зображення, якщо є
         if article_image:
             if article_image.content_type.startswith('image'):
                 article.image = article_image
@@ -185,13 +210,13 @@ def publish(request):
                     'categories': categories,
                 })
 
-        # Редірект на сторінку статті
         return redirect('article', article_id=article.pk)
 
     return render(request, 'editor-cabinet.html', {
         'authors': authors,
         'categories': categories,
     })
+
 
 
 @login_required(login_url='/login')
@@ -227,13 +252,19 @@ def delete_category(request, category_id):
 def edit_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
     authors = Author.objects.all()
-    categories = Category.objects.all()  # Передамо категорії у шаблон
+    categories = Category.objects.all()
 
     if request.method == 'POST':
         article_name = request.POST.get('article_name')
         article_text = request.POST.get('article_text')
         article_image = request.FILES.get('article_image')
         author_id = request.POST.get('article_author')
+        language = request.POST.get('language')
+        category_ids = request.POST.getlist('categories')
+
+        # Отримуємо параметри публікації
+        publish_option = request.POST.get('publish_option')  # "now" або "schedule"
+        publish_datetime = request.POST.get('publish_datetime')  # Дата для запланованої публікації
 
         try:
             author = Author.objects.get(id=author_id)
@@ -245,23 +276,27 @@ def edit_article(request, article_id):
                 'error_message': 'Автор не знайдений.'
             })
 
-        language = request.POST.get('language')
-        category_ids = request.POST.getlist('categories')
-
+        # Оновлюємо категорії
         all_categories = []
         for category_id in category_ids:
             try:
                 category = Category.objects.get(id=category_id)
                 all_categories.append(category)
 
-                # Додати батьківські категорії
                 while category.parent:
                     category = category.parent
                     all_categories.append(category)
             except Category.DoesNotExist:
                 continue
 
-        # Оновлення статті
+        # Оновлюємо публікацію
+        if publish_option == "schedule" and publish_datetime:
+            article.is_published = False
+            article.publish_at = make_aware(datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M"))
+        else:
+            article.is_published = True
+            article.publish_at = now()
+
         article.name = article_name
         article.text = article_text
         article.language = language
@@ -269,6 +304,7 @@ def edit_article(request, article_id):
         article.categories.clear()
         article.categories.add(*all_categories)
 
+        # Оновлення зображення (залишаємо старе, якщо нове не завантажено)
         if article_image:
             if article_image.content_type.startswith('image'):
                 article.image = article_image
@@ -282,7 +318,6 @@ def edit_article(request, article_id):
 
         article.save()
 
-        # Завжди редіректимо на сторінку статті
         return redirect('article', article_id=article.pk)
 
     return render(request, 'edit_article.html', {
@@ -290,6 +325,7 @@ def edit_article(request, article_id):
         'authors': authors,
         'categories': categories
     })
+
 
 
 @login_required(login_url='/login')
@@ -326,7 +362,10 @@ def create_new_author(request):
 
 def author_detail(request, author_id):
        author = get_object_or_404(Author, id=author_id)
-       author_articles = Article.objects.filter(author=author)
+       author_articles = Article.objects.filter(
+        author=author,
+        is_published=True,
+       )
        return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
 
 @login_required(login_url='/login')
