@@ -1,7 +1,6 @@
 ﻿from django.contrib.auth.models import User
 from django.db import models
 import uuid
-from django.utils.timezone import now
 
 # Create your models here.
 
@@ -44,8 +43,6 @@ class Article(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     views = models.IntegerField(default=0)
     reactions = models.IntegerField(default=0)
-    publish_at = models.DateTimeField(default=now, help_text="Час, коли стаття стане доступною")
-    is_published = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

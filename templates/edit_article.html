@@ -26,23 +26,18 @@
 
 <form method="POST" action="{% url 'edit' article.id %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
-
-    <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required value="{{ article.name }}" />
-
+    <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required value="{{article.name}}" />
     <select name="article_author" class="form" required>
         <option value="" disabled>Виберіть автора</option>
         {% for new_author in authors %}
         <option value="{{ new_author.id }}" {% if article.author == new_author %} selected {% endif %}>{{ new_author.name_ua }}</option>
         {% endfor %}
     </select>
-
-    <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form">{{ article.text }}</textarea>
-
+    <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form">{{article.text}}</textarea>
     {% if article.image %}
     <img src="{{ article.image.url }}" alt="" style="max-width: 200px;">
     {% endif %}
-    <input type="file" name="article_image" accept="image/*" class="form" />
-
+    <input type="file" name="article_image" accept="image/*" class="form" value="article.image" />
     <fieldset class="form">
         <label class="form">
             <input type="radio" name="language" value="ua" {% if article.language == "ua" %} checked {% endif %}>
@@ -53,7 +48,6 @@
             <span class="form">Англійська</span>
         </label>
     </fieldset>
-
     <fieldset class="form">
         {% for category in categories %}
         <label>
@@ -62,25 +56,8 @@
         </label>
         {% endfor %}
     </fieldset>
-
-    <!-- Вибір способу публікації -->
-    <fieldset class="form">
-        <label>
-            <input type="radio" name="publish_option" value="now" id="publish_now" {% if article.is_published %} checked {% endif %}>
-            <span class="form">Опублікувати зараз</span>
-        </label>
-        <label>
-            <input type="radio" name="publish_option" value="schedule" id="schedule_publication" {% if not article.is_published %} checked {% endif %}>
-            <span class="form">Відкласти публікацію</span>
-        </label>
-    </fieldset>
-
-    <!-- Поле вибору дати та часу -->
-    <input type="datetime-local" name="publish_datetime" id="publish_datetime" class="form" {% if article.is_published %} disabled {% endif %} value="{% if article.publish_at %}{{ article.publish_at|date:'Y-m-d\TH:i' }}{% endif %}">
-
     <button type="submit" class="btn">Зберегти</button>
 </form>
-
 
 <p style="margin-top: 20px"><a href="{% url 'editor_cabinet' %}">Назад до кабінету редактора</a></p>
 
@@ -92,27 +69,6 @@
         .catch(error => {
             console.error(error);
         });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const publishNow = document.getElementById("publish_now");
-        const schedulePublication = document.getElementById("schedule_publication");
-        const publishDateTime = document.getElementById("publish_datetime");
-
-        function toggleDateTimeField() {
-            if (publishNow.checked) {
-                publishDateTime.disabled = true;
-                publishDateTime.value = "";
-            } else {
-                publishDateTime.disabled = false;
-            }
-        }
-
-        toggleDateTimeField();
-        publishNow.addEventListener("change", toggleDateTimeField);
-        schedulePublication.addEventListener("change", toggleDateTimeField);
-    });
 </script>
 
 {%endblock %}
