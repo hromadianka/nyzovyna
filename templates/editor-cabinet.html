@@ -32,6 +32,7 @@
 
 <form method="POST" action="{% url 'publish' %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
+
     <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required />
 
     <select name="article_author" class="form" required>
@@ -65,9 +66,23 @@
         {% endfor %}
     </fieldset>
 
+    <!-- Вибір способу публікації -->
+    <fieldset class="form">
+        <label>
+            <input type="radio" name="publish_option" value="now" id="publish_now" checked>
+            <span class="form">Опублікувати зараз</span>
+        </label>
+        <label>
+            <input type="radio" name="publish_option" value="schedule" id="schedule_publication">
+            <span class="form">Відкласти публікацію</span>
+        </label>
+    </fieldset>
+
+    <!-- Поле вибору дати та часу -->
+    <input type="datetime-local" name="publish_datetime" id="publish_datetime" class="form" disabled>
+
     <button type="submit" class="btn">Опублікувати</button>
 </form>
-
 
 <script>
     ClassicEditor
@@ -169,6 +184,35 @@
 </div>
 {% endfor %}
 
+<h2 style="margin-top: 30px; margin-bottom: 24px">Відкладені статті</h2>
+
+<div class="articles-container">
+
+    {% for article in unpublished_articles reversed %}
+
+    <div class="article-card" id="article-{{article.id}}" style="background: white">
+        <div class="card-content">
+            <div class="card-image {% if not article.is_published %}unpublished{% endif %}" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
+                {% for category in article.categories.all %}
+                <p>{{ category.name_ua }}</p>
+                {% endfor %}
+            </div>
+            <div class="card-text">
+                <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
+                <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <p style="margin-bottom: 10px"><a href="{% url 'edit' article.id %}">Редагувати статтю</a></p>
+            <p><a href="#" onclick="confirmDelete(event, '{{ article.id }}')" style="color: red;">Видалити статтю</a></p>
+        </div>
+    </div>
+
+
+    {% endfor %}
+
+</div>
+
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Опубліковані статті</h2>
 
@@ -178,7 +222,7 @@
 
     <div class="article-card" id="article-{{article.id}}" style="background: white">
         <div class="card-content">
-            <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
+            <div class="card-image {% if not article.is_published %}unpublished{% endif %}" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
                 {% for category in article.categories.all %}
                 <p>{{ category.name_ua }}</p>
                 {% endfor %}
@@ -245,5 +289,30 @@
 
 
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const publishNow = document.getElementById("publish_now");
+        const schedulePublication = document.getElementById("schedule_publication");
+        const publishDateTime = document.getElementById("publish_datetime");
+
+        function toggleDateTimeField() {
+            if (publishNow.checked) {
+                publishDateTime.disabled = true;
+                publishDateTime.value = ""; // Очистити поле, якщо воно вимикається
+            } else {
+                publishDateTime.disabled = false;
+            }
+        }
+
+        // Викликаємо функцію при завантаженні сторінки
+        toggleDateTimeField();
+
+        // Додаємо обробники подій для перемикання
+        publishNow.addEventListener("change", toggleDateTimeField);
+        schedulePublication.addEventListener("change", toggleDateTimeField);
+    });
+</script>
+
 
 {% endblock %}

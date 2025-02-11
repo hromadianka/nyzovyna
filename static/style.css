@@ -826,6 +826,20 @@ h2 {
     margin-bottom: 15px;
 }
 
+.unpublished {
+    position: relative;
+}
+
+    .unpublished::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
 header {
     position: fixed;
     width: 100%;
