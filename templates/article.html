@@ -44,7 +44,7 @@
                 <p>{{comments.count}}</p>
             </div>
         </a>
-        
+
     </div>
 
     <div class="article-container">
@@ -61,7 +61,7 @@
         <div class="article">
             <div class="article-text">
                 <h1>{{ article.name }}</h1>
-                <p>{% autoescape off %}{{ article.text }}{% endautoescape %}</p>
+                <p>{% autoescape off %}{{ article.text|safe }}{% endautoescape %}</p>
             </div>
 
             {% if article.author %}
@@ -168,12 +168,27 @@
 </script>
 
 <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var mainElement = document.querySelector('main');
-            
-            mainElement.classList.add('article-main');
-        });
+    document.addEventListener("DOMContentLoaded", function () {
+        var mainElement = document.querySelector('main');
+
+        mainElement.classList.add('article-main');
+    });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("oembed[url]").forEach(element => {
+            let iframe = document.createElement("iframe");
+            iframe.setAttribute("src", element.getAttribute("url").replace("watch?v=", "embed/"));
+            iframe.setAttribute("width", "560");
+            iframe.setAttribute("height", "315");
+            iframe.setAttribute("frameborder", "0");
+            iframe.setAttribute("allowfullscreen", "true");
+            element.parentNode.replaceChild(iframe, element);
+        });
+    });
+</script>
+
 
 
 {% endblock %}

@@ -103,11 +103,18 @@
 
     ClassicEditor
         .create(document.querySelector('#article_text'), {
-            toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote']
+            toolbar: [
+                'heading', '|', 'bold', 'italic', '|', 'link', 'imageUpload', 'mediaEmbed', '|',
+                'bulletedList', 'numberedList', 'blockQuote'
+            ],
+            ckfinder: {
+                uploadUrl: '/ckeditor/upload/'
+            }
         })
         .catch(error => {
             console.error(error);
         });
+
 </script>
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Категорії</h2>

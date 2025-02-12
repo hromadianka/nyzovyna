@@ -2,6 +2,7 @@
 from django.db import models
 import uuid
 from django.utils.timezone import now
+from ckeditor.fields import RichTextField
 
 # Create your models here.
 
@@ -37,7 +38,7 @@ class Article(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, blank=True, related_name='articles')
     name = models.TextField()
-    text = models.TextField()
+    text = RichTextField()
     image = models.ImageField(upload_to='images/', default='card-example.png')
     categories = models.ManyToManyField(Category, related_name='categories')
     language = models.CharField(max_length=2, choices=(('ua', 'Українська'), ('en', 'Англійська')), default='ua')

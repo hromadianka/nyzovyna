@@ -63,7 +63,6 @@
         {% endfor %}
     </fieldset>
 
-    <!-- Вибір способу публікації -->
     <fieldset class="form">
         <label>
             <input type="radio" name="publish_option" value="now" id="publish_now" {% if article.is_published %} checked {% endif %}>
@@ -87,7 +86,13 @@
 <script>
     ClassicEditor
         .create(document.querySelector('#article_text'), {
-            toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote']
+            toolbar: [
+                'heading', '|', 'bold', 'italic', '|', 'link', 'imageUpload', 'mediaEmbed', '|',
+                'bulletedList', 'numberedList', 'blockQuote'
+            ],
+            ckfinder: {
+                uploadUrl: '/ckeditor/upload/'
+            }
         })
         .catch(error => {
             console.error(error);
