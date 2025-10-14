@@ -14,9 +14,10 @@
         }
     }
 </style>
-
+ {% if author.image %}
 <div style="background: url('{{ author.image.url }}') no-repeat; background-size: cover; background-position: center; width: 120px; height: 120px; margin-left: auto; margin-right: auto; border-radius: 150px">
 </div>
+{% endif %}
 {% if current_language == "en" %}
 <h1 style="margin-left: auto; margin-right: auto; width: fit-content; margin-top: 15px; margin-bottom: 0">{{ author.name_en }}</h1>
 <p style="margin-left: auto; margin-right: auto; text-align: center; margin-top: 15px" class="author_full_description">{{ author.description_en }}</p>
