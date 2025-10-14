@@ -885,11 +885,11 @@ header {
 }
 
 main {
-    margin-top: 113px;
+    margin-top: 74px;
 }
 
 @media screen and (min-width: 1000px) {
    main {
-        margin-top: 54px;
+        margin-top: 42px;
     }
 }
