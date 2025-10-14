@@ -201,7 +201,7 @@
         <div class="card-content">
             <div class="card-image {% if not article.is_published %}unpublished{% endif %}" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
                 {% for category in article.categories.all %}
-                <p>{{ category.name_ua }}</p>
+                <a href="{% url 'category_articles' category.id %}"><p>{{ category.name_ua }}</p></a>
                 {% endfor %}
             </div>
             <div class="card-text">

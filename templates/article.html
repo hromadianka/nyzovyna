@@ -51,9 +51,9 @@
         <div class="article-image {% if not article.is_published %}unpublished{% endif %}" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
             {% for category in article.categories.all %}
             {% if current_language == "en" %}
-            <p>{{ category.name_en }}</p>
+            <a href="{% url 'category_articles' category.id %}"><p>{{ category.name_en }}</p></a>
             {% else %}
-            <p>{{ category.name_ua }}</p>
+            <a href="{% url 'category_articles' category.id %}"><p>{{ category.name_ua }}</p></a>
             {% endif %}
             {% endfor %}
         </div>
