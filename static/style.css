@@ -403,8 +403,8 @@ footer a {
         }
 
         .container {
-            width: 61.5%;
-            max-width: 1180px;
+            width: 72.5%;
+            max-width: 1380px;
             margin: auto;
         }
 
@@ -888,7 +888,7 @@ main {
     margin-top: 74px;
 }
 
-@media screen and (min-width: 1000px) {
+@media screen and (max-width: 1000px) {
    main {
         margin-top: 42px;
     }
