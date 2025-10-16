@@ -1,9 +1,9 @@
 {% for child_category in category.children.all %}
 <li class="parent-category">
     {% if current_language == "en" %}
-    <a href="{% url 'category_articles' child_category.id %}" class="menu-link">{{ child_category.name_en }}</a>
+    <a href="{% url 'category_articles' child_category.slug %}" class="menu-link">{{ child_category.name_en }}</a>
     {% else %}
-    <a href="{% url 'category_articles' child_category.id %}" class="menu-link">{{ child_category.name_ua }}</a>
+    <a href="{% url 'category_articles' child_category.slug %}" class="menu-link">{{ child_category.name_ua }}</a>
     {% endif %}
     {% if child_category.children.all %}
     <ul class="sub-menu iteration">

@@ -26,9 +26,9 @@
                     {% if not category.parent %}
                     <li class="parent-category">
                         {% if current_language == "en" %}
-                        <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_en }}</a>
+                        <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_en }}</a>
                         {% else %}
-                        <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_ua }}</a>
+                        <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_ua }}</a>
                         {% endif %}
                         {% if category.children.all %}
                         <ul class="sub-menu">
