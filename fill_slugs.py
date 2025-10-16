@@ -1,6 +1,14 @@
 from django.utils.text import slugify
 from app.models import Article, Author, Category
 
+Article.objects.all().update(slug=None)
+Author.objects.all().update(slug=None)
+Category.objects.all().update(slug=None)
+
+updated_articles = 0
+updated_authors = 0
+updated_categories = 0
+
 for obj in Article.objects.all():
     if not obj.slug or obj.slug.strip() == '':
         base_slug = slugify(obj.name) or 'article'
