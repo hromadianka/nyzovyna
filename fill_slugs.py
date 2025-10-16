@@ -1,5 +1,5 @@
 from django.utils.text import slugify
-from new_app.models import Article, Author, Category
+from app.models import Article, Author, Category
 
 for obj in Article.objects.all():
     if not obj.slug or obj.slug.strip() == '':
