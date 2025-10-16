@@ -50,19 +50,21 @@ def all_articles(request):
     )
     return render(request, 'category.html', {'articles': articles})
 
-def article_detail_by_id(request, id):
-    article = get_object_or_404(Article, id=id)
-    return article_detail(request, slug=article.slug)
-
-def article_detail(request, slug):
-    article = get_object_or_404(Article, slug=slug)
+def article_detail(request, slug=None, id=None):
+    if slug:
+        article = get_object_or_404(Article, slug=slug)
+    elif id:
+        article = get_object_or_404(Article, id=id)
+        # Можно перенаправить на slug
+        if article.slug:
+            return redirect('article', slug=article.slug)
+    else:
+        raise Http404("Статья не найдена")
+    
+    # Дальше оставляем весь твой код для показа статьи
     article.views += 1
     article.save()
-    all_articles = (
-        Article.objects.filter(is_published=True)
-        .exclude(pk=article.pk)
-        .order_by('-views')[:2]
-    )
+    all_articles = Article.objects.filter(is_published=True).exclude(pk=article.pk).order_by('-views')[:2]
     comments = Comment.objects.filter(article=article).order_by('-created_at')
     comments_count = article.comments.count()
     parent_category = None
@@ -72,20 +74,23 @@ def article_detail(request, slug):
             parent_category = parent_category.parent
     recommended_articles = []
     if parent_category:
-        recommended_articles = (
-            Article.objects.filter(
+        recommended_articles = Article.objects.filter(
             categories=parent_category,
-            is_published=True,
-            )
-            .exclude(pk=article.pk)
-            .order_by('-views')[:2]
-        )
+            is_published=True
+        ).exclude(pk=article.pk).order_by('-views')[:2]
     translate = {
         'reply': _('Відповісти'),
         'enter_name': _('Введіть ім\'я'),
         'enter_comment': _('Введіть коментар')
     }
-    return render(request, 'article.html', {'article': article, 'comments': comments, 'translate': translate, 'comments_count': comments_count, 'recommended_articles': recommended_articles, 'all_articles': all_articles})
+    return render(request, 'article.html', {
+        'article': article,
+        'comments': comments,
+        'translate': translate,
+        'comments_count': comments_count,
+        'recommended_articles': recommended_articles,
+        'all_articles': all_articles
+    })
 
 def comment(request):
 
