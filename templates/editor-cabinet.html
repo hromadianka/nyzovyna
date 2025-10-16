@@ -66,7 +66,6 @@
         {% endfor %}
     </fieldset>
 
-    <!-- Вибір способу публікації -->
     <fieldset class="form">
         <label>
             <input type="radio" name="publish_option" value="now" id="publish_now" checked>
@@ -78,7 +77,6 @@
         </label>
     </fieldset>
 
-    <!-- Поле вибору дати та часу -->
     <input type="datetime-local" name="publish_datetime" id="publish_datetime" class="form" disabled>
 
     <button type="submit" class="btn">Опублікувати</button>
@@ -180,13 +178,13 @@
     {% endif %}
     {% if current_language == "en" %}
     <div>
-        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.id %}">{{ author.name_en }}</a></h3>
+        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.slug %}">{{ author.name_en }}</a></h3>
         <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ author.description_en|linebreaks|striptags|truncatechars:30 }}</p>
-        <a style="font-size: 15px; color: red" href="{% url 'edit_author' author.id %}">Редагувати</a>
+        <a style="font-size: 15px; color: red" href="{% url 'edit_author' author.slug %}">Редагувати</a>
     </div>
     {% else %}
     <div>
-        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.id %}">{{ author.name_ua }}</a></h3>
+        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.slug %}">{{ author.name_ua }}</a></h3>
         <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ author.description_ua|linebreaks|striptags|truncatechars:30 }}</p>
     </div>
     {% endif %}
@@ -203,17 +201,17 @@
         <div class="card-content">
             <div class="card-image {% if not article.is_published %}unpublished{% endif %}" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
                 {% for category in article.categories.all %}
-                <a href="{% url 'category_articles' category.id %}"><p>{{ category.name_ua }}</p></a>
+                <a href="{% url 'category_articles' category.slug %}"><p>{{ category.name_ua }}</p></a>
                 {% endfor %}
             </div>
             <div class="card-text">
-                <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
+                <h3><a href="{% url 'article' article.slug %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
                 <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
             </div>
         </div>
         <div class="card-footer">
-            <p style="margin-bottom: 10px"><a href="{% url 'edit' article.id %}">Редагувати статтю</a></p>
-            <p><a href="#" onclick="confirmDelete(event, '{{ article.id }}')" style="color: red;">Видалити статтю</a></p>
+            <p style="margin-bottom: 10px"><a href="{% url 'edit' article.slug %}">Редагувати статтю</a></p>
+            <p><a href="#" onclick="confirmDelete(event, '{{ article.slug }}')" style="color: red;">Видалити статтю</a></p>
         </div>
     </div>
 
@@ -237,13 +235,13 @@
                 {% endfor %}
             </div>
             <div class="card-text">
-                <h3><a href="{% url 'article' article.id %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
+                <h3><a href="{% url 'article' article.slug %}" style="text-decoration: none">{{ article.name|linebreaks|truncatechars:130 }}</a></h3>
                 <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
             </div>
         </div>
         <div class="card-footer">
-            <p style="margin-bottom: 10px"><a href="{% url 'edit' article.id %}">Редагувати статтю</a></p>
-            <p><a href="#" onclick="confirmDelete(event, '{{ article.id }}')" style="color: red;">Видалити статтю</a></p>
+            <p style="margin-bottom: 10px"><a href="{% url 'edit' article.slug %}">Редагувати статтю</a></p>
+            <p><a href="#" onclick="confirmDelete(event, '{{ article.slug }}')" style="color: red;">Видалити статтю</a></p>
         </div>
     </div>
 
@@ -308,16 +306,14 @@
         function toggleDateTimeField() {
             if (publishNow.checked) {
                 publishDateTime.disabled = true;
-                publishDateTime.value = ""; // Очистити поле, якщо воно вимикається
+                publishDateTime.value = "";
             } else {
                 publishDateTime.disabled = false;
             }
         }
 
-        // Викликаємо функцію при завантаженні сторінки
         toggleDateTimeField();
 
-        // Додаємо обробники подій для перемикання
         publishNow.addEventListener("change", toggleDateTimeField);
         schedulePublication.addEventListener("change", toggleDateTimeField);
     });

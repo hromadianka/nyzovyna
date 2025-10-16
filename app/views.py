@@ -32,9 +32,9 @@ def authors(request):
     authors = Author.objects.all()
     return render(request, 'authors.html', {'authors': authors})
 
-def category_articles(request, category_id):
+def category_articles(request, slug:
     current_language = get_language()
-    category = get_object_or_404(Category, pk=category_id)
+    category = get_object_or_404(Category, slug=slug)
     articles = Article.objects.filter(
         language = current_language, 
         categories__in = [category],
@@ -50,8 +50,8 @@ def all_articles(request):
     )
     return render(request, 'category.html', {'articles': articles})
 
-def article_detail(request, article_id):
-    article = get_object_or_404(Article, pk=article_id)
+def article_detail(request, slug):
+    article = get_object_or_404(Article, slug=slug)
     article.views += 1
     article.save()
     all_articles = (
@@ -180,7 +180,6 @@ def publish(request):
             except Category.DoesNotExist:
                 continue
 
-        # Визначаємо дату публікації
         if publish_option == "schedule" and publish_datetime:
             is_published = False
             publish_date = make_aware(datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M"))
@@ -220,8 +219,8 @@ def publish(request):
 
 
 @login_required(login_url='/login')
-def delete_article(request, article_id):
-    article = get_object_or_404(Article, id=article_id)
+def delete_article(request, slug):
+    article = get_object_or_404(Article, slug=slug)
     if request.method == 'GET':
         article.delete()
         return JsonResponse({'success': True})
@@ -242,15 +241,15 @@ def create_category(request):
     return render(request, 'editor-cabinet.html')
 
 @login_required(login_url='/login')
-def delete_category(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
+def delete_category(request, slug):
+    category = get_object_or_404(Category, slug)
     if request.method == 'GET':
         category.delete()
         return JsonResponse({'success': True})
 
 @login_required(login_url='/login')
-def edit_article(request, article_id):
-    article = get_object_or_404(Article, id=article_id)
+def edit_article(request, slug):
+    article = get_object_or_404(Article, slug)
     authors = Author.objects.all()
     categories = Category.objects.all()
 
@@ -262,7 +261,6 @@ def edit_article(request, article_id):
         language = request.POST.get('language')
         category_ids = request.POST.getlist('categories')
 
-        # Отримуємо параметри публікації
         publish_option = request.POST.get('publish_option')  # "now" або "schedule"
         publish_datetime = request.POST.get('publish_datetime')  # Дата для запланованої публікації
 
@@ -276,7 +274,6 @@ def edit_article(request, article_id):
                 'error_message': 'Автор не знайдений.'
             })
 
-        # Оновлюємо категорії
         all_categories = []
         for category_id in category_ids:
             try:
@@ -289,7 +286,6 @@ def edit_article(request, article_id):
             except Category.DoesNotExist:
                 continue
 
-        # Оновлюємо публікацію
         if publish_option == "schedule" and publish_datetime:
             article.is_published = False
             article.publish_at = make_aware(datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M"))
@@ -304,7 +300,6 @@ def edit_article(request, article_id):
         article.categories.clear()
         article.categories.add(*all_categories)
 
-        # Оновлення зображення (залишаємо старе, якщо нове не завантажено)
         if article_image:
             if article_image.content_type.startswith('image'):
                 article.image = article_image
@@ -360,7 +355,7 @@ def create_new_author(request):
         return redirect('editor_cabinet')
     return render(request, 'editor-cabinet.html')
 
-def author_detail(request, author_id):
+def author_detail(request, slug):
        author = get_object_or_404(Author, id=author_id)
        author_articles = Article.objects.filter(
         author=author,
@@ -369,8 +364,8 @@ def author_detail(request, author_id):
        return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
 
 @login_required(login_url='/login')
-def edit_author(request, author_id):
-       author = get_object_or_404(Author, id=author_id)
+def edit_author(request, slug):
+       author = get_object_or_404(Author, slug=slug)
        if request.method == 'POST':
            name_ua = request.POST.get('name_ua')
            name_en = request.POST.get('name_en')

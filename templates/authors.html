@@ -13,12 +13,12 @@
     {% endif %}
     {% if current_language == "en" %}
     <div>
-        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.id %}">{{ author.name_en }}</a></h3>
+        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.slug %}">{{ author.name_en }}</a></h3>
         <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ author.description_en|linebreaks|striptags|truncatechars:30 }}</p>
     </div>
     {% else %}
     <div>
-        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.id %}">{{ author.name_ua }}</a></h3>
+        <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' author.slug %}">{{ author.name_ua }}</a></h3>
         <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ author.description_ua|linebreaks|striptags|truncatechars:30 }}</p>
     </div>
     {% endif %}
