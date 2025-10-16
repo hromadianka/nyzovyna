@@ -44,7 +44,7 @@ def fill_slugs(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('your_app', 'previous_migration_name'),
+        ('app', '0006_article_slug_author_slug_category_slug_and_more'),
     ]
 
     operations = [
