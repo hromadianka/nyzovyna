@@ -356,7 +356,7 @@ def create_new_author(request):
     return render(request, 'editor-cabinet.html')
 
 def author_detail(request, slug):
-       author = get_object_or_404(Author, id=author_id)
+       author = get_object_or_404(Author, slug=slug)
        author_articles = Article.objects.filter(
         author=author,
         is_published=True,
