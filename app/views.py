@@ -50,6 +50,10 @@ def all_articles(request):
     )
     return render(request, 'category.html', {'articles': articles})
 
+def article_detail_by_id(request, id):
+    article = get_object_or_404(Article, id=id)
+    return article_detail(request, slug=article.slug)
+
 def article_detail(request, slug):
     article = get_object_or_404(Article, slug=slug)
     article.views += 1
