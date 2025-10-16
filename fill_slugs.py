@@ -6,7 +6,7 @@ updated_authors = 0
 updated_categories = 0
 
 for obj in Article.objects.all():
-    if not obj.slug:
+    if not obj.slug or obj.slug.strip() == '':
         base_slug = slugify(obj.name)
         slug = base_slug
         n = 1
@@ -18,7 +18,7 @@ for obj in Article.objects.all():
         updated_articles += 1
 
 for obj in Author.objects.all():
-    if not obj.slug:
+    if not obj.slug or obj.slug.strip() == '':
         base_slug = slugify(obj.name_en or obj.name_ua)
         slug = base_slug
         n = 1
@@ -30,7 +30,7 @@ for obj in Author.objects.all():
         updated_authors += 1
 
 for obj in Category.objects.all():
-    if not obj.slug:
+    if not obj.slug or obj.slug.strip() == '':
         base_slug = slugify(obj.name_en or obj.name_ua)
         slug = base_slug
         n = 1
