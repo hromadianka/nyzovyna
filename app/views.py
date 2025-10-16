@@ -32,7 +32,7 @@ def authors(request):
     authors = Author.objects.all()
     return render(request, 'authors.html', {'authors': authors})
 
-def category_articles(request, slug:
+def category_articles(request, slug):
     current_language = get_language()
     category = get_object_or_404(Category, slug=slug)
     articles = Article.objects.filter(
