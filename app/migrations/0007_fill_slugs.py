@@ -4,9 +4,9 @@ from django.db import migrations
 from django.utils.text import slugify
 
 def fill_slugs(apps, schema_editor):
-    Article = apps.get_model('your_app', 'Article')
-    Author = apps.get_model('your_app', 'Author')
-    Category = apps.get_model('your_app', 'Category')
+    Article = apps.get_model('app', 'Article')
+    Author = apps.get_model('app', 'Author')
+    Category = apps.get_model('app', 'Category')
 
     for obj in Article.objects.all():
         if not obj.slug:
