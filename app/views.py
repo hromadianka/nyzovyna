@@ -55,13 +55,9 @@ def article_detail(request, slug=None, id=None):
         article = get_object_or_404(Article, slug=slug)
     elif id:
         article = get_object_or_404(Article, id=id)
-        # Можно перенаправить на slug
         if article.slug:
             return redirect('article', slug=article.slug)
-    else:
-        raise Http404("Статья не найдена")
     
-    # Дальше оставляем весь твой код для показа статьи
     article.views += 1
     article.save()
     all_articles = Article.objects.filter(is_published=True).exclude(pk=article.pk).order_by('-views')[:2]

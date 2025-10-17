@@ -36,6 +36,7 @@ urlpatterns = [
     path('category/<slug:slug>/', views.category_articles, name='category_articles'),
     path('category/<slug:slug>/delete/', views.delete_category, name='delete_category'),
     path('article/<slug:slug>/', views.article_detail, name='article'),
+    path('article/<uuid:id>/', views.article_detail, name='article_by_id'),
     path('comment', views.comment, name='comment'),
     path('login/', views.user_login, name='login'),
     path('editor-cabinet', views.editor_cabinet, name='editor_cabinet'),
