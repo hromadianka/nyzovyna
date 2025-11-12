@@ -54,14 +54,8 @@ def all_articles(request):
     )
     return render(request, 'category.html', {'articles': articles})
 
-def article_detail(request, slug=None, id=None):
-    if slug:
-        article = get_object_or_404(Article, slug=slug)
-    elif id:
-        article = get_object_or_404(Article, id=id)
-        if article.slug:
-            return redirect('article', slug=article.slug)
-    
+def article_detail(request, slug):
+    article = get_object_or_404(Article, slug=slug)
     article.views += 1
     article.save()
     all_articles = Article.objects.filter(is_published=True).exclude(pk=article.pk).order_by('-views')[:2]
