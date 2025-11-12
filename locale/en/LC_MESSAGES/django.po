@@ -96,3 +96,11 @@ msgstr "All articles"
 #: .\anarchia\article.html
 msgid "Залишились питання або хочете щось сказати? —  Напишіть коментар!"
 msgstr "Do you still have some questions or something to tell? —  Leave a comment!"
+
+#: .\anarchia\index.html
+msgid "Останні публікації"
+msgstr "Latest articles"
+
+#: .\anarchia\index.html
+msgid "Найпопулярніші публікації"
+msgstr "Most popular articles"

@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('set-language/', set_language, name='set_language'),
+    #path('captcha/', include("captcha.urls")),
     path('', views.index, name='home'),
     path('about-us', views.about_us, name='about_us'),
     path('authors', views.authors, name='authors'),
@@ -46,7 +47,9 @@ urlpatterns = [
     path('create-category/', views.create_category, name='create_category'),
     path('about-us-edit', views.about_us_edit, name='about_us_edit'),
     path('feed/', LatestPostsFeed(), name='post_feed'),
-    path('create_new_author/', views.create_new_author, name='create_new_author')
+    path('create_new_author/', views.create_new_author, name='create_new_author'),
+    #path('editor-cabinet/comments-moderation/', views.comments_moderation, name='comments_moderation'),
+    #path('editor-cabinet/comments-moderation/<uuid:id>/delete/', views.delete_comment, name='delete_comment'),
 ]
 
 if settings.DEBUG:

@@ -13,6 +13,8 @@
 </style>
 
 
+<h1 style="margin-top: 10px">{% trans "Останні публікації" %}</h1>
+
 <div class="articles-container">
 
     {% for article in latest_articles %}
@@ -53,7 +55,22 @@
 
     {% endif %}
     {% endfor %}
+</div>
+<h1 style="margin-top: 30px">{% trans "Найпопулярніші публікації" %}</h1>
+<div class="articles-container">
+    {% for article in popular_articles reversed %}
 
+    <div class="article-card">
+        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+        </div>
+        <div class="card-text">
+            <h3><a href="{% url 'article' article.slug %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:130 }}</a></h3>
+            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+        </div>
+    </div>
+
+    {% endfor %}
 </div>
 
-{% endblock %}
+<a class="btn" href="{% url 'all_articles' %}" style="margin-left: auto; margin-right: auto; margin-top: 30px; font-size: 22px; padding: 12px 25px; border: 1px solid white">{% trans "Всі статті" %}</a>
+    {% endblock %}

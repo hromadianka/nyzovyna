@@ -1,4 +1,4 @@
-﻿from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -21,8 +21,12 @@ def index(request):
         language = current_language, 
         is_published = True, 
     ).order_by('-publish_at')[:5]
+    popular_articles = Article.objects.filter(
+        language = current_language, 
+        is_published = True, 
+    ).order_by('-views')[:10]
 
-    return render(request, 'index.html', {'latest_articles': latest_articles})
+    return render(request, 'index.html', {'latest_articles': latest_articles, 'popular_articles': popular_articles})
 
 def about_us(request):
     about_us_text = AboutUsText.objects.get(pk=1)
@@ -119,6 +123,14 @@ def comment(request):
             comment = comment.parent_comment
 
         return redirect('article', article_id=article_id)
+
+def author_detail(request, slug):
+       author = get_object_or_404(Author, slug=slug)
+       author_articles = Article.objects.filter(
+        author=author,
+        is_published=True,
+       )
+       return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
 
 #Виды редактора
 
@@ -360,14 +372,6 @@ def create_new_author(request):
         return redirect('editor_cabinet')
     return render(request, 'editor-cabinet.html')
 
-def author_detail(request, slug):
-       author = get_object_or_404(Author, slug=slug)
-       author_articles = Article.objects.filter(
-        author=author,
-        is_published=True,
-       )
-       return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
-
 @login_required(login_url='/login')
 def edit_author(request, slug):
        author = get_object_or_404(Author, slug=slug)
@@ -387,3 +391,16 @@ def edit_author(request, slug):
            author.save()
            return redirect('author_detail', author_id = author.id)
        return render(request, 'edit_author.html', {'author': author})
+
+#@login_required(login_url='/login')
+#def comments_moderation(request):
+#    comments = Comment.objects.all()
+    
+#    return render(request, 'comments_moderation.html', {'comments': comments})
+
+#@login_required(login_url='/login')
+#def delete_comment(request, id):
+#    comment = get_object_or_404(Comment, id=id)
+#    if request.method == 'POST':
+#        comment.delete()
+#        return
