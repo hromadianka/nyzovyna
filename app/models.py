@@ -88,13 +88,12 @@ class Article(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base_slug = slugify(self.name) or 'article'  # на случай пустого name
+            base_slug = slugify(self.name)
             slug = base_slug
             n = 1
             while Article.objects.filter(slug=slug).exclude(id=self.id).exists():
                 slug = f'{base_slug}-{n}'
                 n += 1
-            self.slug = slug  # ← ЭТОГО НЕ ХВАТАЛО
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

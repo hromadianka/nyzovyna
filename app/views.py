@@ -170,13 +170,6 @@ def publish(request):
         publish_option = request.POST.get('publish_option')
         publish_datetime = request.POST.get('publish_datetime')
 
-        if not author_id:
-            return render(request, 'editor-cabinet.html', {
-                'error_message': 'Автор не знайдений.',
-                'authors': authors,
-                'categories': categories,
-            })
-
         try:
             author = Author.objects.get(id=author_id)
         except Author.DoesNotExist:
@@ -187,27 +180,20 @@ def publish(request):
             })
 
         all_categories = []
-
         for category_id in category_ids:
             try:
                 category = Category.objects.get(id=category_id)
+                all_categories.append(category)
+
+                while category.parent:
+                    category = category.parent
+                    all_categories.append(category)
             except Category.DoesNotExist:
                 continue
 
-            all_categories.append(category)
-
-            parent = category.parent
-            while parent:
-                all_categories.append(parent)
-                parent = parent.parent
-
-        all_categories = list(set(all_categories))
-
         if publish_option == "schedule" and publish_datetime:
             is_published = False
-            publish_date = make_aware(
-                datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M")
-            )
+            publish_date = make_aware(datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M"))
         else:
             publish_date = now()
             is_published = True
@@ -218,16 +204,15 @@ def publish(request):
             language=language,
             author=author,
             publish_at=publish_date,
-            is_published=is_published,
+            is_published = is_published
         )
 
-        if all_categories:
-            article.categories.add(*all_categories)
+        article.categories.add(*all_categories)
 
         if article_image:
             if article_image.content_type.startswith('image'):
                 article.image = article_image
-                article.save()  # здесь второй save — ок
+                article.save()
             else:
                 return render(request, 'editor-cabinet.html', {
                     'error_message': 'Неправильний формат файлу.',
@@ -235,7 +220,7 @@ def publish(request):
                     'categories': categories,
                 })
 
-        return redirect('article', slug=article.slug)
+        return redirect('article', article_id=article.pk)
 
     return render(request, 'editor-cabinet.html', {
         'authors': authors,
