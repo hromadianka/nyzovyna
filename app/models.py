@@ -87,14 +87,16 @@ class Article(models.Model):
     is_published = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.name) or 'article'  # на случай пустого name
-            slug = base_slug
-            n = 1
-            while Article.objects.filter(slug=slug).exclude(id=self.id).exists():
-                slug = f'{base_slug}-{n}'
-                n += 1
-            self.slug = slug  # ← ЭТОГО НЕ ХВАТАЛО
+        base_source = self.slug if self.slug else self.name
+        base_slug = slugify(base_source) or 'article'
+
+        slug = base_slug
+        n = 1
+        while Article.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f'{base_slug}-{n}'
+            n += 1
+
+        self.slug = slug
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.utils.timezone import now
 from django.utils.timezone import make_aware
 from datetime import datetime
+from django.utils.text import slugify
 
 
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
@@ -169,6 +170,7 @@ def publish(request):
         author_id = request.POST.get('article_author')
         publish_option = request.POST.get('publish_option')
         publish_datetime = request.POST.get('publish_datetime')
+        article_slug_raw = request.POST.get('article_slug')
 
         if not author_id:
             return render(request, 'editor-cabinet.html', {
@@ -187,7 +189,6 @@ def publish(request):
             })
 
         all_categories = []
-
         for category_id in category_ids:
             try:
                 category = Category.objects.get(id=category_id)
@@ -195,7 +196,6 @@ def publish(request):
                 continue
 
             all_categories.append(category)
-
             parent = category.parent
             while parent:
                 all_categories.append(parent)
@@ -212,7 +212,7 @@ def publish(request):
             publish_date = now()
             is_published = True
 
-        article = Article.objects.create(
+        article = Article(
             name=article_name,
             text=article_text,
             language=language,
@@ -221,13 +221,18 @@ def publish(request):
             is_published=is_published,
         )
 
+        if article_slug_raw:
+            article.slug = article_slug_raw
+
+        article.save()
+
         if all_categories:
             article.categories.add(*all_categories)
 
         if article_image:
             if article_image.content_type.startswith('image'):
                 article.image = article_image
-                article.save()  # здесь второй save — ок
+                article.save()
             else:
                 return render(request, 'editor-cabinet.html', {
                     'error_message': 'Неправильний формат файлу.',
@@ -241,8 +246,6 @@ def publish(request):
         'authors': authors,
         'categories': categories,
     })
-
-
 
 @login_required(login_url='/login')
 def delete_article(request, slug):

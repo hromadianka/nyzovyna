@@ -30,10 +30,22 @@
 
 <h2 style="margin-top: 30px; margin-bottom: 24px">Опублікувати статтю</h2>
 
+
 <form method="POST" action="{% url 'publish' %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
 
-    <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required />
+    <input type="text"
+       name="article_name"
+       id="article_name"
+       placeholder="Заголовок статті"
+       class="form"
+       required />
+
+    <input type="text"
+       name="article_slug"
+       id="article_slug"
+       placeholder="Слаг (можна змінити вручну)"
+       class="form" />
 
     <select name="article_author" class="form" required>
         <option value="" disabled selected>Виберіть автора</option>
@@ -42,7 +54,10 @@
         {% endfor %}
     </select>
 
-    <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form"></textarea>
+    <textarea name="article_text"
+              placeholder="Текст статті"
+              id="article_text"
+              class="form"></textarea>
 
     <input type="file" name="article_image" accept="image/*" class="form" />
 
@@ -77,7 +92,11 @@
         </label>
     </fieldset>
 
-    <input type="datetime-local" name="publish_datetime" id="publish_datetime" class="form" disabled>
+    <input type="datetime-local"
+           name="publish_datetime"
+           id="publish_datetime"
+           class="form"
+           disabled>
 
     <button type="submit" class="btn">Опублікувати</button>
 </form>
@@ -251,6 +270,29 @@
 </div>
 
 <script>
+    function slugify(text) {
+    return text
+        .toString()
+        .normalize('NFKD')               // убирает диакритику
+        .replace(/[\u0300-\u036f]/g, '') // чистит оставшуюся диакритику
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')     // заменяем всё кроме латиницы и цифр
+        .replace(/^-+|-+$/g, '')         // убираем - в начале/конце
+        .replace(/-{2,}/g, '-');         // заменяем множественные --
+}
+
+let slugEdited = false;
+
+document.getElementById('article_slug').addEventListener('input', () => {
+    slugEdited = true; // пользователь вручную меняет slug → перестаём автообновлять
+});
+
+document.getElementById('article_name').addEventListener('input', (e) => {
+    if (!slugEdited) {
+        const value = slugify(e.target.value);
+        document.getElementById('article_slug').value = value;
+    }
+});
     function confirmDeleteCategory(event, categoryId) {
         event.preventDefault();
         if (confirm('Ви впевнені, що хочете видалити категорію?')) {
