@@ -24,7 +24,7 @@
 {% endif %}
 
 
-<form method="POST" action="{% url 'edit' article.id %}" enctype="multipart/form-data" class="form">
+<form method="POST" action="{% url 'edit_article' article.slug %}" enctype="multipart/form-data" class="form">
     {% csrf_token %}
 
     <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required value="{{ article.name }}" />
@@ -35,6 +35,13 @@
         <option value="{{ new_author.id }}" {% if article.author == new_author %} selected {% endif %}>{{ new_author.name_ua }}</option>
         {% endfor %}
     </select>
+
+    <input type="text"
+       name="article_slug"
+       id="article_slug"
+       class="form"
+       placeholder="Слаг"
+       value="{{ article.slug }}">
 
     <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form">{{ article.text }}</textarea>
 

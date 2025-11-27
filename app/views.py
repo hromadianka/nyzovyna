@@ -278,7 +278,7 @@ def delete_category(request, slug):
 
 @login_required(login_url='/login')
 def edit_article(request, slug):
-    article = get_object_or_404(Article, slug)
+    article = get_object_or_404(Article, slug=slug)
     authors = Author.objects.all()
     categories = Category.objects.all()
 
@@ -289,9 +289,9 @@ def edit_article(request, slug):
         author_id = request.POST.get('article_author')
         language = request.POST.get('language')
         category_ids = request.POST.getlist('categories')
-
-        publish_option = request.POST.get('publish_option')  # "now" або "schedule"
-        publish_datetime = request.POST.get('publish_datetime')  # Дата для запланованої публікації
+        publish_option = request.POST.get('publish_option')
+        publish_datetime = request.POST.get('publish_datetime')
+        article_slug_raw = request.POST.get('article_slug')  # новое поле
 
         try:
             author = Author.objects.get(id=author_id)
@@ -304,20 +304,26 @@ def edit_article(request, slug):
             })
 
         all_categories = []
+
         for category_id in category_ids:
             try:
                 category = Category.objects.get(id=category_id)
-                all_categories.append(category)
-
-                while category.parent:
-                    category = category.parent
-                    all_categories.append(category)
             except Category.DoesNotExist:
                 continue
 
+            all_categories.append(category)
+            parent = category.parent
+            while parent:
+                all_categories.append(parent)
+                parent = parent.parent
+
+        all_categories = list(set(all_categories))
+
         if publish_option == "schedule" and publish_datetime:
             article.is_published = False
-            article.publish_at = make_aware(datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M"))
+            article.publish_at = make_aware(
+                datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M")
+            )
         else:
             article.is_published = True
             article.publish_at = now()
@@ -326,8 +332,10 @@ def edit_article(request, slug):
         article.text = article_text
         article.language = language
         article.author = author
+
         article.categories.clear()
-        article.categories.add(*all_categories)
+        if all_categories:
+            article.categories.add(*all_categories)
 
         if article_image:
             if article_image.content_type.startswith('image'):
@@ -340,14 +348,17 @@ def edit_article(request, slug):
                     'error_message': 'Неправильний формат файлу.'
                 })
 
+        if article_slug_raw is not None:
+            article.slug = article_slug_raw.strip() or None
+
         article.save()
 
-        return redirect('article', article_id=article.pk)
+        return redirect('article', slug=article.slug)
 
     return render(request, 'edit_article.html', {
         'article': article,
         'authors': authors,
-        'categories': categories
+        'categories': categories,
     })
 
 
