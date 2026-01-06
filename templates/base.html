@@ -100,13 +100,20 @@
         const bodyElement = document.querySelector('body');
         const themeToggle = document.getElementById('themeToggle');
 
+        if (localStorage.theme == 'light') {
+                mainElement.classList.add('light');
+                bodyElement.classList.add('light');
+        }
+
         themeToggle.addEventListener('change', () => {
             if (themeToggle.checked) {
                 mainElement.classList.add('light');
                 bodyElement.classList.add('light');
+                localStorage.theme = 'light';
             } else {
                 mainElement.classList.remove('light');
                 bodyElement.classList.remove('light');
+                localStorage.removeItem('theme');
             }
         });
     </script>
