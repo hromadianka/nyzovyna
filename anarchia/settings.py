@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cloudinary',
-    'django_cloudinary_storage',
+    'cloudinary_storage',
     'ckeditor',
     'app'
 ]
@@ -182,7 +182,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ['CLOUDINARY_SECRET'],
 }
 
-DEFAULT_FILE_STORAGE = 'django_cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # CKEditor Settings
 CKEDITOR_UPLOAD_PATH = 'uploads/'
