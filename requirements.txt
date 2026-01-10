@@ -63,3 +63,4 @@ vobject==0.9.7
 wheel==0.45.1
 whitenoise==6.5.0
 wrapt==1.15.0
+mysqlclient
