@@ -229,7 +229,7 @@
             </div>
         </div>
         <div class="card-footer">
-            <p style="margin-bottom: 10px"><a href="{% url 'edit' article.slug %}">Редагувати статтю</a></p>
+            <p style="margin-bottom: 10px"><a href="{% url 'edit_article' article.slug %}">Редагувати статтю</a></p>
             <p><a href="#" onclick="confirmDelete(event, '{{ article.slug }}')" style="color: red;">Видалити статтю</a></p>
         </div>
     </div>
@@ -273,18 +273,18 @@
     function slugify(text) {
     return text
         .toString()
-        .normalize('NFKD')               // убирает диакритику
-        .replace(/[\u0300-\u036f]/g, '') // чистит оставшуюся диакритику
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')     // заменяем всё кроме латиницы и цифр
-        .replace(/^-+|-+$/g, '')         // убираем - в начале/конце
-        .replace(/-{2,}/g, '-');         // заменяем множественные --
+        .replace(/[^a-z0-9]+/g, '-')   
+        .replace(/^-+|-+$/g, '')        
+        .replace(/-{2,}/g, '-');         
 }
 
 let slugEdited = false;
 
 document.getElementById('article_slug').addEventListener('input', () => {
-    slugEdited = true; // пользователь вручную меняет slug → перестаём автообновлять
+    slugEdited = true;
 });
 
 document.getElementById('article_name').addEventListener('input', (e) => {
