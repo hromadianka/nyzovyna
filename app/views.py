@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.utils.timezone import now
 from django.utils.timezone import make_aware
 from datetime import datetime
+from .forms import CommentCaptchaForm
 from django.utils.text import slugify
 
 
@@ -62,6 +63,7 @@ def article_detail(request, slug):
     all_articles = Article.objects.filter(is_published=True).exclude(pk=article.pk).order_by('-views')[:2]
     comments = Comment.objects.filter(article=article).order_by('-created_at')
     comments_count = article.comments.count()
+    captcha_form = CommentCaptchaForm()
     parent_category = None
     if article.categories.exists():
         parent_category = article.categories.first()
@@ -83,41 +85,48 @@ def article_detail(request, slug):
         'comments': comments,
         'translate': translate,
         'comments_count': comments_count,
+        'captcha_form': captcha_form,
         'recommended_articles': recommended_articles,
         'all_articles': all_articles
     })
 
+
 def comment(request):
+    if request.method != 'POST':
+        return redirect('/')
 
-    if request.method == 'POST':
-        article_id = request.POST.get('article_id')
-        author = request.POST.get('author')
-        text = request.POST.get('text')
-        parent_comment_id = request.POST.get('parent_comment_id')
+    article_id = request.POST.get('article_id')
+    parent_comment_id = request.POST.get('parent_comment_id')
 
-        article = get_object_or_404(Article, pk=article_id)
+    article = get_object_or_404(Article, pk=article_id)
 
-        if parent_comment_id:
-            parent_comment = get_object_or_404(Comment, pk=parent_comment_id)
-            comment = Comment.objects.create(
-                article=article,
-                author=author,
-                text=text,
-                parent_comment=parent_comment
-            )
-        else:
-            comment = Comment.objects.create(
-                article=article,
-                author=author,
-                text=text
-            )
+    # КАПЧА — ТОЛЬКО ДЛЯ ОСНОВНОГО КОММЕНТА
+    if not parent_comment_id:
+        captcha_form = CommentCaptchaForm(request.POST)
+        if not captcha_form.is_valid():
+            return redirect('article', slug=article.slug)
 
-        depth = 0
-        while comment.parent_comment:
-            depth += 1
-            comment = comment.parent_comment
+    author = request.POST.get('author')
+    text = request.POST.get('text')
 
-        return redirect('article', article_id=article_id)
+    if parent_comment_id:
+        parent_comment = get_object_or_404(Comment, pk=parent_comment_id)
+        Comment.objects.create(
+            article=article,
+            author=author,
+            text=text,
+            parent_comment=parent_comment
+        )
+    else:
+        Comment.objects.create(
+            article=article,
+            author=author,
+            text=text
+        )
+
+    return redirect('article', slug=article.slug)
+
+
 
 def author_detail(request, slug):
        author = get_object_or_404(Author, slug=slug)

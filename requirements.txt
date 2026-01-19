@@ -65,3 +65,5 @@ whitenoise==6.5.0
 wrapt==1.15.0
 mysqlclient>=2.0
 PyMySQL==1.1.1
+django-recaptcha==3.0.0
+
