@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cloudinary',
     'cloudinary_storage',
-    'ckeditor',
+    'ckeditor',    
+    'captcha',
     'app'
 ]
 
@@ -204,3 +205,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_HSTS_SECONDS = 31536000 
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+
+# Captcha Settings
+RECAPTCHA_PUBLIC_KEY = '6LfAfk8sAAAAAPo1-n1eDxuzg9sToQeJ6RfIpSTz'
+RECAPTCHA_PRIVATE_KEY = '6LfAfk8sAAAAABJCsNLBneERMqfn0jCbqvD7NVGV'
