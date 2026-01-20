@@ -21,10 +21,19 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.i18n import set_language
 from app.feeds import LatestPostsFeed
+from django.contrib.sitemaps.views import sitemap
+from app.sitemaps import AboutUsSitemap, ArticleSitemap, AuthorSitemap
+
+sitemaps = {
+    'about': AboutUsSitemap,
+    'articles': ArticleSitemap,
+    'authors': AuthorSitemap,
+}
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('set-language/', set_language, name='set_language'),
     #path('captcha/', include("captcha.urls")),
