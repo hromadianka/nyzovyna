@@ -5,6 +5,8 @@
 
 <h1>{% trans "Результати пошуку" %}</h1>
 
+<div class="articles-container">
+
 {% for article in results reversed %}
 
     <div class="article-card">
@@ -17,5 +19,8 @@
     </div>
 
     {% endfor %}
+
+    </div>
+
 
 {% endblock %}
