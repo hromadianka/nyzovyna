@@ -893,3 +893,35 @@ main {
         margin-top: 52px;
     }
 }
+
+/* Search form */
+
+.search-form {
+    display: flex;
+    align-items: stretch;
+    height: 35px;
+    background: white;
+    border: 1px solid #828282;
+    width: fit-content;
+}
+
+.search-form .form-field {
+    padding: 10px;
+    border: none;
+    border-color: white;
+    font-family: 'SF Pro Display', sans-serif;
+    width: 250px;
+}
+
+.search-form .form-field::placeholder {
+    color: #828282;
+    margin-left: 6px;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+}

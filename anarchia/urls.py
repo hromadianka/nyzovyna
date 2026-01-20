@@ -48,6 +48,7 @@ urlpatterns = [
     path('about-us-edit', views.about_us_edit, name='about_us_edit'),
     path('feed/', LatestPostsFeed(), name='post_feed'),
     path('create_new_author/', views.create_new_author, name='create_new_author'),
+    path('search/', views.article_search, name='article_search'),
     #path('editor-cabinet/comments-moderation/', views.comments_moderation, name='comments_moderation'),
     #path('editor-cabinet/comments-moderation/<uuid:id>/delete/', views.delete_comment, name='delete_comment'),
 ]

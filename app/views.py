@@ -11,6 +11,7 @@ from django.utils.timezone import make_aware
 from datetime import datetime
 from .forms import CommentCaptchaForm
 from django.utils.text import slugify
+from django.db.models import Q
 
 
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
@@ -135,6 +136,26 @@ def author_detail(request, slug):
         is_published=True,
        )
        return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
+
+
+def article_search(request):
+    query = request.GET.get('q', '').strip()
+
+    results = Article.objects.filter(
+        is_published=True,
+        publish_at__lte=now()
+    )
+
+    if query:
+        results = results.filter(
+            Q(name__icontains=query) |
+            Q(text__icontains=query)
+        )
+
+    return render(request, 'search.html', {
+        'query': query,
+        'results': results
+    })
 
 #Виды редактора
 

@@ -104,3 +104,9 @@ msgstr "Latest articles"
 #: .\anarchia\index.html
 msgid "Найпопулярніші публікації"
 msgstr "Most popular articles"
+
+msgid "Результати пошуку"
+msgstr "Search Results"
+
+msgid "Пошук"
+msgstr "Search"
