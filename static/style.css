@@ -523,6 +523,38 @@ footer a {
         margin-top: auto;
     }
 
+    /* Article cards: hover, active, focus  */
+
+    .article-card {
+        transition: box-shadow 0.25s ease;
+    }
+
+    .article-card h3 a,
+    .article-card p {
+        transition: color 0.25s ease, opacity 0.25s ease;
+    }
+
+
+    .article-card:hover {
+        box-shadow: 0px 0px 20px 0px #00000033;
+    }
+
+    .article-card:hover h3 a {
+        color: #FF8181;
+    }
+
+    .article-card:hover p {
+        opacity: 1;
+    }
+
+    .article-card:active * {
+        opacity: 0.4;
+    }
+
+    .article-card:focus {
+        border: 1px solid #CE5050;
+    }
+
     /* Кнопка */
 
     .btn {
