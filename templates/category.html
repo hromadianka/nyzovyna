@@ -25,17 +25,49 @@
 
     {% for article in articles reversed %}
 
-    <div class="article-card">
-        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+        {% if forloop.first %}
+        <div class="article-card">
+            <div class="card-image"
+                 style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+            </div>
+            <div class="card-text">
+                <h3>
+                    <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                        {{ article.name|striptags|truncatechars:130 }}
+                    </a>
+                </h3>
+                <p>
+                    {% autoescape off %}
+                    {{ article.text|linebreaks|striptags|truncatechars:700 }}
+                    {% endautoescape %}
+                </p>
+            </div>
         </div>
-        <div class="card-text">
-            <h3><a href="{% url 'article' article.slug %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:130 }}</a></h3>
-            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+        {% else %}
+
+        <div class="article-card">
+            <div class="card-image"
+                 style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+            </div>
+            <div class="card-text">
+                <h3>
+                    <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                        {{ article.name|striptags|truncatechars:80 }}
+                    </a>
+                </h3>
+                <p>
+                    {% autoescape off %}
+                    {{ article.text|linebreaks|striptags|truncatechars:160 }}
+                    {% endautoescape %}
+                </p>
+            </div>
         </div>
-    </div>
+
+        {% endif %}
 
     {% endfor %}
 
 </div>
+
 
 {% endblock %}
