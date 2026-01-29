@@ -12,6 +12,7 @@ from datetime import datetime
 from .forms import CommentCaptchaForm
 from django.utils.text import slugify
 from django.db.models import Q
+from django.views.decorators.http import require_POST
 
 
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
@@ -445,15 +446,16 @@ def edit_author(request, slug):
            return redirect('author_detail', author_id = author.id)
        return render(request, 'edit_author.html', {'author': author})
 
-#@login_required(login_url='/login')
-#def comments_moderation(request):
-#    comments = Comment.objects.all()
+@login_required(login_url='/login')
+def comments_moderation(request):
+    comments = Comment.objects.all()
     
-#    return render(request, 'comments_moderation.html', {'comments': comments})
+    return render(request, 'comments_moderation.html', {'comments': comments})
 
-#@login_required(login_url='/login')
-#def delete_comment(request, id):
-#    comment = get_object_or_404(Comment, id=id)
-#    if request.method == 'POST':
-#        comment.delete()
-#        return
+@login_required(login_url='/login')
+@require_POST
+def delete_comment(request, id):
+    comment = get_object_or_404(Comment, id=id)
+    comment.delete()
+
+    return redirect('comments_moderation')
