@@ -60,6 +60,9 @@ urlpatterns = [
     path('search/', views.article_search, name='article_search'),
     path('editor-cabinet/comments-moderation/', views.comments_moderation, name='comments_moderation'),
     path('editor-cabinet/comments-moderation/<uuid:id>/delete/', views.delete_comment, name='delete_comment'),
+    path('editor-cabinet/categories/order/', views.category_order_editor, name='category_order_editor'),
+    path('editor-cabinet/categories/order/update/', views.update_category_order, name='update_category_order'),
+
 ]
 
 if settings.DEBUG:

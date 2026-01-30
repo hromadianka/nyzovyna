@@ -13,6 +13,7 @@ from .forms import CommentCaptchaForm
 from django.utils.text import slugify
 from django.db.models import Q
 from django.views.decorators.http import require_POST
+import json
 
 
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
@@ -459,3 +460,21 @@ def delete_comment(request, id):
     comment.delete()
 
     return redirect('comments_moderation')
+
+@login_required
+def category_order_editor(request):
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related('children')
+    return render(request, 'category_order.html', {
+        'categories': categories
+    })
+
+
+@login_required
+@require_POST
+def update_category_order(request):
+    data = json.loads(request.body)
+
+    for item in data:
+        Category.objects.filter(id=item['id']).update(order=item['order'])
+
+    return JsonResponse({'status': 'ok'})

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+
+{% block content %}
+
+<style>
+.sortable {
+    list-style: none;
+    padding-left: 0;
+}
+
+.sortable-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    margin-left: 0;
+}
+
+.children {
+    margin-left: 24px;
+    margin-top: 6px;
+}
+
+.drag-handle {
+    cursor: grab;
+    margin-right: 10px;
+    font-size: 18px;
+    opacity: 0.6;
+    user-select: none;
+}
+
+.drag-handle:hover {
+    opacity: 1;
+}
+
+.sortable-item:active .drag-handle {
+    cursor: grabbing;
+}
+</style>
+
+<h1>Змінення порядку категорій</h1>
+
+<ul id="category-list" class="sortable">
+    {% for category in categories %}
+        <li data-id="{{ category.id }}" class="sortable-item">
+            <span class="drag-handle">☰</span>
+            <span class="title">{{ category.name_ua }}</span>
+
+            {% if category.children.all %}
+                <ul class="children sortable">
+                    {% for child in category.children.all %}
+                        <li data-id="{{ child.id }}" class="sortable-item">
+                            <span class="drag-handle">☰</span>
+                            <span class="title">{{ child.name_ua }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+
+<button id="save-order" class="btn" style="margin-top: 30px">Зберегти</button>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+function collectOrder(container) {
+    return [...container.children].map((el, index) => ({
+        id: el.dataset.id,
+        order: index
+    }));
+}
+
+const mainList = document.getElementById('category-list');
+
+new Sortable(mainList, {
+    animation: 150
+});
+
+document.querySelectorAll('.children').forEach(el => {
+    new Sortable(el, { animation: 150 });
+});
+
+document.getElementById('save-order').addEventListener('click', () => {
+    let payload = [];
+
+    payload.push(...collectOrder(mainList));
+
+    document.querySelectorAll('.children').forEach(el => {
+        payload.push(...collectOrder(el));
+    });
+
+    fetch("{% url 'update_category_order' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(payload)
+    });
+});
+
+</script>
+<script>
+new Sortable(mainList, {
+    animation: 150,
+    handle: '.drag-handle'
+});
+
+document.querySelectorAll('.children').forEach(el => {
+    new Sortable(el, {
+        animation: 150,
+        handle: '.drag-handle'
+    });
+});
+</script>
+
+
+
+{% endblock %}
