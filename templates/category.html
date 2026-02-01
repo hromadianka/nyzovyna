@@ -26,45 +26,57 @@
     {% for article in articles reversed %}
 
         {% if forloop.first %}
-        <div class="article-card">
+    <div class="article-card">
+
+        <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px">
             <div class="card-image"
-                 style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+                 style="background: url('{{ article.image.url }}') no-repeat;
+                        background-size: cover;
+                        background-position: center">
             </div>
-            <div class="card-text">
-                <h3>
-                    <a href="{% url 'article' article.slug %}" style="text-decoration: none">
-                        {{ article.name|striptags|truncatechars:130 }}
-                    </a>
-                </h3>
-                <p>
-                    {% autoescape off %}
-                    {{ article.text|linebreaks|striptags|truncatechars:700 }}
-                    {% endautoescape %}
-                </p>
-            </div>
-        </div>
-        {% else %}
+        </a>
 
-        <div class="article-card">
+        <div class="card-text">
+            <h3>
+                <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                    {{ article.name|striptags|truncatechars:130 }}
+                </a>
+            </h3>
+            <p>
+                {% autoescape off %}
+                {{ article.text|linebreaks|striptags|truncatechars:700 }}
+                {% endautoescape %}
+            </p>
+        </div>
+    </div>
+    {% else %}
+
+    <div class="article-card">
+
+        <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px">
             <div class="card-image"
-                 style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+                 style="background: url('{{ article.image.url }}') no-repeat;
+                        background-size: cover;
+                        background-position: center">
             </div>
-            <div class="card-text">
-                <h3>
-                    <a href="{% url 'article' article.slug %}" style="text-decoration: none">
-                        {{ article.name|striptags|truncatechars:80 }}
-                    </a>
-                </h3>
-                <p>
-                    {% autoescape off %}
-                    {{ article.text|linebreaks|striptags|truncatechars:160 }}
-                    {% endautoescape %}
-                </p>
-            </div>
+        </a>
+
+        <div class="card-text">
+            <h3>
+                <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                    {{ article.name|striptags|truncatechars:80 }}
+                </a>
+            </h3>
+            <p>
+                {% autoescape off %}
+                {{ article.text|linebreaks|striptags|truncatechars:160 }}
+                {% endautoescape %}
+            </p>
         </div>
+    </div>
 
-        {% endif %}
-
+    {% endif %}
+    
     {% endfor %}
 
 </div>

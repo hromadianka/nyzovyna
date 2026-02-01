@@ -20,8 +20,20 @@
     {% for article in latest_articles %}
 
     {% if forloop.first %}
-    <div class="article-card">
-        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+
+<div class="article-card">
+
+    <div class="card-image-wrapper">
+
+        <a href="{% url 'article' article.slug %}" class="card-image-link">
+            <div class="card-image"
+                 style="background: url('{{ article.image.url }}') no-repeat;
+                        background-size: cover;
+                        background-position: center">
+            </div>
+        </a>
+
+        <div class="card-categories">
             {% for category in article.categories.all %}
             {% if current_language == "en" %}
             <a href="{% url 'category_articles' category.slug %}"><p>{{ category.name_en }}</p></a>
@@ -30,15 +42,39 @@
             {% endif %}
             {% endfor %}
         </div>
-        <div class="card-text">
-            <h3><a href="{% url 'article' article.slug %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:130 }}</a></h3>
-            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:700 }}{% endautoescape %}</p>
-        </div>
-    </div>
-    {% else %}
 
-    <div class="article-card">
-        <div class="card-image" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+    </div>
+
+    <div class="card-text">
+        <h3>
+            <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                {{ article.name|striptags|truncatechars:130 }}
+            </a>
+        </h3>
+        <p>
+            {% autoescape off %}
+            {{ article.text|linebreaks|striptags|truncatechars:700 }}
+            {% endautoescape %}
+        </p>
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="article-card">
+
+    <div class="card-image-wrapper">
+
+        <a href="{% url 'article' article.slug %}" class="card-image-link">
+            <div class="card-image"
+                 style="background: url('{{ article.image.url }}') no-repeat;
+                        background-size: cover;
+                        background-position: center">
+            </div>
+        </a>
+
+        <div class="card-categories">
             {% for category in article.categories.all %}
             {% if current_language == "en" %}
             <a href="{% url 'category_articles' category.slug %}"><p>{{ category.name_en }}</p></a>
@@ -47,60 +83,115 @@
             {% endif %}
             {% endfor %}
         </div>
-        <div class="card-text">
-            <h3><a href="{% url 'article' article.slug %}" style="text-decoration: none">{{ article.name|striptags|truncatechars:80 }}</a></h3>
-            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
-        </div>
+
     </div>
 
-    {% endif %}
+    <div class="card-text">
+        <h3>
+            <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                {{ article.name|striptags|truncatechars:80 }}
+            </a>
+        </h3>
+        <p>
+            {% autoescape off %}
+            {{ article.text|linebreaks|striptags|truncatechars:160 }}
+            {% endautoescape %}
+        </p>
+    </div>
+
+</div>
+
+{% endif %}
     {% endfor %}
 </div>
 <h1 style="margin-top: 30px">{% trans "Найпопулярніші публікації" %}</h1>
 <div class="articles-container">
     {% for article in popular_articles reversed %}
 
-        {% if forloop.first %}
-        <div class="article-card">
-            <div class="card-image"
-                 style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
-            </div>
-            <div class="card-text">
-                <h3>
-                    <a href="{% url 'article' article.slug %}" style="text-decoration: none">
-                        {{ article.name|striptags|truncatechars:130 }}
-                    </a>
-                </h3>
-                <p>
-                    {% autoescape off %}
-                    {{ article.text|linebreaks|striptags|truncatechars:700 }}
-                    {% endautoescape %}
-                </p>
-            </div>
-        </div>
-        {% else %}
+    {% if forloop.first %}
 
-        <div class="article-card">
+<div class="article-card">
+
+    <div class="card-image-wrapper">
+
+        <a href="{% url 'article' article.slug %}" class="card-image-link">
             <div class="card-image"
-                 style="background: url('{{ article.image.url }}') no-repeat; background-size: cover; background-position: center">
+                 style="background: url('{{ article.image.url }}') no-repeat;
+                        background-size: cover;
+                        background-position: center">
             </div>
-            <div class="card-text">
-                <h3>
-                    <a href="{% url 'article' article.slug %}" style="text-decoration: none">
-                        {{ article.name|striptags|truncatechars:80 }}
-                    </a>
-                </h3>
-                <p>
-                    {% autoescape off %}
-                    {{ article.text|linebreaks|striptags|truncatechars:160 }}
-                    {% endautoescape %}
-                </p>
-            </div>
+        </a>
+
+        <div class="card-categories">
+            {% for category in article.categories.all %}
+            {% if current_language == "en" %}
+            <a href="{% url 'category_articles' category.slug %}"><p>{{ category.name_en }}</p></a>
+            {% else %}
+            <a href="{% url 'category_articles' category.slug %}"><p>{{ category.name_ua }}</p></a>
+            {% endif %}
+            {% endfor %}
         </div>
 
-        {% endif %}
+    </div>
 
-    {% endfor %}
+    <div class="card-text">
+        <h3>
+            <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                {{ article.name|striptags|truncatechars:130 }}
+            </a>
+        </h3>
+        <p>
+            {% autoescape off %}
+            {{ article.text|linebreaks|striptags|truncatechars:700 }}
+            {% endautoescape %}
+        </p>
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="article-card">
+
+    <div class="card-image-wrapper">
+
+        <a href="{% url 'article' article.slug %}" class="card-image-link">
+            <div class="card-image"
+                 style="background: url('{{ article.image.url }}') no-repeat;
+                        background-size: cover;
+                        background-position: center">
+            </div>
+        </a>
+
+        <div class="card-categories">
+            {% for category in article.categories.all %}
+            {% if current_language == "en" %}
+            <a href="{% url 'category_articles' category.slug %}"><p>{{ category.name_en }}</p></a>
+            {% else %}
+            <a href="{% url 'category_articles' category.slug %}"><p>{{ category.name_ua }}</p></a>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <div class="card-text">
+        <h3>
+            <a href="{% url 'article' article.slug %}" style="text-decoration: none">
+                {{ article.name|striptags|truncatechars:80 }}
+            </a>
+        </h3>
+        <p>
+            {% autoescape off %}
+            {{ article.text|linebreaks|striptags|truncatechars:160 }}
+            {% endautoescape %}
+        </p>
+    </div>
+
+</div>
+
+{% endif %}
+{% endfor %}
 </div>
 
 

@@ -75,6 +75,9 @@ body.light {
     /* Хедер */
 
     header {
+    position: fixed;
+    width: 100%;
+    z-index: 6;
     background-color: #282828;
 }
 
@@ -523,6 +526,62 @@ footer a {
         margin-top: auto;
     }
 
+    .card-image-wrapper {
+    position: relative;
+    height: 231px;
+}
+
+.card-image-link {
+    display: block;
+}
+
+.card-categories {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    z-index: 2;
+}
+
+.card-categories a {
+    pointer-events: auto;
+}
+
+.card-image-link {
+    pointer-events: auto;
+}
+
+.card-image-link {
+    position: relative;
+    z-index: 1;
+}
+
+.card-categories {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.card-image p,
+.card-categories p {
+    padding: 7px 8px;
+    background: #FDFBEE;
+    color: black;
+    border-radius: 10px;
+}
+
+.card-image-link,
+.card-image {
+    height: 100%;
+}
+
+
     /* Article cards: hover, active, focus  */
 
     .article-card {
@@ -872,11 +931,6 @@ h2 {
         background: rgba(0, 0, 0, 0.5);
     }
 
-header {
-    position: fixed;
-    width: 100%;
-    z-index: 2;
-}
 
 @media screen and (min-width: 1000px) {
    .article-features {
