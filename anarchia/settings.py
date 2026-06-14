@@ -108,10 +108,10 @@ DATABASE_URL = os.environ['DATABASE_URL']
 DATABASES = {  
     'default': {  
         'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'mfal7mt6wg076xrx',  
-        'USER': 'dk5wxeuhz7z83d4w',  
+        'NAME': 'bk25axpoodm6e690',  
+        'USER': 'rftx4ja0vervvc0f',  
         'PASSWORD': os.environ['DATABASE_PASSWORD'],  
-        'HOST': 'yvu4xahse0smimsc.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',  
+        'HOST': 'wyqk6x041tfxg39e.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',  
         'PORT': '3306',  
         'OPTIONS': {  
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
