@@ -213,3 +213,6 @@ SECURE_HSTS_PRELOAD = True
 # Captcha Settings
 RECAPTCHA_PUBLIC_KEY = '6LfAfk8sAAAAAPo1-n1eDxuzg9sToQeJ6RfIpSTz'
 RECAPTCHA_PRIVATE_KEY = '6LfAfk8sAAAAABJCsNLBneERMqfn0jCbqvD7NVGV'
+
+# Sessions
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
