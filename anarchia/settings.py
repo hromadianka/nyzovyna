@@ -103,15 +103,15 @@ WSGI_APPLICATION = 'anarchia.wsgi.application'
 #    }
 #}
 
-DATABASE_URL = os.environ['JAWSDB_GOLD_URL']
+DATABASE_URL = os.environ['DATABASE_URL']
 
 DATABASES = {  
     'default': {  
         'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'mfal7mt6wg076xrx',  
-        'USER': 'dk5wxeuhz7z83d4w',  
-        'PASSWORD': os.environ['JAWSDB_GOLD_PASSWORD'],  
-        'HOST': 'yvu4xahse0smimsc.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',  
+        'NAME': os.environ['DATABASE_NAME'],  
+        'USER': os.environ['DATABASE_USER'],  
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],  
+        'HOST': os.environ['DATABASE_HOST'],  
         'PORT': '3306',  
         'OPTIONS': {  
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
