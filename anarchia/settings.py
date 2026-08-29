@@ -182,8 +182,8 @@ del DATABASES['default']['OPTIONS']['sslmode']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'hiep0qnnm',
-    'API_KEY': '711931388182932',
+    'CLOUD_NAME': 'hscnkoqff',
+    'API_KEY': '367299551177912',
     'API_SECRET': os.environ['CLOUDINARY_SECRET'],
 }
 
