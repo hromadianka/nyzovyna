@@ -216,3 +216,12 @@ RECAPTCHA_PRIVATE_KEY = '6LfAfk8sAAAAABJCsNLBneERMqfn0jCbqvD7NVGV'
 
 # Sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+# Cache
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "site-menu-cache",
+    }
+}
