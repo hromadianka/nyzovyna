@@ -37,7 +37,7 @@
                         <ul class="sub-menu">
                             {% include 'recursive_menu.html' with category=category %}
                         </ul>
-                        {% endcache %}
+                       
                         {% endif %}
                     </li>
                     {% endif %}
@@ -45,6 +45,7 @@
                     <li><a href="{% url 'authors' %}" class="menu-link">{% trans "Автори" %}</a></li>
                     <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
                 </ul>
+                 {% endcache %}
                 <form action="{% url 'set_language' %}" method="post" class="language-form">
                     {% csrf_token %}
                     <input name="next" type="hidden" value="{{ request.path }}">
