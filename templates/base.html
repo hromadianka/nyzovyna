@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load cache %}
 
 <!DOCTYPE html>
 <html>
@@ -23,6 +24,7 @@
                     <div class="bar"></div>
                 </div>
                 <ul class="menu">
+                    {% cache 3600 site_menu current_language %}
                     {% for category in categories %}
                     {% if not category.parent %}
                     <li class="parent-category">
@@ -35,6 +37,7 @@
                         <ul class="sub-menu">
                             {% include 'recursive_menu.html' with category=category %}
                         </ul>
+                        {% endcache %}
                         {% endif %}
                     </li>
                     {% endif %}
@@ -83,6 +86,7 @@
                 </div>
             </div>
             <div class="footer-row2">
+                {% cache 3600 footer_categories current_language %}
                 {% for category in categories %}
                 {% if not category.parent %}
                 {% if current_language == "en" %}
@@ -92,6 +96,7 @@
                 {% endif %}
                 {% endif %}
                 {% endfor %}
+                {% endcache %}
             </div>
             <form method="GET" action="{% url 'article_search' %}" class="search-form">
                     <input
