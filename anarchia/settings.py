@@ -180,6 +180,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 django_heroku.settings(locals(), allowed_hosts=False)
 del DATABASES['default']['OPTIONS']['sslmode']
+# django_heroku rebuilds DATABASES from DATABASE_URL and drops OPTIONS, so pin the connection here.
+DATABASES['default']['OPTIONS'].update({
+    'charset': 'utf8mb4',
+    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+})
 
 
 CLOUDINARY_STORAGE = {
