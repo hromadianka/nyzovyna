@@ -1,6 +1,6 @@
 import re
 
-from .helpers import BASE_DIR, TEMPLATES_DIR, Base, html_of, mk_comment, seed_site
+from .helpers import BASE_DIR, TEMPLATES_DIR, Base, html_of, mk_article, mk_comment, seed_site
 
 PAGES = ['/', '/all', '/about-us', '/authors', '/authors/author-1', '/category/root/', '/article/seed-0/',
          '/search/?q=Title', '/login/']
@@ -86,3 +86,15 @@ class ScriptTargetTests(Base):
 
     def test_mobile_menu_toggle_state_is_exposed(self):
         self.assertIn('aria-expanded', html_of(self.get_ok('/')))
+
+
+class CabinetCardMarkupTests(Base):
+    def test_cabinet_card_titles_do_not_nest_a_paragraph_inside_the_heading(self):
+        self.login()
+        mk_article('card', name='Line one\nLine two', published=False)
+        html = html_of(self.get_ok('/editor-cabinet'))
+        self.assertNotRegex(html, r'<h3>\s*<a[^>]*>\s*<p>')
+
+    def test_cabinet_card_image_keeps_its_height_in_css(self):
+        css = (BASE_DIR / 'static' / 'style.css').read_text(encoding='utf-8')
+        self.assertIn('.card-content .card-image', css)
