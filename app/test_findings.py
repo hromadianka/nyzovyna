@@ -53,7 +53,8 @@ def make_editor():
 
 
 def table_queries(ctx, table):
-    return [q['sql'] for q in ctx.captured_queries if f'"{table}"' in q['sql']]
+    pattern = re.compile(r'["`]%s["`]' % table)
+    return [q['sql'] for q in ctx.captured_queries if pattern.search(q['sql'])]
 
 
 class Base(TestCase):
