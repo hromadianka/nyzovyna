@@ -51,3 +51,29 @@ class ProductionLoggingTests(SimpleTestCase):
     def test_log_lines_carry_a_timestamp_and_level(self):
         import logging
         self.assertRegex(self.emit('django.request', logging.ERROR), r'\d{4}-\d{2}-\d{2}.*ERROR')
+
+
+class DeploymentFilesTests(SimpleTestCase):
+    def read(self, name):
+        from pathlib import Path
+        return (Path(prod_settings().BASE_DIR) / name).read_text(encoding='utf-8')
+
+    def test_migrations_run_in_the_release_phase(self):
+        self.assertRegex(self.read('Procfile'), r'(?m)^release:\s*python manage.py migrate')
+
+    def test_web_process_sets_workers_timeout_and_request_logging(self):
+        web = [line for line in self.read('Procfile').splitlines() if line.startswith('web:')][0]
+        for flag in ('--workers', '--timeout', '--access-logfile', '--max-requests'):
+            with self.subTest(flag=flag):
+                self.assertIn(flag, web)
+
+    def test_menu_cache_expires_within_a_minute_so_workers_converge(self):
+        import re
+        base = self.read('templates/base.html')
+        for ttl in re.findall(r'{% cache (\d+) ', base):
+            with self.subTest(ttl=ttl):
+                self.assertLessEqual(int(ttl), 60)
+
+    def test_one_off_slug_rewrite_script_is_not_in_the_repository(self):
+        from pathlib import Path
+        self.assertFalse((Path(prod_settings().BASE_DIR) / 'fill_slugs.py').exists())
