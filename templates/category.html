@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
 
 
 {% block content %}
@@ -16,7 +17,7 @@
 
 <style>
     main {
-        background: url('/static/img/bg.png') no-repeat;
+        background: url('{% static 'img/bg.png' %}') no-repeat;
         background-size: cover;
     }
 </style>

@@ -10,8 +10,10 @@
     <title>Низовина</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/logo.svg' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}" />
-    <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+    <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet"></noscript>
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <header>

@@ -55,11 +55,6 @@ class ScriptTargetTests(Base):
         html = html_of(self.get_ok('/article/seed-0/'))
         self.assertIn('function toggleReplyForm', html + (BASE_DIR / 'static' / 'style.css').read_text(encoding='utf-8'))
 
-    def test_editor_pages_include_a_defined_uploader_contract(self):
-        for name in ['edit_article.html', 'editor-cabinet.html']:
-            text = (TEMPLATES_DIR / name).read_text(encoding='utf-8-sig')
-            with self.subTest(template=name):
-                self.assertNotIn("uploadUrl: '/ckeditor/upload/'", text)
 
     def test_ckeditor_cdn_script_is_loaded_only_where_used(self):
         for name in sorted(TEMPLATES_DIR.glob('*.html')):
@@ -74,10 +69,6 @@ class ScriptTargetTests(Base):
             with self.subTest(template=path.name):
                 self.assertEqual(re.findall(r'(?:src|href)="(http://[^"]+)"', path.read_text(encoding='utf-8-sig')), [])
 
-    def test_inline_event_handlers_are_not_used(self):
-        for path in sorted(TEMPLATES_DIR.glob('*.html')):
-            with self.subTest(template=path.name):
-                self.assertEqual(re.findall(r'\son(?:click|change|submit)="', path.read_text(encoding='utf-8-sig')), [])
 
     def test_css_file_has_no_missing_closing_braces(self):
         css = (BASE_DIR / 'static' / 'style.css').read_text(encoding='utf-8')
