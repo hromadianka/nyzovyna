@@ -60,6 +60,7 @@ SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'app.resilience.DatabaseUnavailableMiddleware',
+    'app.language.ContentLanguageMiddleware',
     'app.middleware.LoginThrottleMiddleware',
     'app.middleware.PermissionsPolicyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -150,6 +151,14 @@ LANGUAGES = [
 ]
 
 LANGUAGE_CODE = 'ua'
+
+# 'ua' is the code stored in Article.language and in visitors' cookies; Django only knows 'uk', so declare it.
+import django.conf.locale  # noqa: E402
+
+EXTRA_LANG_INFO = {
+    'ua': {'bidi': False, 'code': 'ua', 'name': 'Ukrainian', 'name_local': 'Українська'},
+}
+django.conf.locale.LANG_INFO = dict(django.conf.locale.LANG_INFO, **EXTRA_LANG_INFO)
 
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),

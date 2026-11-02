@@ -16,6 +16,7 @@
 
 <h1 style="margin-top: 10px">{% trans "Останні публікації" %}</h1>
 
+{% if not latest_articles %}<p>{% trans "Поки що немає статей" %}</p>{% endif %}
 <div class="articles-container">
 
     {% for article in latest_articles %}

@@ -1,17 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Nyzovyna interface translations.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Nyzovyna\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-14 03:44+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2026-11-02 12:00+0200\n"
+"Last-Translator: Nyzovyna team\n"
+"Language-Team: Nyzovyna team\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -126,3 +123,21 @@ msgstr "Confirm that you are not a robot and try again."
 #: app/views.py
 msgid "Вхід"
 msgstr "Sign in"
+
+msgid "Логін"
+msgstr "Login"
+
+msgid "Пароль"
+msgstr "Password"
+
+msgid "Увійти"
+msgstr "Sign in"
+
+msgid "Рекомендовані статті"
+msgstr "Recommended articles"
+
+msgid "Поки що немає статей"
+msgstr "No articles yet."
+
+msgid "Неправильний логін або пароль"
+msgstr "Wrong login or password"

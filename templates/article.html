@@ -88,7 +88,7 @@
             {% endif %}
 
             <div class="recommended-articles" style="padding-bottom: 40px; margin-top: 30px ">
-                <h2 style="margin-bottom: 25px">{% trans "Рекомендовані статті " %}</h2>
+                <h2 style="margin-bottom: 25px">{% trans "Рекомендовані статті" %}</h2>
 
                 <div class="articles-container">
                     {% for article in recommended_articles %}
@@ -124,7 +124,7 @@
                 <div class="comment">
                     <div style="display: flex; align-items: center; gap: 32px">
                         <p style="font-weight: bold">{{ comment.author }}</p>
-                        <p style="font-size: 16px; color: #828282">{{ comment.created_at|date:"d.m.Y" }}</p>
+                        <p style="font-size: 16px; color: #828282">{% if current_language == "en" %}{{ comment.created_at|date:"M j, Y" }}{% else %}{{ comment.created_at|date:"d.m.Y" }}{% endif %}</p>
                     </div>
                     <p style="font-size: 16px; margin: 10px 0;">{{ comment.text }}</p>
                     <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ comment.id }}')">

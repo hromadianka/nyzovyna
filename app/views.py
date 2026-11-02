@@ -18,6 +18,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.timezone import make_aware, now
 from django.utils.translation import get_language
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST, require_http_methods, require_safe
 
@@ -222,7 +223,7 @@ def comment(request):
     article = get_object_or_404(Article.objects.public(), pk=article_id)
 
     if not CommentCaptchaForm(request.POST).is_valid():
-        messages.error(request, _('Підтвердіть, що ви не робот, і спробуйте ще раз.'))
+        messages.error(request, gettext('Підтвердіть, що ви не робот, і спробуйте ще раз.'))
         return redirect('article', slug=article.slug)
 
     author = clean_text(request, 'author', 100)
@@ -285,7 +286,7 @@ def user_login(request):
             if target and url_has_allowed_host_and_scheme(target, {request.get_host()}, request.is_secure()):
                 return redirect(target)
             return redirect('editor_cabinet')
-        messages.error(request, 'Неправильний логін або пароль')
+        messages.error(request, gettext('Неправильний логін або пароль'))
     return render(request, 'login.html', {'meta': page_meta(request, _('Вхід'), noindex=True)})
 
 

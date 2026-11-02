@@ -6,7 +6,7 @@
 <div class="comment" style="margin-left: 60px;">
     <div style="display: flex; align-items: center; gap: 32px">
         <p style="font-weight: bold">{{ reply.author }}</p>
-        <p style="font-size: 16px; color: #828282">{{ reply.created_at|date:"d.m.Y" }}</p>
+        <p style="font-size: 16px; color: #828282">{% if current_language == "en" %}{{ reply.created_at|date:"M j, Y" }}{% else %}{{ reply.created_at|date:"d.m.Y" }}{% endif %}</p>
     </div>
     <p style="font-size: 16px; margin: 10px 0;">{{ reply.text }}</p>
     <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ reply.id }}')">
