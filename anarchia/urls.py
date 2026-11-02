@@ -24,6 +24,7 @@ from django.conf import settings
 from django.views.i18n import set_language
 from app.feeds import LatestPostsFeed
 from django.contrib.sitemaps.views import sitemap
+from django.views.decorators.http import require_safe
 from app.sitemaps import AboutUsSitemap, ArticleSitemap, AuthorSitemap
 
 sitemaps = {
@@ -37,7 +38,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('healthz', ops_views.healthz, name='healthz'),
     path('robots.txt', ops_views.robots_txt, name='robots_txt'),
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
+    path('sitemap.xml', require_safe(sitemap), {'sitemaps': sitemaps}, name='sitemap'),
     path('ckeditor/upload/', staff_member_required(ckeditor_upload), name='ckeditor_upload'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('set-language/', set_language, name='set_language'),
@@ -61,7 +62,7 @@ urlpatterns = [
     path('article/<slug:slug>/edit/', views.edit_article, name='edit_article'),
     path('create-category/', views.create_category, name='create_category'),
     path('about-us-edit', views.about_us_edit, name='about_us_edit'),
-    path('feed/', LatestPostsFeed(), name='post_feed'),
+    path('feed/', require_safe(LatestPostsFeed()), name='post_feed'),
     path('create_new_author/', views.create_new_author, name='create_new_author'),
     path('search/', views.article_search, name='article_search'),
     path('editor-cabinet/comments-moderation/', views.comments_moderation, name='comments_moderation'),

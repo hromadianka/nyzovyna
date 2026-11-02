@@ -19,7 +19,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.timezone import make_aware, now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.http import require_POST, require_http_methods, require_safe
 
 from .forms import CommentCaptchaForm
 from .menu_cache import invalidate_menu_cache
@@ -42,7 +42,7 @@ MAX_COMMENT_LENGTH = 5000
 MAX_SEARCH_LENGTH = 100
 MAX_ORDER_ITEMS = 1000
 INT32_MAX = 2 ** 31 - 1
-BOT_MARKERS = ('bot', 'crawl', 'spider', 'slurp')
+BOT_MARKERS = ('bot', 'crawl', 'spider', 'slurp', 'curl', 'wget', 'python-requests', 'httpclient', 'headless')
 
 
 def parse_uuid(value):
@@ -77,6 +77,8 @@ def should_count_view(request, article):
     agent = request.META.get('HTTP_USER_AGENT', '').lower()
     if any(marker in agent for marker in BOT_MARKERS):
         return False
+    if 'prefetch' in (request.headers.get('Purpose', '') + request.headers.get('Sec-Purpose', '')).lower():
+        return False
     return cache.add(f'viewed:{article.pk}:{client_id(request)}', 1, 30 * 60)
 
 
@@ -84,6 +86,7 @@ def paginate(request, queryset):
     return Paginator(queryset, PAGE_SIZE).get_page(request.GET.get('page'))
 
 
+@require_safe
 def index(request):
     public = Article.objects.public().filter(language=get_language()).prefetch_related('categories')
     return render(request, 'index.html', {
@@ -92,14 +95,17 @@ def index(request):
     })
 
 
+@require_safe
 def about_us(request):
     return render(request, 'about-us.html', {'about_us_text': AboutUsText.objects.filter(pk=1).first()})
 
 
+@require_safe
 def authors(request):
     return render(request, 'authors.html', {'authors': Author.objects.order_by('name_en')})
 
 
+@require_safe
 def category_articles(request, slug):
     category = get_object_or_404(Category, slug=slug)
     articles = Article.objects.public().filter(
@@ -108,6 +114,7 @@ def category_articles(request, slug):
     return render(request, 'category.html', {'this_category': category, 'articles': page, 'page_obj': page})
 
 
+@require_safe
 def all_articles(request):
     articles = Article.objects.public().filter(language=get_language()).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
@@ -133,11 +140,13 @@ def attach_replies(comments):
             shown_parent[comment.id].reply_list.append(comment)
 
 
+@require_safe
 def article_by_id(request, id):
     article = get_object_or_404(Article, pk=id)
     return redirect('article', slug=article.slug, permanent=True)
 
 
+@require_safe
 def article_detail(request, slug):
     try:
         article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
@@ -185,6 +194,7 @@ def article_detail(request, slug):
     })
 
 
+@require_http_methods(['GET', 'POST'])
 def comment(request):
     if request.method != 'POST':
         return redirect('/')
@@ -221,6 +231,7 @@ def comment(request):
     return redirect('article', slug=article.slug)
 
 
+@require_safe
 def author_detail(request, slug):
     author = get_object_or_404(Author, slug=slug)
     articles = Article.objects.public().filter(author=author).order_by('-publish_at', '-created_at')
@@ -228,6 +239,7 @@ def author_detail(request, slug):
     return render(request, 'author_detail.html', {'author': author, 'author_articles': page, 'page_obj': page})
 
 
+@require_safe
 def article_search(request):
     if hit('search', request, limit=60, window=60):
         return HttpResponse('Too many searches. Try again later.', status=429)
@@ -369,6 +381,7 @@ def delete_article(request, slug):
 
 
 @editor_required
+@require_http_methods(['GET', 'POST'])
 def create_category(request):
     if request.method != 'POST':
         return render(request, 'editor-cabinet.html')
@@ -455,6 +468,7 @@ def author_fields(request, prefix):
 
 
 @editor_required
+@require_http_methods(['GET', 'POST'])
 def create_new_author(request):
     if request.method != 'POST':
         return render(request, 'editor-cabinet.html')

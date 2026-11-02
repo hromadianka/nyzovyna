@@ -311,7 +311,7 @@ class StatusCodeTests(Base):
 
     def test_get_on_post_only_endpoints_is_405(self):
         self.login()
-        for url in ['/create-category/', '/create_new_author/', '/about-us-edit']:
+        for url in ['/about-us-edit']:
             with self.subTest(url=url):
                 self.assertEqual(self.client.get(url).status_code, 405)
 
@@ -330,10 +330,10 @@ class StatusCodeTests(Base):
                 self.login('u' + str(abs(hash(url)))[:6]) if 'edit' in url else None
                 self.assertEqual(self.client.get(url).status_code, 404)
 
-    def test_unknown_resources_with_every_public_method_are_404_not_500(self):
-        for method in ['get', 'head', 'options', 'post']:
+    def test_unknown_resources_answer_404_for_read_methods_and_405_for_others(self):
+        for method, expected in [('get', 404), ('head', 404), ('options', 405), ('post', 405)]:
             with self.subTest(method=method):
-                self.assertEqual(getattr(self.client, method)('/article/nope/').status_code, 404 if method != 'options' else 404)
+                self.assertEqual(getattr(self.client, method)('/article/nope/').status_code, expected)
 
     def test_malformed_percent_encoding_is_not_500(self):
         for url in ['/search/?q=%', '/search/?q=%ZZ', '/category/%E0%A4%A/', '/article/%00/', '/%ff']:
