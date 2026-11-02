@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.admin.views.decorators import staff_member_required
+from app.ckeditor_views import ckeditor_upload
 from django.urls import path, include
 from app import views
 from django.conf.urls.static import static
@@ -34,6 +36,7 @@ sitemaps = {
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
+    path('ckeditor/upload/', staff_member_required(ckeditor_upload), name='ckeditor_upload'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('set-language/', set_language, name='set_language'),
     #path('captcha/', include("captcha.urls")),
