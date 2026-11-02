@@ -74,7 +74,7 @@ class Category(models.Model):
     name_en = models.CharField(max_length=100)
     #slug = models.SlugField(max_length=200, blank=True, null=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children')
     order = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
@@ -112,7 +112,7 @@ class ArticleQuerySet(models.QuerySet):
 
 class Article(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, blank=True, related_name='articles')
+    author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True, blank=True, related_name='articles')
     name = models.TextField()
     #slug = models.SlugField(max_length=200, blank=True, null=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True, null=True)
