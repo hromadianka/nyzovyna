@@ -144,3 +144,15 @@ msgstr "Wrong login or password"
 
 msgid "Меню"
 msgstr "Menu"
+
+msgid "Новіші"
+msgstr "Newer"
+
+msgid "Старіші"
+msgstr "Older"
+
+msgid "Назад"
+msgstr "Previous"
+
+msgid "Далі"
+msgstr "Next"

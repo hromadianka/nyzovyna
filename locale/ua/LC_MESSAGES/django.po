@@ -143,3 +143,15 @@ msgstr "Неправильний логін або пароль"
 
 msgid "Меню"
 msgstr "Меню"
+
+msgid "Новіші"
+msgstr "Новіші"
+
+msgid "Старіші"
+msgstr "Старіші"
+
+msgid "Назад"
+msgstr "Назад"
+
+msgid "Далі"
+msgstr "Далі"
