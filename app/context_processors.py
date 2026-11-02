@@ -1,7 +1,7 @@
 from django.utils.functional import SimpleLazyObject
 from django.utils.translation import get_language
 
-from .models import Category
+from .models import MAX_CATEGORY_DEPTH, Category
 
 
 def build_menu_tree():
@@ -15,7 +15,18 @@ def build_menu_tree():
     for siblings in by_parent.values():
         for category in siblings:
             category.menu_children = by_parent.get(category.id, [])
-    return by_parent.get(None, [])
+    roots = by_parent.get(None, [])
+    # the menu template recurses; cut anything deeper than the model allows (and any cycle)
+    level, seen = roots, set()
+    for _ in range(MAX_CATEGORY_DEPTH):
+        next_level = []
+        for category in level:
+            seen.add(category.id)
+            next_level.extend(child for child in category.menu_children if child.id not in seen)
+        level = next_level
+    for category in level:
+        category.menu_children = []
+    return roots
 
 
 def categories(request):
