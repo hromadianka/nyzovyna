@@ -12,10 +12,12 @@ for key, value in {
 from anarchia.settings import *  # noqa: E402,F401,F403
 
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': ':memory:'}}
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 ALLOWED_HOSTS = ['*']
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
 SECURE_SSL_REDIRECT = False
 
 import atexit  # noqa: E402

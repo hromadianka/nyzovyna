@@ -12,7 +12,7 @@ from .base import REPO, SecBase, add_cases, known_open, tracked_files
 
 # package -> (pinned-version advisories, minimum version fixing all of them)
 MIN_SAFE = {
-    'django': (91, '4.2.30'), 'pillow': (76, '13.0.0'), 'urllib3': (18, '2.8.0'), 'cryptography': (16, '49.0.0'),
+    'django': (91, '5.2.18'), 'pillow': (76, '13.0.0'), 'urllib3': (18, '2.8.0'), 'cryptography': (16, '49.0.0'),
     'pyasn1': (12, '0.6.5'), 'sqlparse': (12, '0.6.0'), 'requests': (8, '2.33.0'), 'jwcrypto': (6, '1.5.7'),
     'certifi': (4, '2026.10.18'), 'gunicorn': (4, '22.0.0'), 'idna': (4, '3.15'), 'protobuf': (4, '6.33.5'),
     'setuptools': (3, '84.1.0'), 'httplib2': (2, '0.32.0'), 'pycryptodome': (1, '3.19.1'), 'wheel': (1, '0.46.2'),
@@ -58,6 +58,8 @@ class KnownVulnerableVersions(SecBase):
 
 @add_cases(KnownVulnerableVersions, 'pinned_version_has_no_known_advisories', {k: k for k in MIN_SAFE})
 def _pinned(self, name):
+    if name not in parse_requirements():
+        return  # dropped from requirements.txt
     operator, version, line = parse_requirements()[name]
     count, safe = MIN_SAFE[name]
     self.assertEqual(operator, '==')
@@ -71,6 +73,8 @@ class UnusedPackages(SecBase):
 
 @add_cases(UnusedPackages, 'requirement_is_imported_by_the_project', {k: k for k in SUSPECT_UNUSED})
 def _unused(self, name):
+    if name.lower() not in parse_requirements():
+        return  # dropped from requirements.txt
     module = SUSPECT_UNUSED[name]
     sources = project_sources()
     used = re.search(rf'(^|\s)(import|from)\s+{re.escape(module)}\b|[\'"]{re.escape(module)}[\'".]', sources, re.M)
@@ -98,7 +102,7 @@ class RequirementHygiene(SecBase):
     def test_runtime_python_is_supported_by_pinned_django(self):
         python = re.search(r'python-(\d+)\.(\d+)', (REPO / 'runtime.txt').read_text()).groups()
         django = parse_requirements()['django'][1]
-        supported = {'4.2': {(3, 8), (3, 9), (3, 10), (3, 11), (3, 12)}}[django.rsplit('.', 1)[0]]
+        supported = {'4.2': {(3, 8), (3, 9), (3, 10), (3, 11), (3, 12)}, '5.2': {(3, 10), (3, 11), (3, 12), (3, 13)}}[django.rsplit('.', 1)[0]]
         self.assertIn((int(python[0]), int(python[1])), supported, f'runtime.txt asks for Python {".".join(python)}, which Django {django} does not support (security fixes are not tested there)')
 
     def test_ckeditor4_is_not_in_use(self):
@@ -136,9 +140,21 @@ class FrontendSupplyChain(SecBase):
         self.assertGreaterEqual(version, (3, 5, 0), 'jQuery < 3.5.0 has known XSS issues (CVE-2020-11022/11023)')
 
 
-# Open findings: dependency changes need an explicit decision (see docs/security/AUDIT.md, section 7).
-known_open(KnownVulnerableVersions, 'test_pinned_version')
-known_open(UnusedPackages, 'test_requirement_is_imported')
-known_open(RequirementHygiene, 'test_every_requirement', 'test_requirements_carry', 'test_only_one_mysql',
-           'test_runtime_python', 'test_ckeditor4')
+# Open findings: SRI hashes need network access, hashes in requirements.txt need pip-compile, CKEditor 4 needs replacing.
+known_open(RequirementHygiene, 'test_requirements_carry', 'test_ckeditor4')
 known_open(FrontendSupplyChain, 'test_external_scripts', 'test_external_stylesheets')
+
+
+class FrameworkCompatibility(SecBase):
+    def test_admin_forms_with_ckeditor_widget_render(self):
+        client = self.make_client(self.staff_user)
+        for path in ('/admin/app/article/add/', f'/admin/app/article/{self.article.pk}/change/', '/admin/app/aboutustext/'):
+            with self.subTest(path=path):
+                self.assertEqual(client.get(path).status_code, 200)
+
+    def test_storage_settings_use_the_storages_dict(self):
+        from .base import prod_settings
+        prod = prod_settings()
+        self.assertFalse(hasattr(prod, 'DEFAULT_FILE_STORAGE'), 'DEFAULT_FILE_STORAGE is ignored since Django 5.1')
+        self.assertIn('cloudinary', prod.STORAGES['default']['BACKEND'])
+        self.assertIn('whitenoise', prod.STORAGES['staticfiles']['BACKEND'])

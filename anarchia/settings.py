@@ -181,7 +181,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_heroku.settings(locals(), allowed_hosts=False)
 del DATABASES['default']['OPTIONS']['sslmode']
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'hscnkoqff',
@@ -189,7 +188,10 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ['CLOUDINARY_SECRET'],
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    'default': {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
 # CKEditor Settings
 CKEDITOR_UPLOAD_PATH = 'uploads/'
