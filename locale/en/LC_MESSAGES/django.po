@@ -141,3 +141,6 @@ msgstr "No articles yet."
 
 msgid "Неправильний логін або пароль"
 msgstr "Wrong login or password"
+
+msgid "Меню"
+msgstr "Menu"

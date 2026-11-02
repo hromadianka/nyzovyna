@@ -31,21 +31,21 @@
 <body>
     <header>
         <div class="container">
-            <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.svg' %}" /></a>
+            <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.svg' %}" alt="Низовина" /></a>
             <div class="burger-menu">
-                <div class="burger-icon">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
+                <button type="button" class="burger-icon" aria-label="{% trans 'Меню' %}" aria-expanded="false">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
                 <ul class="menu">
                     {% cache 3600 site_menu current_language %}
                     {% for category in menu_categories %}
                     <li class="parent-category">
                         {% if current_language == "en" %}
-                        <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_en }}</a>
+                        <a href="{% url 'category_articles' category.slug %}" class="menu-link"{% if category.menu_children %} aria-haspopup="true"{% endif %}>{{ category.name_en }}</a>
                         {% else %}
-                        <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_ua }}</a>
+                        <a href="{% url 'category_articles' category.slug %}" class="menu-link"{% if category.menu_children %} aria-haspopup="true"{% endif %}>{{ category.name_ua }}</a>
                         {% endif %}
                         {% if category.menu_children %}
                         <ul class="sub-menu">
@@ -90,7 +90,7 @@
     <footer>
         <div class="container">
             <div class="footer-row1">
-                <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.svg' %}" /></a>
+                <a href="{% url 'home' %}" class="logo"><img style="width: 100%" src="{% static 'img/logo.svg' %}" alt="Низовина" /></a>
                 <div>
                     <a href="{% url 'post_feed' %}">RSS feed</a>
                     <a href="https://www.instagram.com/magazine_nyzovyna?igsh=MWgwZHB2cWFucXZ5eg==">{% trans "Instagram" %}</a>
@@ -114,10 +114,11 @@
                         type="text"
                         name="q"
                         class="form-field"
+                        aria-label="{% trans 'Пошук' %}"
                         placeholder="{% trans 'Пошук' %}..."
                         value="{{ query|default:'' }}"
                     >
-                    <button type="submit" class="search-button">
+                    <button type="submit" class="search-button" aria-label="{% trans 'Пошук' %}">
                        <svg xmlns="http://www.w3.org/2000/svg" height="27px" viewBox="0 -960 960 960" width="27px" fill="#1f1f1f"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                     </button>
                 </form>
@@ -139,7 +140,8 @@
             const menu = document.querySelector(".menu");
 
             burgerIcon.addEventListener("click", function () {
-                menu.classList.toggle("active");
+                const open = menu.classList.toggle("active");
+                burgerIcon.setAttribute("aria-expanded", open ? "true" : "false");
                 bodyElement.classList.toggle("overflow-hidden")
             });
         });
@@ -221,6 +223,9 @@
         .sub-menu {
             display: none;
             z-index: 3;
+        }
+        .parent-category:focus-within > .sub-menu {
+            display: flex;
         }
     </style>
 

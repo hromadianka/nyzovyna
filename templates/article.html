@@ -75,12 +75,12 @@
                 {% endif %}
                 {% if current_language == "en" %}
                 <div>
-                    <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' article.author.slug %}">{{ article.author.name_en }}</a></h3>
+                    <h2><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' article.author.slug %}">{{ article.author.name_en }}</a></h2>
                     <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ article.author.description_en|linebreaks|striptags|truncatechars:30 }}</p>
                 </div>
                 {% else %}
                 <div>
-                    <h3><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' article.author.slug %}">{{ article.author.name_ua }}</a></h3>
+                    <h2><a style="text-decoration: none; line-height: 100%" href="{% url 'author_detail' article.author.slug %}">{{ article.author.name_ua }}</a></h2>
                     <p style="font-size: 12px; opacity: 50%; margin: 0; line-height: 100%">{{ article.author.description_ua|linebreaks|striptags|truncatechars:30 }}</p>
                 </div>
                 {% endif %}
@@ -127,19 +127,19 @@
                         <p style="font-size: 16px; color: #828282">{% if current_language == "en" %}{{ comment.created_at|date:"M j, Y" }}{% else %}{{ comment.created_at|date:"d.m.Y" }}{% endif %}</p>
                     </div>
                     <p style="font-size: 16px; margin: 10px 0;">{{ comment.text }}</p>
-                    <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ comment.id }}')">
+                    <button type="button" style="text-decoration: none; color: gray; cursor: pointer; background: none; border: 0; padding: 0; font: inherit" onclick="toggleReplyForm('{{ comment.id }}')">
                         <span style="font-size: 1.4em">&#x21A9;</span>
                         {{ translate.reply }}
-                    </a>
+                    </button>
                 </div>
                 <div class="comment-form reply-form" id="reply-form-{{ comment.id }}" style="display: none; margin-left: 100px; margin-top: 20px;">
                     <form action="{% url 'comment' %}" method="POST" class="comment-form">
                         {% csrf_token %}
                         <input hidden value="{{ comment.id }}" name="parent_comment_id">
                         <input hidden value="{{article.id}}" name="article_id" />
-                        <input class="comment-input-name" type="text" placeholder="{{ translate.enter_name }}" required name="author" />
-                        <textarea class="comment-input-text" placeholder="{{ translate.enter_comment }}" required name="text">{{ comment.author }}, </textarea>
-                        {{ captcha_form.captcha }}
+                        <input class="comment-input-name" type="text" placeholder="{{ translate.enter_name }}" aria-label="{{ translate.enter_name }}" required name="author" />
+                        <textarea class="comment-input-text" placeholder="{{ translate.enter_comment }}" aria-label="{{ translate.enter_comment }}" required name="text">{{ comment.author }}, </textarea>
+                        <div class="captcha-slot" id="captcha-slot-{{ comment.id }}"></div>
                         <button class="comment-btn" type="submit">{{ translate.reply }}</button>
                     </form>
                 </div>
@@ -160,15 +160,17 @@
 
     <input class="comment-input-name"
            placeholder="{{ translate.enter_name }}"
+           aria-label="{{ translate.enter_name }}"
            required
            name="author" />
 
     <textarea class="comment-input-text"
               placeholder="{{ translate.enter_comment }}"
+              aria-label="{{ translate.enter_comment }}"
               required
               name="text"></textarea>
 
-    {{ captcha_form.captcha }}
+    <div id="main-captcha-slot"><div id="shared-captcha">{{ captcha_form.captcha }}</div></div>
 
     <button class="comment-btn" type="submit">
         {% trans "Залишити коментар" %}
@@ -182,9 +184,12 @@
 <script>
     function toggleReplyForm(id) {
         var form = document.getElementById('reply-form-' + id);
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
+        var captcha = document.getElementById('shared-captcha');
+        if (!form) return;
+        var opening = form.style.display === 'none';
+        form.style.display = opening ? 'block' : 'none';
+        var slot = opening ? document.getElementById('captcha-slot-' + id) : document.getElementById('main-captcha-slot');
+        if (captcha && slot) slot.appendChild(captcha);
     }
 </script>
 

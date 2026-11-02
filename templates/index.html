@@ -27,7 +27,7 @@
 
     <div class="card-image-wrapper">
 
-        <a href="{% url 'article' article.slug %}" class="card-image-link">
+        <a href="{% url 'article' article.slug %}" class="card-image-link" aria-label="{{ article.name|striptags|truncatechars:80 }}">
             <div class="card-image"
                  style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;
@@ -48,7 +48,7 @@
     </div>
 
     <div class="card-text">
-        <h3>
+        <h2>
             <a href="{% url 'article' article.slug %}" style="text-decoration: none">
                 {{ article.name|striptags|truncatechars:130 }}
             </a>
@@ -68,7 +68,7 @@
 
     <div class="card-image-wrapper">
 
-        <a href="{% url 'article' article.slug %}" class="card-image-link">
+        <a href="{% url 'article' article.slug %}" class="card-image-link" aria-label="{{ article.name|striptags|truncatechars:80 }}">
             <div class="card-image"
                  style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;
@@ -89,7 +89,7 @@
     </div>
 
     <div class="card-text">
-        <h3>
+        <h2>
             <a href="{% url 'article' article.slug %}" style="text-decoration: none">
                 {{ article.name|striptags|truncatechars:80 }}
             </a>
@@ -106,7 +106,7 @@
 {% endif %}
     {% endfor %}
 </div>
-<h1 style="margin-top: 30px">{% trans "Найпопулярніші публікації" %}</h1>
+<h2 style="margin-top: 30px">{% trans "Найпопулярніші публікації" %}</h2>
 <div class="articles-container">
     {% for article in popular_articles %}
 
@@ -116,7 +116,7 @@
 
     <div class="card-image-wrapper">
 
-        <a href="{% url 'article' article.slug %}" class="card-image-link">
+        <a href="{% url 'article' article.slug %}" class="card-image-link" aria-label="{{ article.name|striptags|truncatechars:80 }}">
             <div class="card-image"
                  style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;
@@ -157,7 +157,7 @@
 
     <div class="card-image-wrapper">
 
-        <a href="{% url 'article' article.slug %}" class="card-image-link">
+        <a href="{% url 'article' article.slug %}" class="card-image-link" aria-label="{{ article.name|striptags|truncatechars:80 }}">
             <div class="card-image"
                  style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;

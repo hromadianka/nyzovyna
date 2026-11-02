@@ -29,7 +29,7 @@
         {% if forloop.first %}
     <div class="article-card">
 
-        <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px">
+        <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px" aria-label="{{ article.name|striptags|truncatechars:80 }}">
             <div class="card-image"
                  style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;
@@ -38,7 +38,7 @@
         </a>
 
         <div class="card-text">
-            <h3>
+            <h2>
                 <a href="{% url 'article' article.slug %}" style="text-decoration: none">
                     {{ article.name|striptags|truncatechars:130 }}
                 </a>
@@ -54,7 +54,7 @@
 
     <div class="article-card">
 
-        <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px">
+        <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px" aria-label="{{ article.name|striptags|truncatechars:80 }}">
             <div class="card-image"
                  style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;
@@ -63,7 +63,7 @@
         </a>
 
         <div class="card-text">
-            <h3>
+            <h2>
                 <a href="{% url 'article' article.slug %}" style="text-decoration: none">
                     {{ article.name|striptags|truncatechars:80 }}
                 </a>

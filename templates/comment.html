@@ -9,10 +9,10 @@
         <p style="font-size: 16px; color: #828282">{% if current_language == "en" %}{{ reply.created_at|date:"M j, Y" }}{% else %}{{ reply.created_at|date:"d.m.Y" }}{% endif %}</p>
     </div>
     <p style="font-size: 16px; margin: 10px 0;">{{ reply.text }}</p>
-    <a style="text-decoration: none; color: gray; cursor: pointer" onclick="toggleReplyForm('{{ reply.id }}')">
+    <button type="button" style="text-decoration: none; color: gray; cursor: pointer; background: none; border: 0; padding: 0; font: inherit" onclick="toggleReplyForm('{{ reply.id }}')">
         <span style="font-size: 1.4em">&#x21A9;</span>
         {{ translate.reply }}
-    </a>
+    </button>
 </div>
 
 <div class="comment-form reply-form" id="reply-form-{{ reply.id }}" style="display: none; margin-top: 20px; margin-left: 60px;">
@@ -20,9 +20,9 @@
         {% csrf_token %}
         <input hidden value="{{ reply.id }}" name="parent_comment_id">
         <input hidden value="{{article.id}}" name="article_id" />
-        <input class="comment-input-name" type="text" placeholder="{{ translate.enter_name }}" required name="author" />
-        <textarea class="comment-input-text" placeholder="{{ translate.enter_comment }}" required name="text">{{ reply.author }}, </textarea>
-        {{ captcha_form.captcha }}
+        <input class="comment-input-name" type="text" placeholder="{{ translate.enter_name }}" aria-label="{{ translate.enter_name }}" required name="author" />
+        <textarea class="comment-input-text" placeholder="{{ translate.enter_comment }}" aria-label="{{ translate.enter_comment }}" required name="text">{{ reply.author }}, </textarea>
+        <div class="captcha-slot" id="captcha-slot-{{ reply.id }}"></div>
         <button class="comment-btn" type="submit">{{ translate.reply }}</button>
     </form>
 </div>
