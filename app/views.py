@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import F, Q
 from django.http import Http404, HttpResponse, JsonResponse
@@ -24,6 +25,7 @@ from .sanitize import sanitize_html
 from .uploads import validate_image
 
 MAX_REPLY_DEPTH = 5
+PAGE_SIZE = 24
 MAX_COMMENT_LENGTH = 5000
 MAX_SEARCH_LENGTH = 100
 MAX_ORDER_ITEMS = 1000
@@ -66,6 +68,10 @@ def should_count_view(request, article):
     return cache.add(f'viewed:{article.pk}:{client_id(request)}', 1, 30 * 60)
 
 
+def paginate(request, queryset):
+    return Paginator(queryset, PAGE_SIZE).get_page(request.GET.get('page'))
+
+
 def index(request):
     public = Article.objects.public().filter(language=get_language()).prefetch_related('categories')
     return render(request, 'index.html', {
@@ -79,18 +85,21 @@ def about_us(request):
 
 
 def authors(request):
-    return render(request, 'authors.html', {'authors': Author.objects.all()})
+    return render(request, 'authors.html', {'authors': Author.objects.order_by('name_en')})
 
 
 def category_articles(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    articles = Article.objects.public().filter(language=get_language(), categories__in=[category])
-    return render(request, 'category.html', {'this_category': category, 'articles': articles})
+    articles = Article.objects.public().filter(
+        language=get_language(), categories__in=[category]).order_by('-publish_at', '-created_at')
+    page = paginate(request, articles)
+    return render(request, 'category.html', {'this_category': category, 'articles': page, 'page_obj': page})
 
 
 def all_articles(request):
-    articles = Article.objects.public().filter(language=get_language())
-    return render(request, 'category.html', {'articles': articles})
+    articles = Article.objects.public().filter(language=get_language()).order_by('-publish_at', '-created_at')
+    page = paginate(request, articles)
+    return render(request, 'category.html', {'articles': page, 'page_obj': page})
 
 
 def attach_replies(comments):
@@ -186,8 +195,9 @@ def comment(request):
 
 def author_detail(request, slug):
     author = get_object_or_404(Author, slug=slug)
-    author_articles = Article.objects.public().filter(author=author)
-    return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
+    articles = Article.objects.public().filter(author=author).order_by('-publish_at', '-created_at')
+    page = paginate(request, articles)
+    return render(request, 'author_detail.html', {'author': author, 'author_articles': page, 'page_obj': page})
 
 
 def article_search(request):
@@ -195,11 +205,13 @@ def article_search(request):
         return HttpResponse('Too many searches. Try again later.', status=429)
     query = request.GET.get('q', '').strip()[:MAX_SEARCH_LENGTH]
 
-    results = Article.objects.public()
     if query:
-        results = results.filter(Q(name__icontains=query) | Q(text__icontains=query))
-
-    return render(request, 'search.html', {'query': query, 'results': results})
+        matches = Article.objects.public().filter(language=get_language()).filter(
+            Q(name__icontains=query) | Q(text__icontains=query)).order_by('-publish_at', '-created_at')
+    else:
+        matches = Article.objects.none()
+    page = paginate(request, matches)
+    return render(request, 'search.html', {'query': query, 'results': page, 'page_obj': page})
 
 
 def user_login(request):
@@ -413,7 +425,7 @@ def edit_author(request, slug):
 
 @editor_required
 def comments_moderation(request):
-    comments = Comment.objects.select_related('article', 'parent_comment')
+    comments = Comment.objects.select_related('article', 'parent_comment').order_by('-created_at')
     return render(request, 'comments_moderation.html', {'comments': comments})
 
 

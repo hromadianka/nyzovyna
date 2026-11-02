@@ -110,3 +110,11 @@ msgstr "Search Results"
 
 msgid "Пошук"
 msgstr "Search"
+
+#: templates/search.html
+msgid "Нічого не знайдено"
+msgstr "Nothing found"
+
+#: templates/search.html
+msgid "Введіть запит у полі пошуку"
+msgstr "Enter a search query"

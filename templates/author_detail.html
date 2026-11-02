@@ -27,7 +27,7 @@
 {% endif %}
 <div class="articles-container" style="margin-top: 35px">
 
-    {% for article in author_articles reversed %}
+    {% for article in author_articles %}
 
     {% if forloop.first %}
     <div class="article-card">
@@ -84,5 +84,7 @@
 {% endfor %}
 
 </div>
+
+{% include 'pagination.html' %}
 
 {% endblock %}

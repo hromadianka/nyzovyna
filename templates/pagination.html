@@ -1,0 +1,11 @@
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="Pagination">
+    {% if page_obj.has_previous %}
+    <a rel="prev" href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% if current_language == "en" %}Previous{% else %}Назад{% endif %}</a>
+    {% endif %}
+    <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a rel="next" href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% if current_language == "en" %}Next{% else %}Далі{% endif %}</a>
+    {% endif %}
+</nav>
+{% endif %}

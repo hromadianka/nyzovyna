@@ -5,9 +5,13 @@
 
 <h1>{% trans "Результати пошуку" %}</h1>
 
+{% if not results %}
+<p>{% if query %}{% trans "Нічого не знайдено" %}{% else %}{% trans "Введіть запит у полі пошуку" %}{% endif %}</p>
+{% endif %}
+
 <div class="articles-container">
 
-    {% for article in results reversed %}
+    {% for article in results %}
 
         {% if forloop.first %}
         <div class="article-card">
@@ -54,5 +58,7 @@
 </div>
 
 
+
+{% include 'pagination.html' %}
 
 {% endblock %}

@@ -297,7 +297,7 @@ class AuthorAndAboutTests(Base):
 
     def test_authors_list_is_ordered_deterministically(self):
         for s in ['b', 'a', 'c']:
-            mk_author(s, name_en=f'Name {s}')
+            mk_author(s, name_en=f'Name {s}', name_ua=f'Name {s}')
         html = html_of(self.get_ok('/authors'))
         self.in_order(html, 'Name a', 'Name b', 'Name c')
 
