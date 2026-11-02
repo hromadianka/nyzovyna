@@ -155,30 +155,23 @@
 
             parentCategories.forEach(function (category) {
                 const subMenu = category.querySelector('.sub-menu');
+                const link = category.querySelector('a');
+                if (!subMenu) return;
 
                 if (window.innerWidth <= 768) {
-                    category.addEventListener('click', function (event) {
-                        event.preventDefault();
-                        var link = event.currentTarget.querySelector('a');
-                        if (link) {
-                            var href = link.getAttribute('href');
-                        }
-
-
-                        if (subMenu) {
+                    link.addEventListener('click', function (event) {
+                        // First tap opens the submenu, second tap on the open item follows the link.
+                        if (subMenu.style.display !== 'flex') {
+                            event.preventDefault();
+                            event.stopPropagation();
                             subMenu.style.display = 'flex';
-                        } else {
-                            window.location.href = href;
+                            link.setAttribute('aria-expanded', 'true');
                         }
-
-
                     });
                 } else {
                     category.addEventListener('mouseenter', function () {
-                        if (subMenu) {
-                            clearTimeout(subMenuTimeout);
-                            subMenu.style.display = 'flex';
-                        }
+                        clearTimeout(subMenuTimeout);
+                        subMenu.style.display = 'flex';
                     });
 
                     category.addEventListener('mouseleave', function () {
@@ -187,19 +180,12 @@
                         }, 400);
                     });
 
-                    if (subMenu) {
-                        subMenu.addEventListener('mouseenter', function () {
-                            clearTimeout(subMenuTimeout);
-                        });
-
-                        subMenu.addEventListener('mouseleave', function () {
-                            subMenu.style.display = 'none';
-                        });
-                    }
+                    subMenu.addEventListener('mouseenter', function () {
+                        clearTimeout(subMenuTimeout);
+                    });
                 }
             });
         });
-
     </script>
 
     <script>
