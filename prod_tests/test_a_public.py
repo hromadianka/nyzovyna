@@ -66,7 +66,9 @@ class HomeTests(Base):
         self.assertNotIn('/article/future/', html_of(self.get_ok('/')))
 
     def test_scheduled_article_appears_after_its_time_without_external_job(self):
-        mk_article('sched', published=False, publish_at=now() - timedelta(minutes=5))
+        article = mk_article('sched', publish_at=now() + timedelta(hours=2))
+        self.assertNotIn('/article/sched/', html_of(self.get_ok('/')))
+        type(article).objects.filter(pk=article.pk).update(publish_at=now() - timedelta(minutes=1))
         self.assertIn('/article/sched/', html_of(self.get_ok('/')))
 
     def test_article_without_image_renders_home(self):

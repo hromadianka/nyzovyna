@@ -250,7 +250,6 @@ def parse_article_form(request):
             publish_at = make_aware(datetime.strptime(publish_datetime, '%Y-%m-%dT%H:%M'))
         except (ValueError, OverflowError):
             return None, 'Невірна дата публікації.'
-        is_published = False
 
     image = request.FILES.get('article_image')
     if image is not None:
@@ -268,8 +267,8 @@ def parse_article_form(request):
 @editor_required
 def editor_cabinet(request):
     return render(request, 'editor-cabinet.html', {
-        'articles': Article.objects.filter(is_published=True).prefetch_related('categories'),
-        'unpublished_articles': Article.objects.filter(is_published=False).prefetch_related('categories'),
+        'articles': Article.objects.public().prefetch_related('categories'),
+        'unpublished_articles': Article.objects.exclude(is_published=True, publish_at__lte=now()).prefetch_related('categories'),
         'about_us_text': AboutUsText.objects.filter(pk=1).first(),
         'authors': Author.objects.all(),
     })

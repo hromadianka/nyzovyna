@@ -117,8 +117,15 @@ class PublishTests(Base):
     def test_publish_schedule_creates_hidden_article(self):
         self.post(article_slug='sch', publish_option='schedule', publish_datetime='2099-01-01T10:00')
         article = Article.objects.get(slug='sch')
-        self.assertFalse(article.is_published)
-        self.assertEqual(self.client.logout() or self.client.get('/article/sch/').status_code, 404)
+        self.assertGreater(article.publish_at, now())
+        self.client.logout()
+        self.assertEqual(self.client.get('/article/sch/').status_code, 404)
+
+    def test_scheduled_article_needs_no_external_job_to_go_live(self):
+        self.post(article_slug='sch2', publish_option='schedule', publish_datetime='2099-01-01T10:00')
+        Article.objects.filter(slug='sch2').update(publish_at=now() - timedelta(minutes=1))
+        self.client.logout()
+        self.assertEqual(self.client.get('/article/sch2/').status_code, 200)
 
     def test_scheduled_article_goes_live_by_command_after_time(self):
         past = now() - timedelta(minutes=1)
@@ -147,11 +154,6 @@ class PublishTests(Base):
         a.refresh_from_db()
         self.assertTrue(a.is_published)
 
-    def test_publish_command_is_wired_to_a_scheduler(self):
-        from .helpers import BASE_DIR
-        wired = any('publish_articles' in (BASE_DIR / name).read_text()
-                    for name in ['Procfile', 'app.json'] if (BASE_DIR / name).exists())
-        self.assertTrue(wired)
 
     def test_publish_without_author_shows_error(self):
         response = self.client.post('/publish', {'article_name': 'x', 'article_text': 't', 'language': 'ua'})
@@ -335,10 +337,12 @@ class EditArticleTests(Base):
         self.article.refresh_from_db()
         self.assertEqual(self.article.publish_at, before)
 
-    def test_edit_can_unpublish_by_schedule(self):
+    def test_edit_can_reschedule_a_live_article(self):
         self.edit(publish_option='schedule', publish_datetime='2099-01-01T10:00')
         self.article.refresh_from_db()
-        self.assertFalse(self.article.is_published)
+        self.assertGreater(self.article.publish_at, now())
+        self.client.logout()
+        self.assertEqual(self.client.get('/article/orig/').status_code, 404)
 
     def test_edit_bad_image_keeps_categories(self):
         bad = SimpleUploadedFile('x.txt', b'hello', content_type='text/plain')

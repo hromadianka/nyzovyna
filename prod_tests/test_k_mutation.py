@@ -133,4 +133,4 @@ class EditorResponseContractTests(Base):
         self.client.post('/publish', {
             'article_name': 'later', 'article_text': 't', 'language': 'ua', 'article_author': str(author.id),
             'publish_option': 'schedule', 'publish_datetime': '2099-01-01T10:00', 'article_slug': 'later'})
-        self.assertFalse(Article.objects.get(slug='later').is_published)
+        self.assertGreater(Article.objects.get(slug='later').publish_at, now())

@@ -451,6 +451,20 @@ class MigrationTests(TransactionTestCase):
         module.fill_slugs(apps, None)
         self.assertEqual(apps.get_model('app', 'Article').objects.get().slug, first)
 
+    def test_0010_switches_pending_scheduled_articles_on(self):
+        from datetime import timedelta
+        MigrationExecutor(connection).migrate([('app', '0009_alter_article_slug_alter_author_slug_and_more')])
+        apps = self.state('0009_alter_article_slug_alter_author_slug_and_more')
+        Art = apps.get_model('app', 'Article')
+        pending = Art.objects.create(name='pending', text='x', slug='pending', is_published=False,
+                                     publish_at=now() + timedelta(days=2))
+        hidden = Art.objects.create(name='hidden', text='x', slug='hidden', is_published=False,
+                                    publish_at=now() - timedelta(days=2))
+        MigrationExecutor(connection).migrate([('app', '0010_publish_pending_scheduled')])
+        Art = self.state('0010_publish_pending_scheduled').get_model('app', 'Article')
+        self.assertTrue(Art.objects.get(pk=pending.pk).is_published)
+        self.assertFalse(Art.objects.get(pk=hidden.pk).is_published)
+
     def test_final_slug_columns_are_nullable_and_unique(self):
         with connection.cursor() as cursor:
             for table in ['app_article', 'app_author', 'app_category']:
