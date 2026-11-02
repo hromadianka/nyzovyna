@@ -113,14 +113,9 @@
         const bodyElement = document.querySelector('body');
         const themeToggle = document.getElementById('themeToggle');
 
-        themeToggle.addEventListener('change', () => {
-            if (themeToggle.checked) {
-                mainElement.classList.add('light');
-                bodyElement.classList.add('light');
-            } else {
-                mainElement.classList.remove('light');
-                bodyElement.classList.remove('light');
-            }
+        themeToggle?.addEventListener('change', () => {
+            mainElement.classList.toggle('light', themeToggle.checked);
+            bodyElement.classList.toggle('light', themeToggle.checked);
         });
     </script>
     <script>
@@ -135,11 +130,6 @@
         });
     </script>
 
-    <script>
-        document.getElementById("ticker").addEventListener("click", function () {
-            window.location.href = "{% url 'about_us' %}";
-        });
-    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -199,14 +189,13 @@
 
         function updateHeaderMargin() {
             const header = document.querySelector('header');
-            const ticker = document.querySelector('.ticker');
-            const headerHeight = header.offsetHeight;
-            ticker.style.marginTop = headerHeight + 'px';
             const main = document.querySelector('main');
-            const height = ticker.offsetHeight + header.offsetHeight;
-            main.style.marginTop = `${height}px`;
+            const ticker = document.querySelector('.ticker');
+            if (!header || !main) return;
+            if (ticker) ticker.style.marginTop = header.offsetHeight + 'px';
+            main.style.marginTop = (header.offsetHeight + (ticker ? ticker.offsetHeight : 0)) + 'px';
         }
-        
+
         window.addEventListener('load', updateHeaderMargin);
         window.addEventListener('resize', updateHeaderMargin);
 

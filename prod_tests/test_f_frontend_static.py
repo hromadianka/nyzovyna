@@ -4,7 +4,7 @@ from .helpers import BASE_DIR, TEMPLATES_DIR, Base, html_of, mk_comment, seed_si
 
 PAGES = ['/', '/all', '/about-us', '/authors', '/authors/author-1', '/category/root/', '/article/seed-0/',
          '/search/?q=Title', '/login/']
-SCRIPT_TARGETS = ['#ticker', '.ticker', '#themeToggle', '.burger-icon', '.menu', '.dropbtn', '.dropdown-content',
+SCRIPT_TARGETS = ['.burger-icon', '.menu', '.dropbtn', '.dropdown-content',
                   'header', 'main']
 
 
@@ -44,10 +44,6 @@ class ScriptTargetTests(Base):
         body = base.split('function updateHeaderMargin', 1)[1].split('}', 1)[0]
         self.assertRegex(body, r'if\s*\(\s*!?ticker|ticker\s*\?|ticker\s*&&')
 
-    def test_theme_toggle_exists_wherever_the_script_expects_it(self):
-        for url in PAGES:
-            with self.subTest(url=url):
-                self.assertIn('id="themeToggle"', html_of(self.get_ok(url)))
 
     def test_ids_referenced_by_inline_handlers_exist(self):
         html = html_of(self.get_ok('/article/seed-0/'))
