@@ -25,10 +25,11 @@ from django.views.i18n import set_language
 from app.feeds import LatestPostsFeed
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.http import require_safe
-from app.sitemaps import AboutUsSitemap, ArticleSitemap, AuthorSitemap
+from app.sitemaps import ArticleSitemap, AuthorSitemap, CategorySitemap, StaticPagesSitemap
 
 sitemaps = {
-    'about': AboutUsSitemap,
+    'pages': StaticPagesSitemap,
+    'categories': CategorySitemap,
     'articles': ArticleSitemap,
     'authors': AuthorSitemap,
 }

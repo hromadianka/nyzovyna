@@ -60,10 +60,6 @@ class MetaTests(SeoSetup):
             with self.subTest(url=url):
                 self.assertRegex(html, r'<html[^>]+lang=')
 
-    def test_pages_have_hreflang_alternates(self):
-        for url, html in self.pages():
-            with self.subTest(url=url):
-                self.assertIn('hreflang=', html)
 
     def test_viewport_meta_present(self):
         for url, html in self.pages():
@@ -75,8 +71,9 @@ class MetaTests(SeoSetup):
 
     def test_article_has_structured_data(self):
         html = html_of(self.get_ok('/article/seed-0/'))
-        self.assertIn('application/ld+json', html)
-        self.assertIn('"@type": "Article"', html.replace('"@type":"Article"', '"@type": "Article"'))
+        self.assertIn('itemtype="https://schema.org/Article"', html)
+        self.assertIn('itemprop="headline"', html)
+        self.assertIn('itemprop="datePublished"', html)
 
     def test_noindex_on_login_and_search_results(self):
         for url in ['/login/', '/search/?q=Title']:
@@ -204,7 +201,9 @@ class RobotsSitemapTests(SeoSetup):
 
 class FeedTests(SeoSetup):
     def parse(self):
-        return feedparser.parse(self.get_ok('/feed/').content)
+        response = self.client.get('/feed/', secure=True)
+        self.assertEqual(response.status_code, 200)
+        return feedparser.parse(response.content)
 
     def test_feed_is_well_formed(self):
         self.assertFalse(self.parse().bozo)

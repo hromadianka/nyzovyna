@@ -59,8 +59,11 @@
         </div>
 
         <div class="article">
-            <div class="article-text">
-                <h1>{{ article.name }}</h1>
+            <div class="article-text" itemscope itemtype="https://schema.org/Article">
+                <meta itemprop="datePublished" content="{{ article.publish_at|date:'c' }}">
+                <meta itemprop="inLanguage" content="{{ html_lang }}">
+                <meta itemprop="image" content="{{ meta.og_image }}">
+                <h1 itemprop="headline">{{ article.name }}</h1>
                 <div class="article-body">{{ article.text|sanitize_html }}</div>
             </div>
 

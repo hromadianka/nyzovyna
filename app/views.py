@@ -27,6 +27,7 @@ from .models import AboutUsText, Article, ArticleSlugHistory, Author, Category, 
 from .permissions import editor_required, is_editor
 from .ratelimit import client_id, hit
 from .sanitize import sanitize_html
+from .seo import absolute, page_meta, plain
 from .uploads import validate_image
 
 try:
@@ -92,17 +93,21 @@ def index(request):
     return render(request, 'index.html', {
         'latest_articles': public.order_by('-publish_at')[:5],
         'popular_articles': public.order_by('-views')[:10],
+        'meta': page_meta(request),
     })
 
 
 @require_safe
 def about_us(request):
-    return render(request, 'about-us.html', {'about_us_text': AboutUsText.objects.filter(pk=1).first()})
+    return render(request, 'about-us.html', {
+        'about_us_text': AboutUsText.objects.filter(pk=1).first(), 'meta': page_meta(request, _('Про нас')),
+    })
 
 
 @require_safe
 def authors(request):
-    return render(request, 'authors.html', {'authors': Author.objects.order_by('name_en')})
+    return render(request, 'authors.html', {'authors': Author.objects.order_by('name_en'),
+                                            'meta': page_meta(request, _('Автори'))})
 
 
 @require_safe
@@ -111,14 +116,17 @@ def category_articles(request, slug):
     articles = Article.objects.public().filter(
         language=get_language(), categories__in=[category]).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
-    return render(request, 'category.html', {'this_category': category, 'articles': page, 'page_obj': page})
+    title = category.name_en if get_language() == 'en' else category.name_ua
+    return render(request, 'category.html', {'this_category': category, 'articles': page, 'page_obj': page,
+                                             'meta': page_meta(request, title)})
 
 
 @require_safe
 def all_articles(request):
     articles = Article.objects.public().filter(language=get_language()).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
-    return render(request, 'category.html', {'articles': page, 'page_obj': page})
+    return render(request, 'category.html', {'articles': page, 'page_obj': page,
+                                             'meta': page_meta(request, _('Всі статті'))})
 
 
 def attach_replies(comments):
@@ -141,6 +149,12 @@ def attach_replies(comments):
 
 
 @require_safe
+def article_meta(request, article):
+    return page_meta(request, plain(article.name, 70), plain(article.text, 160),
+                     image_url=absolute(request, article.image_url), kind='article',
+                     noindex=not (article.is_published and article.publish_at <= now()))
+
+
 def article_by_id(request, id):
     article = get_object_or_404(Article, pk=id)
     return redirect('article', slug=article.slug, permanent=True)
@@ -190,7 +204,8 @@ def article_detail(request, slug):
         'comments_count': len(comments),
         'captcha_form': CommentCaptchaForm(),
         'recommended_articles': recommended_articles,
-        'all_articles': all_articles
+        'all_articles': all_articles,
+        'meta': article_meta(request, article),
     })
 
 
@@ -236,7 +251,13 @@ def author_detail(request, slug):
     author = get_object_or_404(Author, slug=slug)
     articles = Article.objects.public().filter(author=author).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
-    return render(request, 'author_detail.html', {'author': author, 'author_articles': page, 'page_obj': page})
+    english = get_language() == 'en'
+    return render(request, 'author_detail.html', {
+        'author': author, 'author_articles': page, 'page_obj': page,
+        'meta': page_meta(request, author.name_en if english else author.name_ua,
+                          plain(author.description_en if english else author.description_ua, 160),
+                          image_url=author.image_url),
+    })
 
 
 @require_safe
@@ -251,7 +272,8 @@ def article_search(request):
     else:
         matches = Article.objects.none()
     page = paginate(request, matches)
-    return render(request, 'search.html', {'query': query, 'results': page, 'page_obj': page})
+    return render(request, 'search.html', {'query': query, 'results': page, 'page_obj': page,
+                                          'meta': page_meta(request, _('Результати пошуку'), noindex=True)})
 
 
 def user_login(request):
@@ -264,7 +286,7 @@ def user_login(request):
                 return redirect(target)
             return redirect('editor_cabinet')
         messages.error(request, 'Неправильний логін або пароль')
-    return render(request, 'login.html')
+    return render(request, 'login.html', {'meta': page_meta(request, _('Вхід'), noindex=True)})
 
 
 @require_POST

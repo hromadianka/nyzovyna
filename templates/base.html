@@ -3,11 +3,24 @@
 {% load cache %}
 
 <!DOCTYPE html>
-<html>
+<html lang="{{ html_lang }}">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Низовина</title>
+    <title>{% if meta %}{{ meta.title }}{% else %}Низовина{% endif %}</title>
+    {% if meta %}
+    <meta name="description" content="{{ meta.description }}">
+    <link rel="canonical" href="{{ meta.canonical }}">
+    {% if meta.noindex %}<meta name="robots" content="noindex,follow">{% endif %}
+    <meta property="og:site_name" content="Низовина">
+    <meta property="og:type" content="{{ meta.og_type }}">
+    <meta property="og:title" content="{{ meta.title }}">
+    <meta property="og:description" content="{{ meta.description }}">
+    <meta property="og:url" content="{{ meta.canonical }}">
+    <meta property="og:image" content="{{ meta.og_image }}">
+    <meta property="og:locale" content="{{ meta.og_locale }}">
+    {% endif %}
+    <link rel="alternate" type="application/rss+xml" title="Низовина" href="{% url 'post_feed' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'img/logo.svg' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}" />
     <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>

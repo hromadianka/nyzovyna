@@ -2,6 +2,7 @@ from django.utils.functional import SimpleLazyObject
 from django.utils.translation import get_language
 
 from .models import MAX_CATEGORY_DEPTH, Category
+from .seo import html_lang
 
 
 def build_menu_tree():
@@ -39,4 +40,5 @@ def categories(request):
 def language(request):
     return {
         'current_language': get_language(),
+        'html_lang': html_lang(),
     }
