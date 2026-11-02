@@ -1,5 +1,6 @@
 import os
 import re
+import secrets
 import signal
 import tempfile
 import uuid
@@ -20,6 +21,7 @@ from django.utils.timezone import now
 from app.forms import CommentCaptchaForm
 from app.models import AboutUsText, Article, Author, Category, Comment, Editor
 
+TEST_PASSWORD = secrets.token_hex(12)
 BASE_DIR = Path(settings.BASE_DIR)
 TEMPLATES_DIR = BASE_DIR / 'templates'
 ON_MYSQL = os.environ.get('NYZ_DB') == 'mysql'
@@ -149,7 +151,7 @@ class SavepointClient(Client):
 
 class Base(TestCase):
     client_class = SavepointClient
-    password = 'pw-for-tests-123'
+    password = TEST_PASSWORD
 
     def setUp(self):
         cache.clear()
@@ -182,7 +184,7 @@ class Base(TestCase):
         self.assertEqual(positions, sorted(positions), f'wrong order: {list(zip(needles, positions))}')
 
 
-def make_editor(username='editor', password='pw-for-tests-123'):
+def make_editor(username='editor', password=TEST_PASSWORD):
     user = User.objects.create_user(username, password=password)
     Editor.objects.create(user=user)
     return user

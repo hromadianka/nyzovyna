@@ -9,7 +9,7 @@ from django.urls import NoReverseMatch, get_resolver, reverse
 from hypothesis import HealthCheck, given, settings, strategies as st
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
-from .helpers import make_editor, BASE_DIR, TEMPLATES_DIR, Base, captcha_ok, db_fingerprint, html_of, mk_article, mk_author, seed_site
+from .helpers import TEST_PASSWORD, make_editor, BASE_DIR, TEMPLATES_DIR, Base, captcha_ok, db_fingerprint, html_of, mk_article, mk_author, seed_site
 
 DUMMY = str(uuid.UUID(int=7))
 FUZZ = settings(max_examples=60, derandomize=True, deadline=None, suppress_health_check=list(HealthCheck))
@@ -462,5 +462,5 @@ class FuzzTests(HypothesisTestCase):
     def login_editor(self):
         from django.contrib.auth.models import User
         if not User.objects.filter(username='fuzz').exists():
-            make_editor('fuzz', 'pw123456789')
-        self.client.login(username='fuzz', password='pw123456789')
+            make_editor('fuzz', TEST_PASSWORD)
+        self.client.login(username='fuzz', password=TEST_PASSWORD)

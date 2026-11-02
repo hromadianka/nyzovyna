@@ -35,7 +35,7 @@ def run_full(args):
         open(target, 'w', encoding='utf-8').write(mutate.apply(original, m))
         env = dict(os.environ, DJANGO_SETTINGS_MODULE='anarchia.settings_test', PYTHONDONTWRITEBYTECODE='1')
         env.pop('NYZ_DB', None)
-        done = subprocess.run([mutate.PY, 'manage.py', 'test', 'app.prod_tests', 'app.test_findings', '-v', '2',
+        done = subprocess.run([mutate.PY, 'manage.py', 'test', 'prod_tests', 'app.test_findings', '-v', '2',
                                '--noinput'], cwd=work, env=env, capture_output=True, text=True, timeout=600)
         red = failing_set(done.stderr + done.stdout)
         new = sorted(red - baseline_red)
@@ -49,7 +49,7 @@ def run_full(args):
 def main():
     project, green, mutants_json, baseline_log, out = sys.argv[1:6]
     workers = int(sys.argv[6]) if len(sys.argv) > 6 else 6
-    tests = [x.strip() for x in open(green) if x.strip()] + ['app.prod_tests.test_k_mutation']
+    tests = [x.strip() for x in open(green) if x.strip()] + ['prod_tests.test_k_mutation']
     survivors = [m for m in json.load(open(mutants_json)) if m['status'] == 'survived']
     baseline_red = failing_set(open(baseline_log, encoding='utf-8', errors='replace').read())
     with cf.ProcessPoolExecutor(workers) as pool:

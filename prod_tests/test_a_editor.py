@@ -11,7 +11,7 @@ from django.utils.timezone import now
 
 from app.models import AboutUsText, Article, Author, Category, Comment
 
-from .helpers import (make_editor, Base, captcha_ok, html_of, mk_article, mk_author, mk_category, mk_comment, new_uuid, png,
+from .helpers import (TEST_PASSWORD, make_editor, Base, captcha_ok, html_of, mk_article, mk_author, mk_category, mk_comment, new_uuid, png,
                       time_limit, Timeout, query_limit)
 
 EDITOR_GET_URLS = ['/editor-cabinet', '/publish', '/editor-cabinet/comments-moderation/',
@@ -57,8 +57,8 @@ class EditorAuthTests(Base):
 
     def test_login_success_redirects_to_cabinet(self):
         from django.contrib.auth.models import User
-        make_editor('ed', 'pw123456789')
-        response = self.client.post('/login/', {'login': 'ed', 'password': 'pw123456789'})
+        make_editor('ed', TEST_PASSWORD)
+        response = self.client.post('/login/', {'login': 'ed', 'password': TEST_PASSWORD})
         self.assertRedirects(response, '/editor-cabinet', fetch_redirect_response=False)
 
     def test_login_failure_shows_error(self):
@@ -71,8 +71,8 @@ class EditorAuthTests(Base):
 
     def test_login_has_next_support(self):
         from django.contrib.auth.models import User
-        make_editor('ed', 'pw123456789')
-        response = self.client.post('/login/?next=/publish', {'login': 'ed', 'password': 'pw123456789'})
+        make_editor('ed', TEST_PASSWORD)
+        response = self.client.post('/login/?next=/publish', {'login': 'ed', 'password': TEST_PASSWORD})
         self.assertEqual(response['Location'], '/publish')
 
 

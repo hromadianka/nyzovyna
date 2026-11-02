@@ -8,7 +8,7 @@ from unittest import skipUnless
 
 from app.models import Article, Author, Category, Comment
 
-from .helpers import (make_editor, Base, ON_MYSQL, captcha_ok, html_of, mk_article, mk_author, mk_category, mk_comment, png,
+from .helpers import (TEST_PASSWORD, make_editor, Base, ON_MYSQL, captcha_ok, html_of, mk_article, mk_author, mk_category, mk_comment, png,
                       seed_site)
 
 
@@ -236,14 +236,14 @@ class ConcurrencyTests(TransactionTestCase):
 
     def test_view_counter_survives_parallel_edit(self):
         from django.contrib.auth.models import User
-        make_editor('ed', 'pw123456789')
+        make_editor('ed', TEST_PASSWORD)
         author = mk_author('a1')
         article = mk_article('edit-par', author=author)
 
         def work(i):
             c = Client()
             if i % 2:
-                c.login(username='ed', password='pw123456789')
+                c.login(username='ed', password=TEST_PASSWORD)
                 c.post('/article/edit-par/edit/', {
                     'article_name': 'x', 'article_text': 't', 'language': 'ua', 'article_author': str(author.id),
                     'publish_option': 'now', 'article_slug': 'edit-par'})

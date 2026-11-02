@@ -4,7 +4,7 @@ cd "$(dirname "$0")/../../.." || exit 1
 OUT=${2:-/tmp}
 if [ "$1" = mysql ]; then export NYZ_DB=mysql; fi
 PYTHONDONTWRITEBYTECODE=1 DJANGO_SETTINGS_MODULE=anarchia.settings_test \
-  /opt/homebrew/Caskroom/miniconda/base/envs/nyz/bin/python manage.py test app.prod_tests -v 2 > "$OUT/prod_$1.log" 2>&1
+  /opt/homebrew/Caskroom/miniconda/base/envs/nyz/bin/python manage.py test prod_tests -v 2 > "$OUT/prod_$1.log" 2>&1
 python3 - "$OUT/prod_$1.log" <<'PY'
 import re, sys
 log = open(sys.argv[1], encoding='utf-8', errors='replace').read()

@@ -27,7 +27,7 @@
 
 | | |
 |---|---|
-| Тесты (`app/prod_tests/`, 12 модулей) | **558 методов** + 24 прежних из `test_findings.py` = **582 теста** (28 помечены skip на SQLite: MySQL-only). Параметризация через `subTest`, hypothesis (`derandomize=True`), детерминированные данные |
+| Тесты (`prod_tests/`, 12 модулей) | **558 методов** + 24 прежних из `test_findings.py` = **582 теста** (28 помечены skip на SQLite: MySQL-only). Параметризация через `subTest`, hypothesis (`derandomize=True`), детерминированные данные |
 | Красные (подтверждённые проблемы) | SQLite: **224 метода / 291 красный подтест**. MySQL: **238 методов / 297 подтестов**. Группируются в **54 находки** (раздел 4) |
 | Зелёные | 358 (SQLite) / 344 (MySQL): в том числе 14 регрессионных замков на уже исправленные проблемы (`test_regressions.py`) |
 | Покрытие `app/` | **97,3 % строк, 95,9 % ветвей** (521 стейтмент, 98 ветвей); цель ≥85 / ≥75 выполнена. Непокрыто: `views.py` 240, 355-356, 361-362, 395→398; `templatetags/app_tags.py` (мёртвый код) |
@@ -41,8 +41,8 @@
 
 Запуск:
 ```
-PYTHONDONTWRITEBYTECODE=1 DJANGO_SETTINGS_MODULE=anarchia.settings_test python manage.py test app.prod_tests            # SQLite in-memory
-PYTHONDONTWRITEBYTECODE=1 NYZ_DB=mysql DJANGO_SETTINGS_MODULE=anarchia.settings_test python manage.py test app.prod_tests   # Docker MySQL 8.0 на 127.0.0.1:33306
+PYTHONDONTWRITEBYTECODE=1 DJANGO_SETTINGS_MODULE=anarchia.settings_test python manage.py test prod_tests            # SQLite in-memory
+PYTHONDONTWRITEBYTECODE=1 NYZ_DB=mysql DJANGO_SETTINGS_MODULE=anarchia.settings_test python manage.py test prod_tests   # Docker MySQL 8.0 на 127.0.0.1:33306
 ```
 Красный тест = найденная проблема (тест описывает желаемое поведение). Для воспроизведения любой находки запустите тест из колонки «Красных тестов».
 
@@ -322,7 +322,7 @@ PYTHONDONTWRITEBYTECODE=1 NYZ_DB=mysql DJANGO_SETTINGS_MODULE=anarchia.settings_
 
 ## Приложение: артефакты
 
-- Тесты: `app/prod_tests/` (`helpers.py` — общие фабрики, мок капчи, изоляция запросов в savepoint, лимит запросов вместо сигнального таймаута); расширение `anarchia/settings_test.py` (`NYZ_DB=mysql`, `NYZ_DB_FILE`, `NYZ_DB_NAME`).
+- Тесты: `prod_tests/` (`helpers.py` — общие фабрики, мок капчи, изоляция запросов в savepoint, лимит запросов вместо сигнального таймаута); расширение `anarchia/settings_test.py` (`NYZ_DB=mysql`, `NYZ_DB_FILE`, `NYZ_DB_NAME`).
 - Скрипты: `docs/prod-readiness/scripts/` (`findings.py` — каталог находок и статусы по логам, `mutate*.py`, `run_prod_tests.sh`, генератор данных, locust, EXPLAIN, Playwright).
 - Доказательства: `docs/prod-readiness/evidence/` (`D_performance.md`, `FG_frontend.md`, `I_deploy.md`, скриншоты), инвентаризация: `INVENTORY.md`.
 - Инфраструктура тестов: тест-хелпер `table_queries` в `test_findings.py` ищет `"app_category"` в двойных кавычках и на MySQL даёт ложно-зелёное «0 запросов» (P-50).

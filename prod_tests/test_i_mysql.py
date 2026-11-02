@@ -9,7 +9,7 @@ from django.test import TransactionTestCase
 
 from app.models import Article, Author, Category, Comment
 
-from .helpers import make_editor, BASE_DIR, ON_MYSQL, captcha_ok, html_of, mk_article, mk_author, mk_category, seed_site
+from .helpers import TEST_PASSWORD, make_editor, BASE_DIR, ON_MYSQL, captcha_ok, html_of, mk_article, mk_author, mk_category, seed_site
 
 PROD_OPTIONS = {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
 
@@ -56,8 +56,8 @@ class MySqlBehaviourTests(TransactionTestCase):
 
     def test_emoji_in_article_title_is_stored_with_production_connection_options(self):
         from django.contrib.auth.models import User
-        make_editor('ed', 'pw123456789')
-        self.client.login(username='ed', password='pw123456789')
+        make_editor('ed', TEST_PASSWORD)
+        self.client.login(username='ed', password=TEST_PASSWORD)
         author = mk_author('a1')
         with production_connection_options():
             response = self.client.post('/publish', {
@@ -80,15 +80,15 @@ class MySqlBehaviourTests(TransactionTestCase):
 
     def test_category_name_longer_than_column_is_client_error(self):
         from django.contrib.auth.models import User
-        make_editor('ed', 'pw123456789')
-        self.client.login(username='ed', password='pw123456789')
+        make_editor('ed', TEST_PASSWORD)
+        self.client.login(username='ed', password=TEST_PASSWORD)
         response = self.client.post('/create-category/', {'name_ua': 'x' * 150, 'name_en': 'y'})
         self.assertLess(response.status_code, 500)
 
     def test_author_name_longer_than_column_is_client_error(self):
         from django.contrib.auth.models import User
-        make_editor('ed', 'pw123456789')
-        self.client.login(username='ed', password='pw123456789')
+        make_editor('ed', TEST_PASSWORD)
+        self.client.login(username='ed', password=TEST_PASSWORD)
         response = self.client.post('/create_new_author/', {
             'author_name_ua': 'x' * 150, 'author_name_en': 'y', 'author_description_ua': 'd',
             'author_description_en': 'd'})
