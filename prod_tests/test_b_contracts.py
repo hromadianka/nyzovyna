@@ -123,10 +123,12 @@ class UrlContractTests(TestCase):
         self.assertEqual(resolve(f'/article/{DUMMY}/').url_name, 'article_by_id')
 
 
-    def test_trailing_slash_consistency(self):
-        urls = [reverse(n, args=dummy_args(p)) for n, p in top_level_names().items()]
-        mixed = {u.endswith('/') for u in urls if u != '/'}
-        self.assertEqual(len(mixed), 1)
+    def test_slash_variants_of_slashless_pages_redirect_to_the_canonical_url(self):
+        for slashless in ['/about-us', '/authors', '/all']:
+            with self.subTest(url=slashless):
+                response = self.client.get(slashless + '/')
+                self.assertEqual(response.status_code, 301)
+                self.assertEqual(response['Location'], slashless)
 
     def test_sitemap_and_feed_urls_exist(self):
         self.assertEqual(reverse('sitemap'), '/sitemap.xml')

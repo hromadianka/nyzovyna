@@ -25,6 +25,7 @@ from django.views.i18n import set_language
 from app.feeds import LatestPostsFeed
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.http import require_safe
+from django.views.generic import RedirectView
 from app.sitemaps import ArticleSitemap, AuthorSitemap, CategorySitemap, StaticPagesSitemap
 
 sitemaps = {
@@ -46,10 +47,13 @@ urlpatterns = [
     #path('captcha/', include("captcha.urls")),
     path('', views.index, name='home'),
     path('about-us', views.about_us, name='about_us'),
+    path('about-us/', RedirectView.as_view(pattern_name='about_us', permanent=True)),
     path('authors', views.authors, name='authors'),
+    path('authors/', RedirectView.as_view(pattern_name='authors', permanent=True)),
     path('authors/<slug:slug>', views.author_detail, name='author_detail'),
     path('authors/<slug:slug>/edit', views.edit_author, name='edit_author'),
     path('all', views.all_articles, name='all_articles'),
+    path('all/', RedirectView.as_view(pattern_name='all_articles', permanent=True)),
     path('category/<slug:slug>/', views.category_articles, name='category_articles'),
     path('category/<slug:slug>/delete/', views.delete_category, name='delete_category'),
     path('article/<uuid:id>/', views.article_by_id, name='article_by_id'),

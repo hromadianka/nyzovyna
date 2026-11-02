@@ -1,11 +1,12 @@
 from datetime import timedelta
+from unittest import skipUnless
 
 from django.urls import reverse
 from django.utils.timezone import now
 
 from app.models import AboutUsText, Article, Category
 
-from .helpers import (Base, captcha_ok, html_of, mk_article, mk_author, mk_category, mk_comment, seed_site,
+from .helpers import (Base, ON_MYSQL, captcha_ok, html_of, mk_article, mk_author, mk_category, mk_comment, seed_site,
                       visible_text)
 
 PUBLIC_LIST_URLS = ['/', '/all', '/category/root/', '/category/child/', '/authors/author-1', '/search/?q=Title']
@@ -350,6 +351,7 @@ class SearchTests(Base):
         mk_article('s1', name='Alpha Beta')
         self.assertIn('/article/s1/', html_of(self.get_ok('/search/?q=alpha')))
 
+    @skipUnless(ON_MYSQL, 'SQLite LIKE ignores case for ASCII only; the production database is MySQL')
     def test_search_by_title_case_insensitive_cyrillic(self):
         mk_article('s2', name='Привіт Світ')
         self.assertIn('/article/s2/', html_of(self.get_ok('/search/?q=привіт')))

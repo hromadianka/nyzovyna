@@ -146,6 +146,13 @@
                 {% include 'comment.html' with comment=comment %}
                 {% endif %}
                 {% endfor %}
+                {% if comments_page.paginator.num_pages > 1 %}
+                <nav class="pagination" aria-label="Comments pagination">
+                    {% if comments_page.has_previous %}<a rel="prev" href="?cpage={{ comments_page.previous_page_number }}#comments">{% if current_language == "en" %}Newer{% else %}Новіші{% endif %}</a>{% endif %}
+                    <span>{{ comments_page.number }} / {{ comments_page.paginator.num_pages }}</span>
+                    {% if comments_page.has_next %}<a rel="next" href="?cpage={{ comments_page.next_page_number }}#comments">{% if current_language == "en" %}Older{% else %}Старіші{% endif %}</a>{% endif %}
+                </nav>
+                {% endif %}
                 <p class="comment-description">
                     {% trans "Залишились питання або хочете щось сказати? —  Напишіть коментар!" %}
                 </p>

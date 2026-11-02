@@ -40,6 +40,8 @@ STORAGE_ERRORS = (OSError, CloudinaryError)
 logger = logging.getLogger(__name__)
 MAX_REPLY_DEPTH = 5
 PAGE_SIZE = 24
+COMMENTS_PER_PAGE = 20
+MAX_COMMENTS_ON_PAGE = 300
 MAX_COMMENT_LENGTH = 5000
 MAX_SEARCH_LENGTH = 100
 MAX_ORDER_ITEMS = 1000
@@ -114,6 +116,8 @@ def authors(request):
 @require_safe
 def category_articles(request, slug):
     category = get_object_or_404(Category, slug=slug)
+    if category.slug != slug:
+        return redirect('category_articles', slug=category.slug, permanent=True)
     articles = Article.objects.public().filter(
         language=get_language(), categories__in=[category]).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
@@ -128,6 +132,27 @@ def all_articles(request):
     page = paginate(request, articles)
     return render(request, 'category.html', {'articles': page, 'page_obj': page,
                                              'meta': page_meta(request, _('Всі статті'))})
+
+
+def load_comment_page(request, article):
+    """One light query for the thread structure, one full query for the threads on the requested page."""
+    rows = list(Comment.objects.filter(article=article).order_by('-created_at').values_list('id', 'parent_comment_id'))
+    known = {row[0] for row in rows}
+    children, roots = {}, []
+    for comment_id, parent_id in rows:
+        if parent_id is None or parent_id not in known:
+            roots.append(comment_id)
+        else:
+            children.setdefault(parent_id, []).append(comment_id)
+    page = Paginator(roots, COMMENTS_PER_PAGE).get_page(request.GET.get('cpage'))
+    wanted, queue = [], list(page.object_list)
+    while queue and len(wanted) < MAX_COMMENTS_ON_PAGE:
+        comment_id = queue.pop(0)
+        wanted.append(comment_id)
+        queue.extend(children.get(comment_id, []))
+    comments = list(Comment.objects.filter(pk__in=wanted).order_by('-created_at'))
+    attach_replies(comments)
+    return comments, page, len(rows)
 
 
 def attach_replies(comments):
@@ -165,6 +190,8 @@ def article_by_id(request, id):
 def article_detail(request, slug):
     try:
         article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
+        if article.slug != slug:
+            return redirect('article', slug=article.slug, permanent=True)
     except Http404:
         moved = ArticleSlugHistory.objects.filter(slug=slug).select_related('article').first()
         if moved is None:
@@ -178,8 +205,7 @@ def article_detail(request, slug):
         article.views += 1
     all_articles = Article.objects.public().exclude(pk=article.pk).order_by('-views')[:2]
 
-    comments = list(Comment.objects.filter(article=article).order_by('-created_at'))
-    attach_replies(comments)
+    comments, comments_page, comments_total = load_comment_page(request, article)
 
     parent_category = None
     article_categories = list(article.categories.all())
@@ -201,8 +227,9 @@ def article_detail(request, slug):
     return render(request, 'article.html', {
         'article': article,
         'comments': comments,
+        'comments_page': comments_page,
         'translate': translate,
-        'comments_count': len(comments),
+        'comments_count': comments_total,
         'captcha_form': CommentCaptchaForm(),
         'recommended_articles': recommended_articles,
         'all_articles': all_articles,
@@ -250,6 +277,8 @@ def comment(request):
 @require_safe
 def author_detail(request, slug):
     author = get_object_or_404(Author, slug=slug)
+    if author.slug != slug:
+        return redirect('author_detail', slug=author.slug, permanent=True)
     articles = Article.objects.public().filter(author=author).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
     english = get_language() == 'en'
