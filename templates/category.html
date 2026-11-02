@@ -30,7 +30,7 @@
 
         <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px">
             <div class="card-image"
-                 style="background: url('{{ article.image.url }}') no-repeat;
+                 style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;
                         background-position: center">
             </div>
@@ -55,7 +55,7 @@
 
         <a href="{% url 'article' article.slug %}" style="display: block; padding: 0; height: 231px">
             <div class="card-image"
-                 style="background: url('{{ article.image.url }}') no-repeat;
+                 style="background: url('{{ article.image_url }}') no-repeat;
                         background-size: cover;
                         background-position: center">
             </div>

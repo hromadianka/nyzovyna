@@ -46,7 +46,7 @@
     <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form">{{ article.text }}</textarea>
 
     {% if article.image %}
-    <img src="{{ article.image.url }}" alt="" style="max-width: 200px;">
+    <img src="{{ article.image_url }}" alt="" style="max-width: 200px;">
     {% endif %}
     <input type="file" name="article_image" accept="image/*" class="form" />
 

@@ -40,7 +40,7 @@ class DependencyFailureTests(Base):
             self.assertEqual(self.client.get('/').status_code, 200)
 
     def test_media_url_resolution_failure_does_not_break_listing(self):
-        with mock.patch('django.core.files.storage.FileSystemStorage.url', side_effect=RuntimeError('cdn down')):
+        with mock.patch.object(Article._meta.get_field('image').storage, 'url', side_effect=RuntimeError('cdn down')):
             try:
                 status = self.client.get('/').status_code
             except RuntimeError:

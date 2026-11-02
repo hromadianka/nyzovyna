@@ -27,7 +27,7 @@
     <input type="text" name="name_en" placeholder="Ім'я англійською" class="form" required value="{{author.name_en}}" />
     <textarea name="description_en" placeholder="Опис англійською" class="form">{{author.description_en}}</textarea>
     {% if author.image %}
-    <img src="{{ author.image.url }}" alt="" style="max-width: 120px;">
+    <img src="{{ author.image_url }}" alt="" style="max-width: 120px;">
     {% endif %}
     <input type="file" name="author_image" accept="image/*" class="form" value="author.image" />
     <button type="submit" class="btn">Зберегти</button>

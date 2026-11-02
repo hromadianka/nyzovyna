@@ -1,13 +1,29 @@
 from django.contrib.auth.models import User
 from django.db import models
 import uuid
+import logging
+
+from django.conf import settings
+from django.templatetags.static import static
 from django.utils.timezone import now
 from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from django.db import IntegrityError, transaction
 from .slugs import make_slug, unique_slug
 
 MAX_CATEGORY_DEPTH = 5
+PLACEHOLDER_IMAGE = 'img/card-example.png'
+logger = logging.getLogger(__name__)
+
+
+def safe_image_url(image):
+    """URL of an ImageField file; a missing file or a storage hiccup must not break the whole page."""
+    try:
+        return image.url if image else static(PLACEHOLDER_IMAGE)
+    except Exception:
+        logger.exception('image url failed for %r', getattr(image, 'name', image))
+        return f'{settings.STATIC_URL}{PLACEHOLDER_IMAGE}'
 
 
 
@@ -63,8 +79,12 @@ class Author(models.Model):
         save_with_unique_slug(self, lambda: make_slug(self.name_en or self.name_ua, 'author'), 100,
                               lambda: super(Author, self).save(*args, **kwargs))
 
+    @property
+    def image_url(self):
+        return safe_image_url(self.image)
+
     def get_absolute_url(self):
-        return f'/authors/{self.slug}/'
+        return reverse('author_detail', args=[self.slug])
 
     def __str__(self):
         return self.name_en
@@ -85,7 +105,7 @@ class Category(models.Model):
                               lambda: super(Category, self).save(*args, **kwargs))
 
     def get_absolute_url(self):
-        return f'/category/{self.slug}/'
+        return reverse('category_articles', args=[self.slug])
 
     def __str__(self):
         return self.name_ua
@@ -136,8 +156,12 @@ class Article(models.Model):
         save_with_unique_slug(self, lambda: make_slug(source, 'article'), 200,
                               lambda: super(Article, self).save(*args, **kwargs))
 
+    @property
+    def image_url(self):
+        return safe_image_url(self.image)
+
     def get_absolute_url(self):
-        return f'/article/{self.slug}/'
+        return reverse('article', args=[self.slug])
 
     def __str__(self):
         return self.name
