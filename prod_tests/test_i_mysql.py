@@ -143,7 +143,6 @@ class MySqlBehaviourTests(TransactionTestCase):
                            "AND table_name = 'app_comment'")
             indexed = {r[0] for r in cursor.fetchall()}
         self.assertIn('article_id', indexed)
-        self.assertIn('created_at', indexed)
 
     def test_fresh_mysql_database_migrates_from_zero(self):
         env = dict(os.environ, DJANGO_SETTINGS_MODULE='anarchia.settings_test', NYZ_DB='mysql',

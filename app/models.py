@@ -124,6 +124,13 @@ class Article(models.Model):
 
     objects = ArticleQuerySet.as_manager()
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['language', 'is_published', '-publish_at'], name='art_lang_pub_date'),
+            models.Index(fields=['language', 'is_published', '-views'], name='art_lang_pub_views'),
+            models.Index(fields=['is_published', '-views'], name='art_pub_views'),
+        ]
+
     def save(self, *args, **kwargs):
         source = self.slug or self.name
         save_with_unique_slug(self, lambda: make_slug(source, 'article'), 200,
