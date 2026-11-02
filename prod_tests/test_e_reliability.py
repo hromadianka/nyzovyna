@@ -196,7 +196,7 @@ class ConcurrencyTests(TransactionTestCase):
         article = mk_article('par')
 
         def hit(i):
-            Client().get('/article/par/')
+            Client().get('/article/par/', REMOTE_ADDR=f'10.0.0.{i + 1}', HTTP_USER_AGENT='Mozilla/5.0')
 
         errors = run_threads(hit, 16)
         article.refresh_from_db()
@@ -206,7 +206,8 @@ class ConcurrencyTests(TransactionTestCase):
         article = mk_article('pc')
 
         def post(i):
-            Client().post('/comment', {'article_id': str(article.id), 'author': f'u{i}', 'text': 'hi'})
+            Client().post('/comment', {'article_id': str(article.id), 'author': f'u{i}', 'text': 'hi'},
+                          REMOTE_ADDR=f'10.0.1.{i + 1}')
 
         with captcha_ok():
             errors = run_threads(post, 12)
@@ -248,7 +249,7 @@ class ConcurrencyTests(TransactionTestCase):
                     'article_name': 'x', 'article_text': 't', 'language': 'ua', 'article_author': str(author.id),
                     'publish_option': 'now', 'article_slug': 'edit-par'})
             else:
-                c.get('/article/edit-par/')
+                c.get('/article/edit-par/', REMOTE_ADDR=f'10.0.2.{i + 1}', HTTP_USER_AGENT='Mozilla/5.0')
 
         run_threads(work, 10)
         article.refresh_from_db()

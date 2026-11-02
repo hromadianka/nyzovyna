@@ -4,6 +4,7 @@ import uuid
 from django.utils.timezone import now
 from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from django.utils.text import slugify
 
 MAX_CATEGORY_DEPTH = 5
@@ -20,6 +21,34 @@ def make_slug(text, fallback):
     """slugify() drops every non-Latin letter, which left Ukrainian names with an empty slug."""
     transliterated = ''.join(_CYRILLIC.get(ch, ch) for ch in (text or '').lower())
     return slugify(transliterated) or fallback
+
+
+def unique_slug(model, base, max_length, pk=None):
+    """First free slug for `base`, cut so that the numeric suffix still fits into max_length."""
+    base = base[:max_length].rstrip('-') or base[:max_length]
+    slug, n = base, 1
+    while model.objects.filter(slug=slug).exclude(pk=pk).exists():
+        suffix = f'-{n}'
+        slug = f'{base[:max_length - len(suffix)].rstrip("-")}{suffix}'
+        n += 1
+    return slug
+
+
+def save_with_unique_slug(instance, build_base, max_length, save, attempts=5):
+    """Two writers can pick the same free slug; the unique index rejects the loser, which simply retries."""
+    for attempt in range(attempts):
+        base = build_base()
+        if attempt < 2:
+            instance.slug = unique_slug(type(instance), base, max_length, pk=instance.pk)
+        else:
+            tag = f'-{uuid.uuid4().hex[:8]}'
+            instance.slug = f'{base[:max_length - len(tag)].rstrip("-")}{tag}'
+        try:
+            with transaction.atomic():
+                return save()
+        except IntegrityError:
+            if attempt == attempts - 1:
+                raise
 
 
 def category_ancestors(category):
@@ -52,15 +81,10 @@ class Author(models.Model):
     description_ua = models.TextField()
 
     def save(self, *args, **kwargs):
-       if not self.slug:
-           base_slug = make_slug(self.name_en or self.name_ua, 'author')
-           slug = base_slug
-           n = 1
-           while Author.objects.filter(slug=slug).exists():
-               slug = f'{base_slug}-{n}'
-               n += 1
-           self.slug = slug
-       super().save(*args, **kwargs)
+        if self.slug:
+            return super().save(*args, **kwargs)
+        save_with_unique_slug(self, lambda: make_slug(self.name_en or self.name_ua, 'author'), 100,
+                              lambda: super(Author, self).save(*args, **kwargs))
 
     def get_absolute_url(self):
         return f'/authors/{self.slug}/'
@@ -78,15 +102,10 @@ class Category(models.Model):
     order = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = make_slug(self.name_ua or self.name_en, 'category')
-            slug = base_slug
-            n = 1
-            while Category.objects.filter(slug=slug).exists():
-                slug = f'{base_slug}-{n}'
-                n += 1
-            self.slug = slug
-        super().save(*args, **kwargs)
+        if self.slug:
+            return super().save(*args, **kwargs)
+        save_with_unique_slug(self, lambda: make_slug(self.name_ua or self.name_en, 'category'), 100,
+                              lambda: super(Category, self).save(*args, **kwargs))
 
     def get_absolute_url(self):
         return f'/category/{self.slug}/'
@@ -129,17 +148,9 @@ class Article(models.Model):
     objects = ArticleQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
-        base_source = self.slug if self.slug else self.name
-        base_slug = make_slug(base_source, 'article')
-
-        slug = base_slug
-        n = 1
-        while Article.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-            slug = f'{base_slug}-{n}'
-            n += 1
-
-        self.slug = slug
-        super().save(*args, **kwargs)
+        source = self.slug or self.name
+        save_with_unique_slug(self, lambda: make_slug(source, 'article'), 200,
+                              lambda: super(Article, self).save(*args, **kwargs))
 
     def get_absolute_url(self):
         return f'/article/{self.slug}/'
