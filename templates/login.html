@@ -16,6 +16,7 @@
 
 <form class="form" method="POST" action="{% url 'login' %}">
     {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.GET.next }}">
     <input type="text" name="login" placeholder="Логін" class="form" required />
     <input type="password" name="password" placeholder="Пароль" class="form" required />
     <button class="btn">Увійти</button>

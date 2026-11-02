@@ -157,6 +157,9 @@ LOCALE_PATHS = [
 
 TIME_ZONE = 'UTC'
 
+# Schedule times typed in the cabinet are local to the editorial team, not UTC.
+EDITOR_TIME_ZONE = 'Europe/Kyiv'
+
 USE_I18N = True
 
 USE_TZ = True

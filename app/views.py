@@ -1,7 +1,9 @@
 import json
 import uuid
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
 from django.core.cache import cache
@@ -11,6 +13,7 @@ from django.db import transaction
 from django.db.models import F, Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.timezone import make_aware, now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
@@ -230,6 +233,9 @@ def user_login(request):
         user = authenticate(request, username=request.POST.get('login'), password=request.POST.get('password'))
         if user is not None:
             auth_login(request, user)
+            target = request.POST.get('next') or request.GET.get('next') or ''
+            if target and url_has_allowed_host_and_scheme(target, {request.get_host()}, request.is_secure()):
+                return redirect(target)
             return redirect('editor_cabinet')
         messages.error(request, 'Неправильний логін або пароль')
     return render(request, 'login.html')
@@ -271,7 +277,7 @@ def parse_article_form(request):
     if request.POST.get('publish_option') == 'schedule' and publish_datetime:
         scheduled = True
         try:
-            publish_at = make_aware(datetime.strptime(publish_datetime, '%Y-%m-%dT%H:%M'))
+            publish_at = make_aware(datetime.strptime(publish_datetime, '%Y-%m-%dT%H:%M'), ZoneInfo(settings.EDITOR_TIME_ZONE))
         except (ValueError, OverflowError):
             return None, 'Невірна дата публікації.'
 

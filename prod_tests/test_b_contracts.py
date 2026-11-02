@@ -134,7 +134,8 @@ class UrlContractTests(TestCase):
 
     def test_login_url_setting_points_to_real_route(self):
         from django.conf import settings as s
-        self.assertEqual(self.client.get(s.LOGIN_URL, follow=True).status_code, 200)
+        from django.shortcuts import resolve_url
+        self.assertEqual(self.client.get(resolve_url(s.LOGIN_URL), follow=True).status_code, 200)
 
 
 class CrawlerTests(Base):
