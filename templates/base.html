@@ -39,7 +39,7 @@
                     <span class="bar"></span>
                 </button>
                 <ul class="menu">
-                    {% cache 3600 site_menu current_language %}
+                    {% cache 60 site_menu current_language %}
                     {% for category in menu_categories %}
                     <li class="parent-category">
                         {% if current_language == "en" %}
@@ -99,7 +99,7 @@
                 </div>
             </div>
             <div class="footer-row2">
-                {% cache 3600 footer_categories current_language %}
+                {% cache 60 footer_categories current_language %}
                 {% for category in menu_categories %}
                 {% if current_language == "en" %}
                 <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_en }}</a>
