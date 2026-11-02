@@ -126,9 +126,9 @@ class CategorySlugTests(Base):
                          ['same', 'same-1', 'same-2'])
 
     def test_slug_never_exceeds_max_length(self):
-        for length, char in [(100, 'a'), (101, 'b'), (300, 'c')]:
-            with self.subTest(length=length):
-                self.assertLessEqual(len(Category.objects.create(name_ua=char * length, name_en='x').slug), 100)
+        for char in ['a', 'ш', 'ю']:
+            with self.subTest(char=char):
+                self.assertLessEqual(len(Category.objects.create(name_ua=char * 100, name_en='x').slug), 100)
 
     def test_collision_suffix_respects_max_length(self):
         Category.objects.create(name_ua='a' * 100, name_en='x')
@@ -375,9 +375,11 @@ class MigrationTests(TransactionTestCase):
         MigrationExecutor(connection).migrate([('app', '0007_fill_slugs')])
         return self.state('0007_fill_slugs')
 
+    migrated_for_real = False
+
     def tearDown(self):
         executor = MigrationExecutor(connection)
-        executor.migrate(executor.loader.graph.leaf_nodes(), fake=True)
+        executor.migrate(executor.loader.graph.leaf_nodes(), fake=not self.migrated_for_real)
 
     def test_makemigrations_check_is_clean(self):
         from django.core.management import call_command
@@ -456,6 +458,7 @@ class MigrationTests(TransactionTestCase):
 
     def test_0010_switches_pending_scheduled_articles_on(self):
         from datetime import timedelta
+        self.migrated_for_real = True
         MigrationExecutor(connection).migrate([('app', '0009_alter_article_slug_alter_author_slug_and_more')])
         apps = self.state('0009_alter_article_slug_alter_author_slug_and_more')
         Art = apps.get_model('app', 'Article')

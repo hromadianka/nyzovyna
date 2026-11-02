@@ -81,7 +81,7 @@ class ViewCounter(SecBase):
     def test_counter_update_is_atomic(self):
         with CaptureQueriesContext(connection) as ctx:
             self.make_client().get('/article/public/')
-        updates = [q['sql'] for q in ctx.captured_queries if q['sql'].startswith('UPDATE "app_article"')]
+        updates = [q['sql'].replace('`', '"') for q in ctx.captured_queries if q['sql'].replace('`', '"').startswith('UPDATE "app_article"')]
         self.assertTrue(updates and '"views" + 1' in updates[0], 'views must be incremented in SQL (F expression), not read-modify-write')
 
     def test_popular_list_cannot_be_hijacked_by_one_client(self):
