@@ -315,7 +315,7 @@ def create_category(request):
 
 @login_required(login_url='/login')
 def delete_category(request, slug):
-    category = get_object_or_404(Category, slug)
+    category = get_object_or_404(Category, slug=slug)
     if request.method == 'GET':
         category.delete()
         return JsonResponse({'success': True})
@@ -456,7 +456,7 @@ def edit_author(request, slug):
            if author_image:
                author.image = author_image
            author.save()
-           return redirect('author_detail', author_id = author.id)
+           return redirect('author_detail', slug=author.slug)
        return render(request, 'edit_author.html', {'author': author})
 
 @login_required(login_url='/login')
