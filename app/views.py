@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as auth_logout
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate, login as auth_login
@@ -12,10 +12,11 @@ from datetime import datetime
 from .forms import CommentCaptchaForm
 from django.utils.text import slugify
 from django.db.models import F, Q
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 import json
 
 
+from .permissions import editor_required
 from .menu_cache import invalidate_menu_cache
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
 
@@ -185,7 +186,12 @@ def user_login(request):
             messages.error(request, 'Неправильний логін або пароль')
     return render(request, 'login.html')
 
-@login_required(login_url='/login')
+@require_POST
+def user_logout(request):
+    auth_logout(request)
+    return redirect('home')
+
+@editor_required
 def editor_cabinet(request):
     articles = Article.objects.filter(is_published = True).prefetch_related('categories')
     unpublished_articles = Article.objects.filter(is_published = False).prefetch_related('categories')
@@ -200,7 +206,7 @@ def editor_cabinet(request):
     }
     return render(request, 'editor-cabinet.html', context)
 
-@login_required(login_url='/login')
+@editor_required
 def publish(request):
     authors = Author.objects.all()
     categories = Category.objects.all()
@@ -291,14 +297,13 @@ def publish(request):
         'categories': categories,
     })
 
-@login_required(login_url='/login')
+@editor_required
+@require_POST
 def delete_article(request, slug):
-    article = get_object_or_404(Article, slug=slug)
-    if request.method == 'GET':
-        article.delete()
-        return JsonResponse({'success': True})
+    get_object_or_404(Article, slug=slug).delete()
+    return JsonResponse({'success': True})
 
-@login_required(login_url='/login')
+@editor_required
 def create_category(request):
     if request.method == 'POST':
         name_ua = request.POST.get('name_ua')
@@ -313,14 +318,13 @@ def create_category(request):
             return redirect('editor_cabinet')
     return render(request, 'editor-cabinet.html')
 
-@login_required(login_url='/login')
+@editor_required
+@require_POST
 def delete_category(request, slug):
-    category = get_object_or_404(Category, slug=slug)
-    if request.method == 'GET':
-        category.delete()
-        return JsonResponse({'success': True})
+    get_object_or_404(Category, slug=slug).delete()
+    return JsonResponse({'success': True})
 
-@login_required(login_url='/login')
+@editor_required
 def edit_article(request, slug):
     article = get_object_or_404(Article, slug=slug)
     authors = Author.objects.all()
@@ -407,7 +411,8 @@ def edit_article(request, slug):
 
 
 
-@login_required(login_url='/login')
+@editor_required
+@require_http_methods(['POST'])
 def about_us_edit(request):
     if request.method == 'POST':
         new_text_ua = request.POST.get('new_text_ua')
@@ -419,7 +424,7 @@ def about_us_edit(request):
 
         return redirect('editor_cabinet')
 
-@login_required(login_url='/login')
+@editor_required
 def create_new_author(request):
     if request.method == 'POST':
         name_ua = request.POST.get('author_name_ua')
@@ -439,7 +444,7 @@ def create_new_author(request):
         return redirect('editor_cabinet')
     return render(request, 'editor-cabinet.html')
 
-@login_required(login_url='/login')
+@editor_required
 def edit_author(request, slug):
        author = get_object_or_404(Author, slug=slug)
        if request.method == 'POST':
@@ -459,13 +464,13 @@ def edit_author(request, slug):
            return redirect('author_detail', slug=author.slug)
        return render(request, 'edit_author.html', {'author': author})
 
-@login_required(login_url='/login')
+@editor_required
 def comments_moderation(request):
     comments = Comment.objects.all()
     
     return render(request, 'comments_moderation.html', {'comments': comments})
 
-@login_required(login_url='/login')
+@editor_required
 @require_POST
 def delete_comment(request, id):
     comment = get_object_or_404(Comment, id=id)
@@ -473,7 +478,7 @@ def delete_comment(request, id):
 
     return redirect('comments_moderation')
 
-@login_required
+@editor_required
 def category_order_editor(request):
     categories = Category.objects.filter(parent__isnull=True).prefetch_related('children')
     return render(request, 'category_order.html', {
@@ -481,7 +486,7 @@ def category_order_editor(request):
     })
 
 
-@login_required
+@editor_required
 @require_POST
 def update_category_order(request):
     data = json.loads(request.body)

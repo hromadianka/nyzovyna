@@ -18,6 +18,10 @@
 </style>
 
 <h1>Кабінет редактора</h1>
+<form method="POST" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="btn" type="submit">Вийти</button>
+</form>
 
 <h2 style="margin-bottom: 24px">Про нас</h2>
 
@@ -147,10 +151,10 @@
     {% for category in categories %}
     {% if not category.parent %}
     <li>
-        <details id="category-{{category.id}}">
+        <details id="category-{{category.slug}}">
             <summary>
                 <span>{{ category.name_ua }} ({{ category.name_en }})</span>
-                <span style="margin-left: 8px"><a style="color: red" href="#" onclick="confirmDeleteCategory(event, '{{ category.id }}')">Видалити</a></span>
+                <span style="margin-left: 8px"><a style="color: red" href="#" onclick="confirmDeleteCategory(event, '{{ category.slug }}')">Видалити</a></span>
             </summary>
             <button onclick="toggleForm('{{ category.id }}')" class="btn" style="color: black; background-color: white; border: none; margin-top: 8px; font-size: 14px">+ Додати підкатегорію</button>
             <form id="form_{{ category.id }}" class="form categories-form" method="POST" action="{% url 'create_category' %}" style="display: none; margin-top: 8px">
@@ -218,7 +222,7 @@
 
     {% for article in unpublished_articles reversed %}
 
-    <div class="article-card" id="article-{{article.id}}" style="background: white">
+    <div class="article-card" id="article-{{article.slug}}" style="background: white">
         <div class="card-content">
             <div class="card-image {% if not article.is_published %}unpublished{% endif %}" style="background: url('{{ article.image.url }}') no-repeat; background-size: cover;">
                 {% for category in article.categories.all %}
@@ -323,7 +327,7 @@ document.getElementById('article_name').addEventListener('input', (e) => {
     function confirmDeleteCategory(event, categoryId) {
         event.preventDefault();
         if (confirm('Ви впевнені, що хочете видалити категорію?')) {
-            fetch('/category/' + categoryId + '/delete/')
+            fetch('/category/' + categoryId + '/delete/', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}})
                 .then(response => {
                     if (response.ok) {
                         const categoryElement = document.getElementById('category-' + categoryId);
@@ -344,7 +348,7 @@ document.getElementById('article_name').addEventListener('input', (e) => {
     function confirmDelete(event, articleId) {
         event.preventDefault();
         if (confirm('Ви впевнені, що хочете видалити статтю?')) {
-            fetch('/article/' + articleId + '/delete/')
+            fetch('/article/' + articleId + '/delete/', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}})
                 .then(response => {
                     if (response.ok) {
                         const articleElement = document.getElementById('article-' + articleId);

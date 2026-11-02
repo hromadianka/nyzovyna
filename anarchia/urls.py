@@ -49,6 +49,7 @@ urlpatterns = [
     path('article/<uuid:id>/', views.article_detail, name='article_by_id'),
     path('comment', views.comment, name='comment'),
     path('login/', views.user_login, name='login'),
+    path('logout/', views.user_logout, name='logout'),
     path('editor-cabinet', views.editor_cabinet, name='editor_cabinet'),
     path('publish', views.publish, name='publish'),
     path('article/<slug:slug>/delete/', views.delete_article, name='delete'),

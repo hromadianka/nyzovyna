@@ -15,7 +15,7 @@ from django.test import TestCase
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
-from app.models import Article, Author, Category, Comment, AboutUsText
+from app.models import Article, Author, Category, Comment, AboutUsText, Editor
 
 
 def make_tree(roots=3, children=3, grandchildren=2):
@@ -44,6 +44,12 @@ def make_articles(count, cats, author=None, language='ua'):
         a.categories.add(*cats[:3])
         arts.append(a)
     return arts
+
+
+def make_editor():
+    user = User.objects.create_user('ed', password='x')
+    Editor.objects.create(user=user)
+    return user
 
 
 def table_queries(ctx, table):
@@ -129,7 +135,7 @@ class MenuQueryTests(Base):
     def test_reorder_visible_immediately(self):
         make_tree(roots=2, children=0, grandchildren=0)
         self.render_home()
-        u = User.objects.create_user('ed', password='x')
+        u = make_editor()
         self.client.force_login(u)
         r0, r1 = Category.objects.get(slug='r0'), Category.objects.get(slug='r1')
         import json
@@ -299,13 +305,13 @@ class SideBugTests(Base):
         self.assertEqual(self.client.get(reverse('sitemap')).status_code, 200)
 
     def test_delete_category_works(self):
-        self.client.force_login(User.objects.create_user('ed', password='x'))
+        self.client.force_login(make_editor())
         Category.objects.create(name_ua='z', name_en='z', slug='z')
-        self.assertEqual(self.client.get(reverse('delete_category', args=['z'])).status_code, 200)
+        self.assertEqual(self.client.post(reverse('delete_category', args=['z'])).status_code, 200)
         self.assertFalse(Category.objects.filter(slug='z').exists())
 
     def test_edit_author_redirects(self):
-        self.client.force_login(User.objects.create_user('ed', password='x'))
+        self.client.force_login(make_editor())
         Author.objects.create(name_en='A', name_ua='А', description_en='d', description_ua='д', slug='a')
         resp = self.client.post(reverse('edit_author', args=['a']),
                                 {'name_ua': 'x', 'name_en': 'x', 'description_ua': 'x', 'description_en': 'x'})
