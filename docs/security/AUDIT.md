@@ -365,8 +365,10 @@ System check identified 5 issues (0 silenced).
 | NYZ-006, 007, 010, 011, 012, 013, 014, 015, 016 | Исправлено (лимиты хранятся в `LocMemCache` каждого воркера, для строгих лимитов нужен общий кэш) | `fix(models)`, `fix(uploads)`, `fix(views)` |
 | NYZ-008, 009 | Исправлено: `DEBUG` из `DJANGO_DEBUG`, `allowed_hosts=False` | `fix(settings)` |
 | NYZ-018 | Permissions-Policy добавлен. **CSP отложен**: нужны nonce для всех inline-скриптов и обработчиков и проверка редактора в браузере | – |
-| NYZ-020, 021 | **Не сделано**: меняют `requirements.txt`, нужно ваше решение | – |
+| NYZ-020, 021 | Исправлено: 22 закреплённых пакета вместо 66, Django 5.2 LTS, Python 3.12; `pip-audit`: «No known vulnerabilities found». Хеши (`--hash`) в `requirements.txt` не добавлены (нужен `pip-compile` и сеть) | `fix(deps)` |
 | NYZ-022 | jQuery для CKEditor обновлён и на https. SRI для CDN-скриптов и замена CKEditor 4 отложены (нужны хеши из сети) | `fix(settings)` |
 | NYZ-023 | Cache-Control `never_cache` для кабинета сделан; CSRF-токен в сессии (`CSRF_USE_SESSIONS`) и мёртвый маршрут оставлены | – |
 
 Перед деплоем задать переменные окружения: `SECRET_KEY` (новый), `CLOUDINARY_API_KEY`, `RECAPTCHA_PUBLIC_KEY`, `RECAPTCHA_PRIVATE_KEY` (новые). Без них приложение не стартует. Активные входы редакторов сбросятся из-за смены движка сессий.
+
+Обновление зависимостей: `Django 5.2.18` (4.2 в EOL, оставшиеся advisories исправлены только на новых линиях), `Pillow 13.0.0`, `urllib3 2.8.0`, `requests 2.34.2`, `whitenoise 6.12.0`, `gunicorn 26.2.0` и др.; удалены Pyrebase4, gcloud, python-firebase, python-jwt, Radicale, rethinkdb, oauth2client, vobject, passlib, pybind11, boto3, django-storages, google-*, Markdown, mysqlclient, cryptography и транзитивный хвост. Версии проверены в окружении `nyz`; боевую сборку на Heroku не запускал. `runtime.txt` = `python-3.12.11`: если такой патч-версии у Heroku нет, указать доступную 3.12.x.
