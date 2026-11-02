@@ -227,7 +227,7 @@ class PublishTests(Base):
 
     def test_publish_slug_collision_gets_suffix(self):
         self.post(article_slug='dup')
-        self.post(article_slug='dup')
+        self.post(article_slug='dup', article_text='<p>a different body</p>')
         self.assertEqual(sorted(Article.objects.values_list('slug', flat=True)), ['dup', 'dup-1'])
 
     def test_publish_cyrillic_title_yields_readable_slug(self):

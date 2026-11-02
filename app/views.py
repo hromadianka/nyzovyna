@@ -263,6 +263,12 @@ def user_logout(request):
 
 # Editor views
 
+def is_repeat(request, scope, *parts):
+    """True when this client already sent the same form a moment ago (double click, retry after a timeout)."""
+    fingerprint = hashlib.sha256('|'.join(str(part) for part in parts).encode()).hexdigest()
+    return not cache.add(f'repeat:{scope}:{client_id(request)}:{fingerprint}', 1, 30)
+
+
 def form_error(request, template, context, message):
     return render(request, template, {**context, 'error_message': message}, status=400)
 
@@ -335,6 +341,9 @@ def publish(request):
     if error:
         return form_error(request, 'editor-cabinet.html', context, error)
 
+    if is_repeat(request, 'article', values['name'], values['language'], values['author'].pk, values['text']):
+        return redirect('editor_cabinet')
+
     article = Article(
         name=values['name'], text=values['text'], language=values['language'], author=values['author'],
         publish_at=values['publish_at'], is_published=values['is_published'],
@@ -374,6 +383,8 @@ def create_category(request):
         if parent_uuid is None:
             raise Http404
         parent = get_object_or_404(Category, pk=parent_uuid)
+    if is_repeat(request, 'category', name_ua, name_en, parent_id):
+        return redirect('editor_cabinet')
     category = Category(name_ua=name_ua, name_en=name_en, parent=parent)
     try:
         category.clean()
@@ -452,6 +463,8 @@ def create_new_author(request):
     if fields is None or (image is not None and validate_image(image)):
         return HttpResponse('Invalid author data.', status=400)
     name_ua, name_en, description_ua, description_en = fields
+    if is_repeat(request, 'author', name_ua, name_en, description_ua, description_en):
+        return redirect('editor_cabinet')
     author = Author(name_ua=name_ua, name_en=name_en, description_ua=description_ua, description_en=description_en)
     if image:
         author.image = image
