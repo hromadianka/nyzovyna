@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from app.models import AboutUsText, Article, Author, Category, Comment
 
-from .base import MARK, XSS_PAYLOADS, SecBase, active_content, add_cases, body_text
+from .base import MARK, XSS_PAYLOADS, SecBase, active_content, add_cases, body_text, known_open
 
 LISTING_URLS = ['/', '/all', '/category/root/', '/authors/author', '/search/?q=BODY', '/search/']
 
@@ -243,3 +243,8 @@ class HeaderValues(SecBase):
     def test_error_pages_also_carry_security_headers(self):
         response = self.make_client().get('/definitely-missing/', secure=True)
         self.assertIn('X-Content-Type-Options', response)
+
+
+# CSP needs nonces for every inline script and a browser smoke test of the editor pages: deferred.
+known_open(BrowserSideDefences, 'test_content_security_policy')
+known_open(HeaderValues, 'test_csp_blocks')

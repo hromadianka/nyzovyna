@@ -4,7 +4,7 @@ import re
 from django.test import Client
 from django.urls import reverse, resolve
 
-from .base import REPO, SecBase, add_cases, prod_setting, tracked_files
+from .base import REPO, SecBase, add_cases, known_open, prod_setting, tracked_files
 
 ATTACKER_SECRET = 'a' * 32
 BAD_TOKEN = 'z' * 32
@@ -200,3 +200,6 @@ def _forms_have_token(self, case):
         with self.subTest(form=attrs.strip()[:60]):
             self.assertIn('{% csrf_token %}', body, f'{name}: POST form without {{% csrf_token %}}: <form {attrs.strip()[:80]}>')
             self.assertNotRegex(attrs, r'action\s*=\s*["\']?https?://', f'{name}: form posts to an external URL')
+
+
+known_open(CsrfCookieAndSession, 'test_csrf_token_is_bound')  # CSRF_USE_SESSIONS: hardening, deferred

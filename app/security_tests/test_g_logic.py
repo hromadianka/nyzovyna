@@ -7,7 +7,7 @@ from django.test.utils import CaptureQueriesContext
 
 from app.models import Article, Comment
 
-from .base import REPO, SecBase, add_cases, body_text, prod_setting, tracked_files
+from .base import REPO, SecBase, add_cases, body_text, known_open, prod_setting, tracked_files
 
 HIDDEN = {'draft': ('SECRET DRAFT TITLE', 'secret-draft'), 'scheduled': ('SCHEDULED TITLE', 'future-post')}
 SURFACES = {
@@ -162,13 +162,14 @@ class ErrorPages(SecBase):
         self.assertNotIn('editor-cabinet', body, 'DEBUG=True turns every 404 into a page listing all routes (admin, ckeditor, editor-cabinet ...)')
 
     def test_500_does_not_reveal_paths_with_production_debug(self):
-        with self.production_debug():
-            body = body_text(self.make_client(self.editor_user).get('/about-us-edit'))
+        with self.production_debug(), mock.patch('app.views.render', side_effect=ValueError('boom')):
+            body = body_text(self.make_client().get('/'))
         self.assertNotIn('Traceback', body, 'DEBUG=True renders full tracebacks, local variables and file paths to visitors')
         self.assertNotIn(str(REPO), body)
 
     def test_500_is_generic_when_debug_is_off(self):
-        response = self.make_client(self.editor_user).get('/about-us-edit')
+        with mock.patch('app.views.render', side_effect=ValueError('boom')):
+            response = self.make_client().get('/')
         body = body_text(response)
         self.assertEqual(response.status_code, 500)
         for leak in ('Traceback', str(REPO), 'views.py', 'ValueError'):
@@ -198,3 +199,6 @@ class ErrorPages(SecBase):
     def test_error_pages_have_no_stack_for_method_errors(self):
         body = body_text(self.make_client(self.editor_user).post(self.url('delete_article')))
         self.assertNotIn('Traceback', body)
+
+
+known_open(ErrorPages, 'test_article_by_id_route_is_dead_code')

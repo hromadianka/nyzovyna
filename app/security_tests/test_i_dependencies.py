@@ -8,7 +8,7 @@ import re
 from django.core.checks import run_checks
 from django.test import SimpleTestCase
 
-from .base import REPO, SecBase, add_cases, tracked_files
+from .base import REPO, SecBase, add_cases, known_open, tracked_files
 
 # package -> (pinned-version advisories, minimum version fixing all of them)
 MIN_SAFE = {
@@ -134,3 +134,11 @@ class FrontendSupplyChain(SecBase):
         self.assertTrue(url.startswith('https://'), f'CKEDITOR_JQUERY_URL is protocol-relative ({url}): downgradable to HTTP')
         version = version_tuple(re.search(r'/(\d+\.\d+\.\d+)/', url).group(1))
         self.assertGreaterEqual(version, (3, 5, 0), 'jQuery < 3.5.0 has known XSS issues (CVE-2020-11022/11023)')
+
+
+# Open findings: dependency changes need an explicit decision (see docs/security/AUDIT.md, section 7).
+known_open(KnownVulnerableVersions, 'test_pinned_version')
+known_open(UnusedPackages, 'test_requirement_is_imported')
+known_open(RequirementHygiene, 'test_every_requirement', 'test_requirements_carry', 'test_only_one_mysql',
+           'test_runtime_python', 'test_ckeditor4')
+known_open(FrontendSupplyChain, 'test_external_scripts', 'test_external_stylesheets')

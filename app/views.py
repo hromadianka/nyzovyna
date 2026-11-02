@@ -1,97 +1,142 @@
-from django.shortcuts import render, get_object_or_404, redirect
+import json
+import uuid
+from datetime import datetime
+
 from django.contrib import messages
-from django.http import JsonResponse
-from django.contrib.auth.models import User
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
+from django.core.cache import cache
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.db.models import F, Q
+from django.http import Http404, HttpResponse, JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.timezone import make_aware, now
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import authenticate, login as auth_login
-from django.utils.timezone import now
-from django.utils.timezone import make_aware
-from datetime import datetime
-from .forms import CommentCaptchaForm
-from django.utils.text import slugify
-from django.db.models import F, Q
 from django.views.decorators.http import require_POST, require_http_methods
-import json
 
-
-from .permissions import editor_required
-from .sanitize import sanitize_html
+from .forms import CommentCaptchaForm
 from .menu_cache import invalidate_menu_cache
-from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
+from .models import AboutUsText, Article, Author, Category, Comment, category_ancestors
+from .permissions import editor_required, is_editor
+from .ratelimit import client_id, hit
+from .sanitize import sanitize_html
+from .uploads import validate_image
 
-# Create your views here.
+MAX_REPLY_DEPTH = 5
+MAX_COMMENT_LENGTH = 5000
+MAX_SEARCH_LENGTH = 100
+MAX_ORDER_ITEMS = 1000
+INT32_MAX = 2 ** 31 - 1
+BOT_MARKERS = ('bot', 'crawl', 'spider', 'slurp')
+
+
+def parse_uuid(value):
+    try:
+        return uuid.UUID(str(value))
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+
+def clean_text(request, field, max_length):
+    value = request.POST.get(field)
+    if value is None:
+        return None
+    value = value.strip()
+    if not value or len(value) > max_length:
+        return None
+    return value
+
+
+def with_ancestors(categories):
+    collected = {}
+    for category in categories:
+        collected[category.pk] = category
+        for ancestor in category_ancestors(category):
+            collected[ancestor.pk] = ancestor
+    return list(collected.values())
+
+
+def should_count_view(request, article):
+    if request.method != 'GET':
+        return False
+    agent = request.META.get('HTTP_USER_AGENT', '').lower()
+    if any(marker in agent for marker in BOT_MARKERS):
+        return False
+    return cache.add(f'viewed:{article.pk}:{client_id(request)}', 1, 30 * 60)
+
 
 def index(request):
-    current_language = get_language()
-    latest_articles = Article.objects.filter(
-        language = current_language, 
-        is_published = True, 
-    ).prefetch_related('categories').order_by('-publish_at')[:5]
-    popular_articles = Article.objects.filter(
-        language = current_language, 
-        is_published = True, 
-    ).prefetch_related('categories').order_by('-views')[:10]
+    public = Article.objects.public().filter(language=get_language()).prefetch_related('categories')
+    return render(request, 'index.html', {
+        'latest_articles': public.order_by('-publish_at')[:5],
+        'popular_articles': public.order_by('-views')[:10],
+    })
 
-    return render(request, 'index.html', {'latest_articles': latest_articles, 'popular_articles': popular_articles})
 
 def about_us(request):
-    about_us_text = AboutUsText.objects.get(pk=1)
-    return render(request, 'about-us.html', {'about_us_text': about_us_text})
+    return render(request, 'about-us.html', {'about_us_text': AboutUsText.objects.filter(pk=1).first()})
+
 
 def authors(request):
-    authors = Author.objects.all()
-    return render(request, 'authors.html', {'authors': authors})
+    return render(request, 'authors.html', {'authors': Author.objects.all()})
+
 
 def category_articles(request, slug):
-    current_language = get_language()
     category = get_object_or_404(Category, slug=slug)
-    articles = Article.objects.filter(
-        language = current_language, 
-        categories__in = [category],
-        is_published = True, 
-    )
+    articles = Article.objects.public().filter(language=get_language(), categories__in=[category])
     return render(request, 'category.html', {'this_category': category, 'articles': articles})
 
+
 def all_articles(request):
-    language = get_language()
-    articles = Article.objects.filter(
-        language=language,
-        is_published=True,
-    )
+    articles = Article.objects.public().filter(language=get_language())
     return render(request, 'category.html', {'articles': articles})
 
-def article_detail(request, slug):
-    article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
-    Article.objects.filter(pk=article.pk).update(views=F('views') + 1)
-    article.views += 1
-    all_articles = Article.objects.filter(is_published=True).exclude(pk=article.pk).order_by('-views')[:2]
 
-    comments = list(Comment.objects.filter(article=article).order_by('-created_at'))
+def attach_replies(comments):
+    """Fill `reply_list`; threads deeper than MAX_REPLY_DEPTH are shown flat at the last level, so the
+    recursive template (and the stack) stays bounded however long a chain is posted."""
     for comment in comments:
         comment.reply_list = []
     by_id = {comment.id: comment for comment in comments}
-    for comment in comments:
+    depth, shown_parent = {}, {}
+    for comment in sorted(comments, key=lambda c: c.created_at):
         parent = by_id.get(comment.parent_comment_id)
-        if parent is not None:
-            parent.reply_list.append(comment)
-    comments_count = len(comments)
-    captcha_form = CommentCaptchaForm()
+        if parent is None or parent.id not in depth:
+            depth[comment.id], shown_parent[comment.id] = 0, None
+        else:
+            depth[comment.id] = depth[parent.id] + 1
+            shown_parent[comment.id] = parent if depth[parent.id] < MAX_REPLY_DEPTH else shown_parent[parent.id]
+    for comment in comments:
+        if shown_parent[comment.id] is not None:
+            shown_parent[comment.id].reply_list.append(comment)
+
+
+def article_detail(request, slug):
+    article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
+    is_preview = not (article.is_published and article.publish_at <= now())
+    if is_preview and not is_editor(request.user):
+        raise Http404
+    if not is_preview and should_count_view(request, article):
+        Article.objects.filter(pk=article.pk).update(views=F('views') + 1)
+        article.views += 1
+    all_articles = Article.objects.public().exclude(pk=article.pk).order_by('-views')[:2]
+
+    comments = list(Comment.objects.filter(article=article).order_by('-created_at'))
+    attach_replies(comments)
 
     parent_category = None
     article_categories = list(article.categories.all())
     if article_categories:
         parent_of = dict(Category.objects.values_list('id', 'parent_id'))
-        parent_category = article_categories[0].id
-        while parent_of.get(parent_category):
+        parent_category, seen = article_categories[0].id, set()
+        while parent_of.get(parent_category) and parent_category not in seen:
+            seen.add(parent_category)
             parent_category = parent_of[parent_category]
     recommended_articles = []
     if parent_category:
-        recommended_articles = Article.objects.filter(
-            categories=parent_category,
-            is_published=True
-        ).exclude(pk=article.pk).order_by('-views')[:2]
+        recommended_articles = Article.objects.public().filter(
+            categories=parent_category).exclude(pk=article.pk).order_by('-views')[:2]
     translate = {
         'reply': _('Відповісти'),
         'enter_name': _('Введіть ім\'я'),
@@ -101,8 +146,8 @@ def article_detail(request, slug):
         'article': article,
         'comments': comments,
         'translate': translate,
-        'comments_count': comments_count,
-        'captcha_form': captcha_form,
+        'comments_count': len(comments),
+        'captcha_form': CommentCaptchaForm(),
         'recommended_articles': recommended_articles,
         'all_articles': all_articles
     })
@@ -111,192 +156,148 @@ def article_detail(request, slug):
 def comment(request):
     if request.method != 'POST':
         return redirect('/')
+    if hit('comment', request, limit=10, window=600):
+        return HttpResponse('Too many comments. Try again later.', status=429)
 
-    article_id = request.POST.get('article_id')
-    parent_comment_id = request.POST.get('parent_comment_id')
+    article_id = parse_uuid(request.POST.get('article_id'))
+    if article_id is None:
+        raise Http404
+    article = get_object_or_404(Article.objects.public(), pk=article_id)
 
-    article = get_object_or_404(Article, pk=article_id)
+    if not CommentCaptchaForm(request.POST).is_valid():
+        return redirect('article', slug=article.slug)
 
-    # КАПЧА — ТОЛЬКО ДЛЯ ОСНОВНОГО КОММЕНТА
-    if not parent_comment_id:
-        captcha_form = CommentCaptchaForm(request.POST)
-        if not captcha_form.is_valid():
-            return redirect('article', slug=article.slug)
+    author = clean_text(request, 'author', 100)
+    text = clean_text(request, 'text', MAX_COMMENT_LENGTH)
+    if author is None or text is None:
+        return HttpResponse('Invalid comment.', status=400)
 
-    author = request.POST.get('author')
-    text = request.POST.get('text')
+    parent_comment = None
+    parent_id = request.POST.get('parent_comment_id')
+    if parent_id:
+        parent_uuid = parse_uuid(parent_id)
+        if parent_uuid is None:
+            raise Http404
+        parent_comment = get_object_or_404(Comment, pk=parent_uuid, article=article)
 
-    if parent_comment_id:
-        parent_comment = get_object_or_404(Comment, pk=parent_comment_id)
-        Comment.objects.create(
-            article=article,
-            author=author,
-            text=text,
-            parent_comment=parent_comment
-        )
-    else:
-        Comment.objects.create(
-            article=article,
-            author=author,
-            text=text
-        )
-
+    Comment.objects.create(article=article, author=author, text=text, parent_comment=parent_comment)
     return redirect('article', slug=article.slug)
 
 
-
 def author_detail(request, slug):
-       author = get_object_or_404(Author, slug=slug)
-       author_articles = Article.objects.filter(
-        author=author,
-        is_published=True,
-       )
-       return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
+    author = get_object_or_404(Author, slug=slug)
+    author_articles = Article.objects.public().filter(author=author)
+    return render(request, 'author_detail.html', {'author': author, 'author_articles': author_articles})
 
 
 def article_search(request):
-    query = request.GET.get('q', '').strip()
+    if hit('search', request, limit=60, window=60):
+        return HttpResponse('Too many searches. Try again later.', status=429)
+    query = request.GET.get('q', '').strip()[:MAX_SEARCH_LENGTH]
 
-    results = Article.objects.filter(
-        is_published=True,
-        publish_at__lte=now()
-    )
-
+    results = Article.objects.public()
     if query:
-        results = results.filter(
-            Q(name__icontains=query) |
-            Q(text__icontains=query)
-        )
+        results = results.filter(Q(name__icontains=query) | Q(text__icontains=query))
 
-    return render(request, 'search.html', {
-        'query': query,
-        'results': results
-    })
+    return render(request, 'search.html', {'query': query, 'results': results})
 
-#Виды редактора
 
 def user_login(request):
     if request.method == 'POST':
-        login_username = request.POST.get('login')
-        password = request.POST.get('password')
-        user = authenticate(request, username=login_username, password=password)
+        user = authenticate(request, username=request.POST.get('login'), password=request.POST.get('password'))
         if user is not None:
             auth_login(request, user)
             return redirect('editor_cabinet')
-        else:
-            messages.error(request, 'Неправильний логін або пароль')
+        messages.error(request, 'Неправильний логін або пароль')
     return render(request, 'login.html')
+
 
 @require_POST
 def user_logout(request):
     auth_logout(request)
     return redirect('home')
 
+
+# Editor views
+
+def form_error(request, template, context, message):
+    return render(request, template, {**context, 'error_message': message}, status=400)
+
+
+def parse_article_form(request):
+    """Validate the publish/edit form. Returns (values, error); nothing is written here."""
+    name = clean_text(request, 'article_name', 1000)
+    text = request.POST.get('article_text')
+    language = request.POST.get('language')
+    author_id = parse_uuid(request.POST.get('article_author'))
+    if name is None or not (text or '').strip():
+        return None, 'Заповніть назву і текст статті.'
+    if language not in ('ua', 'en'):
+        return None, 'Невідома мова.'
+    author = Author.objects.filter(pk=author_id).first() if author_id else None
+    if author is None:
+        return None, 'Автор не знайдений.'
+
+    category_ids = [parse_uuid(value) for value in request.POST.getlist('categories')]
+    if None in category_ids:
+        return None, 'Невірна категорія.'
+    categories = with_ancestors(Category.objects.filter(pk__in=category_ids).select_related('parent'))
+
+    is_published, publish_at = True, now()
+    publish_datetime = request.POST.get('publish_datetime')
+    if request.POST.get('publish_option') == 'schedule' and publish_datetime:
+        try:
+            publish_at = make_aware(datetime.strptime(publish_datetime, '%Y-%m-%dT%H:%M'))
+        except (ValueError, OverflowError):
+            return None, 'Невірна дата публікації.'
+        is_published = False
+
+    image = request.FILES.get('article_image')
+    if image is not None:
+        error = validate_image(image)
+        if error:
+            return None, error
+
+    return {
+        'name': name, 'text': sanitize_html(text), 'language': language, 'author': author,
+        'categories': categories, 'is_published': is_published, 'publish_at': publish_at, 'image': image,
+        'slug': (request.POST.get('article_slug') or '').strip(),
+    }, None
+
+
 @editor_required
 def editor_cabinet(request):
-    articles = Article.objects.filter(is_published = True).prefetch_related('categories')
-    unpublished_articles = Article.objects.filter(is_published = False).prefetch_related('categories')
-    about_us_text = AboutUsText.objects.get(pk=1)
-    authors = Author.objects.all()
-    
-    context = {
-        'articles': articles,
-        'unpublished_articles': unpublished_articles,
-        'about_us_text': about_us_text,
-        'authors': authors
-    }
-    return render(request, 'editor-cabinet.html', context)
+    return render(request, 'editor-cabinet.html', {
+        'articles': Article.objects.filter(is_published=True).prefetch_related('categories'),
+        'unpublished_articles': Article.objects.filter(is_published=False).prefetch_related('categories'),
+        'about_us_text': AboutUsText.objects.filter(pk=1).first(),
+        'authors': Author.objects.all(),
+    })
+
 
 @editor_required
 def publish(request):
-    authors = Author.objects.all()
-    categories = Category.objects.all()
+    context = {'authors': Author.objects.all(), 'categories': Category.objects.all()}
+    if request.method != 'POST':
+        return render(request, 'editor-cabinet.html', context)
 
-    if request.method == 'POST':
-        article_name = request.POST.get('article_name')
-        article_text = sanitize_html(request.POST.get('article_text'))
-        article_image = request.FILES.get('article_image')
-        language = request.POST.get('language')
-        category_ids = request.POST.getlist('categories')
-        author_id = request.POST.get('article_author')
-        publish_option = request.POST.get('publish_option')
-        publish_datetime = request.POST.get('publish_datetime')
-        article_slug_raw = request.POST.get('article_slug')
+    values, error = parse_article_form(request)
+    if error:
+        return form_error(request, 'editor-cabinet.html', context, error)
 
-        if not author_id:
-            return render(request, 'editor-cabinet.html', {
-                'error_message': 'Автор не знайдений.',
-                'authors': authors,
-                'categories': categories,
-            })
-
-        try:
-            author = Author.objects.get(id=author_id)
-        except Author.DoesNotExist:
-            return render(request, 'editor-cabinet.html', {
-                'error_message': 'Автор не знайдений.',
-                'authors': authors,
-                'categories': categories,
-            })
-
-        all_categories = []
-        for category_id in category_ids:
-            try:
-                category = Category.objects.get(id=category_id)
-            except Category.DoesNotExist:
-                continue
-
-            all_categories.append(category)
-            parent = category.parent
-            while parent:
-                all_categories.append(parent)
-                parent = parent.parent
-
-        all_categories = list(set(all_categories))
-
-        if publish_option == "schedule" and publish_datetime:
-            is_published = False
-            publish_date = make_aware(
-                datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M")
-            )
-        else:
-            publish_date = now()
-            is_published = True
-
-        article = Article(
-            name=article_name,
-            text=article_text,
-            language=language,
-            author=author,
-            publish_at=publish_date,
-            is_published=is_published,
-        )
-
-        if article_slug_raw:
-            article.slug = article_slug_raw
-
+    article = Article(
+        name=values['name'], text=values['text'], language=values['language'], author=values['author'],
+        publish_at=values['publish_at'], is_published=values['is_published'],
+    )
+    if values['slug']:
+        article.slug = values['slug']
+    if values['image']:
+        article.image = values['image']
+    with transaction.atomic():
         article.save()
+        article.categories.add(*values['categories'])
+    return redirect('article', slug=article.slug)
 
-        if all_categories:
-            article.categories.add(*all_categories)
-
-        if article_image:
-            if article_image.content_type.startswith('image'):
-                article.image = article_image
-                article.save()
-            else:
-                return render(request, 'editor-cabinet.html', {
-                    'error_message': 'Неправильний формат файлу.',
-                    'authors': authors,
-                    'categories': categories,
-                })
-
-        return redirect('article', slug=article.slug)
-
-    return render(request, 'editor-cabinet.html', {
-        'authors': authors,
-        'categories': categories,
-    })
 
 @editor_required
 @require_POST
@@ -304,20 +305,30 @@ def delete_article(request, slug):
     get_object_or_404(Article, slug=slug).delete()
     return JsonResponse({'success': True})
 
+
 @editor_required
 def create_category(request):
-    if request.method == 'POST':
-        name_ua = request.POST.get('name_ua')
-        name_en = request.POST.get('name_en')
-        parent_id =  request.POST.get('parent_id')
-        if parent_id:
-            parent = get_object_or_404(Category, pk=parent_id)
-            new_category = Category.objects.create(name_ua=name_ua, name_en=name_en, parent=parent)
-            return redirect('editor_cabinet')
-        else:
-            new_category = Category.objects.create(name_ua=name_ua, name_en=name_en)
-            return redirect('editor_cabinet')
-    return render(request, 'editor-cabinet.html')
+    if request.method != 'POST':
+        return render(request, 'editor-cabinet.html')
+    name_ua = clean_text(request, 'name_ua', 100)
+    name_en = clean_text(request, 'name_en', 100)
+    if name_ua is None or name_en is None:
+        return HttpResponse('Invalid category name.', status=400)
+    parent = None
+    parent_id = request.POST.get('parent_id')
+    if parent_id:
+        parent_uuid = parse_uuid(parent_id)
+        if parent_uuid is None:
+            raise Http404
+        parent = get_object_or_404(Category, pk=parent_uuid)
+    category = Category(name_ua=name_ua, name_en=name_en, parent=parent)
+    try:
+        category.clean()
+    except ValidationError:
+        return HttpResponse('Categories are nested too deeply.', status=400)
+    category.save()
+    return redirect('editor_cabinet')
+
 
 @editor_required
 @require_POST
@@ -325,176 +336,128 @@ def delete_category(request, slug):
     get_object_or_404(Category, slug=slug).delete()
     return JsonResponse({'success': True})
 
+
 @editor_required
 def edit_article(request, slug):
     article = get_object_or_404(Article, slug=slug)
-    authors = Author.objects.all()
-    categories = Category.objects.all()
+    context = {'article': article, 'authors': Author.objects.all(), 'categories': Category.objects.all()}
+    if request.method != 'POST':
+        return render(request, 'edit_article.html', context)
 
-    if request.method == 'POST':
-        article_name = request.POST.get('article_name')
-        article_text = sanitize_html(request.POST.get('article_text'))
-        article_image = request.FILES.get('article_image')
-        author_id = request.POST.get('article_author')
-        language = request.POST.get('language')
-        category_ids = request.POST.getlist('categories')
-        publish_option = request.POST.get('publish_option')
-        publish_datetime = request.POST.get('publish_datetime')
-        article_slug_raw = request.POST.get('article_slug')  # новое поле
+    values, error = parse_article_form(request)
+    if error:
+        return form_error(request, 'edit_article.html', context, error)
 
-        try:
-            author = Author.objects.get(id=author_id)
-        except Author.DoesNotExist:
-            return render(request, 'edit_article.html', {
-                'article': article,
-                'authors': authors,
-                'categories': categories,
-                'error_message': 'Автор не знайдений.'
-            })
-
-        all_categories = []
-
-        for category_id in category_ids:
-            try:
-                category = Category.objects.get(id=category_id)
-            except Category.DoesNotExist:
-                continue
-
-            all_categories.append(category)
-            parent = category.parent
-            while parent:
-                all_categories.append(parent)
-                parent = parent.parent
-
-        all_categories = list(set(all_categories))
-
-        if publish_option == "schedule" and publish_datetime:
-            article.is_published = False
-            article.publish_at = make_aware(
-                datetime.strptime(publish_datetime, "%Y-%m-%dT%H:%M")
-            )
-        else:
-            article.is_published = True
-            article.publish_at = now()
-
-        article.name = article_name
-        article.text = article_text
-        article.language = language
-        article.author = author
-
-        article.categories.clear()
-        if all_categories:
-            article.categories.add(*all_categories)
-
-        if article_image:
-            if article_image.content_type.startswith('image'):
-                article.image = article_image
-            else:
-                return render(request, 'edit_article.html', {
-                    'article': article,
-                    'authors': authors,
-                    'categories': categories,
-                    'error_message': 'Неправильний формат файлу.'
-                })
-
-        if article_slug_raw is not None:
-            article.slug = article_slug_raw.strip() or None
-
+    article.name, article.text, article.language = values['name'], values['text'], values['language']
+    article.author = values['author']
+    article.is_published, article.publish_at = values['is_published'], values['publish_at']
+    if values['image']:
+        article.image = values['image']
+    article.slug = values['slug'] or None
+    with transaction.atomic():
         article.save()
-
-        return redirect('article', slug=article.slug)
-
-    return render(request, 'edit_article.html', {
-        'article': article,
-        'authors': authors,
-        'categories': categories,
-    })
-
+        article.categories.set(values['categories'])
+    return redirect('article', slug=article.slug)
 
 
 @editor_required
 @require_http_methods(['POST'])
 def about_us_edit(request):
-    if request.method == 'POST':
-        new_text_ua = sanitize_html(request.POST.get('new_text_ua'))
-        new_text_en = sanitize_html(request.POST.get('new_text_en'))
-        about_us_text = AboutUsText.objects.get(pk=1)
-        about_us_text.text_ua = new_text_ua
-        about_us_text.text_en = new_text_en
-        about_us_text.save()
+    text_ua, text_en = request.POST.get('new_text_ua'), request.POST.get('new_text_en')
+    if text_ua is None or text_en is None:
+        return HttpResponse('Invalid text.', status=400)
+    about_us_text, _created = AboutUsText.objects.get_or_create(pk=1)
+    about_us_text.text_ua, about_us_text.text_en = sanitize_html(text_ua), sanitize_html(text_en)
+    about_us_text.save()
+    return redirect('editor_cabinet')
 
-        return redirect('editor_cabinet')
+
+def author_fields(request, prefix):
+    names = [clean_text(request, f'{prefix}name_ua', 100), clean_text(request, f'{prefix}name_en', 100)]
+    descriptions = [request.POST.get(f'{prefix}description_ua'), request.POST.get(f'{prefix}description_en')]
+    if None in names or None in descriptions:
+        return None
+    return names + descriptions
+
 
 @editor_required
 def create_new_author(request):
-    if request.method == 'POST':
-        name_ua = request.POST.get('author_name_ua')
-        name_en = request.POST.get('author_name_en')
-        description_ua = request.POST.get('author_description_ua')
-        description_en = request.POST.get('author_description_en')
-        author_image = request.FILES.get('author_image') 
+    if request.method != 'POST':
+        return render(request, 'editor-cabinet.html')
+    fields = author_fields(request, 'author_')
+    image = request.FILES.get('author_image')
+    if fields is None or (image is not None and validate_image(image)):
+        return HttpResponse('Invalid author data.', status=400)
+    name_ua, name_en, description_ua, description_en = fields
+    author = Author(name_ua=name_ua, name_en=name_en, description_ua=description_ua, description_en=description_en)
+    if image:
+        author.image = image
+    author.save()
+    return redirect('editor_cabinet')
 
-        new_author = Author.objects.create(
-            name_ua=name_ua,
-            name_en=name_en,
-            description_ua=description_ua,
-            description_en=description_en,
-            image=author_image
-        )
-
-        return redirect('editor_cabinet')
-    return render(request, 'editor-cabinet.html')
 
 @editor_required
 def edit_author(request, slug):
-       author = get_object_or_404(Author, slug=slug)
-       if request.method == 'POST':
-           name_ua = request.POST.get('name_ua')
-           name_en = request.POST.get('name_en')
-           description_ua = request.POST.get('description_ua')
-           description_en = request.POST.get('description_en')
-           author_image = request.FILES.get('author_image')
+    author = get_object_or_404(Author, slug=slug)
+    if request.method != 'POST':
+        return render(request, 'edit_author.html', {'author': author})
+    fields = author_fields(request, '')
+    image = request.FILES.get('author_image')
+    if fields is None or (image is not None and validate_image(image)):
+        return form_error(request, 'edit_author.html', {'author': author}, 'Невірні дані автора.')
+    author.name_ua, author.name_en, author.description_ua, author.description_en = fields
+    if image:
+        author.image = image
+    author.save()
+    return redirect('author_detail', slug=author.slug)
 
-           author.name_ua = name_ua
-           author.name_en = name_en
-           author.description_en = description_en
-           author.description_ua = description_ua
-           if author_image:
-               author.image = author_image
-           author.save()
-           return redirect('author_detail', slug=author.slug)
-       return render(request, 'edit_author.html', {'author': author})
 
 @editor_required
 def comments_moderation(request):
-    comments = Comment.objects.all()
-    
+    comments = Comment.objects.select_related('article', 'parent_comment')
     return render(request, 'comments_moderation.html', {'comments': comments})
+
 
 @editor_required
 @require_POST
 def delete_comment(request, id):
-    comment = get_object_or_404(Comment, id=id)
-    comment.delete()
-
+    get_object_or_404(Comment, id=id).delete()
     return redirect('comments_moderation')
+
 
 @editor_required
 def category_order_editor(request):
     categories = Category.objects.filter(parent__isnull=True).prefetch_related('children')
-    return render(request, 'category_order.html', {
-        'categories': categories
-    })
+    return render(request, 'category_order.html', {'categories': categories})
+
+
+def parse_order_payload(body):
+    try:
+        data = json.loads(body)
+    except (ValueError, RecursionError):
+        return None
+    if not isinstance(data, list) or len(data) > MAX_ORDER_ITEMS:
+        return None
+    parsed = {}
+    for item in data:
+        if not isinstance(item, dict):
+            return None
+        category_id, order = parse_uuid(item.get('id')), item.get('order')
+        if category_id is None or type(order) is not int or not -INT32_MAX <= order <= INT32_MAX:
+            return None
+        parsed[category_id] = order
+    return parsed
 
 
 @editor_required
 @require_POST
 def update_category_order(request):
-    data = json.loads(request.body)
-
-    for item in data:
-        Category.objects.filter(id=item['id']).update(order=item['order'])
-
-    invalidate_menu_cache()  # queryset.update() sends no signals
-
+    orders = parse_order_payload(request.body)
+    if orders is None:
+        return JsonResponse({'status': 'invalid payload'}, status=400)
+    categories = list(Category.objects.filter(pk__in=orders))
+    for category in categories:
+        category.order = orders[category.pk]
+    Category.objects.bulk_update(categories, ['order'])
+    invalidate_menu_cache()  # bulk_update sends no signals
     return JsonResponse({'status': 'ok'})

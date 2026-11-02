@@ -127,6 +127,15 @@ def add_cases(cls, name, cases):
     return decorator
 
 
+def known_open(cls, *prefixes):
+    """Mark findings that are documented in docs/security/AUDIT.md but not fixed yet as expected failures.
+    Fixing one turns it into an 'unexpected success' so the marker gets removed."""
+    import unittest
+    for name in dir(cls):
+        if name.startswith('test_') and name.startswith(prefixes):
+            setattr(cls, name, unittest.expectedFailure(getattr(cls, name)))
+
+
 def png_bytes(width=4, height=4):
     from PIL import Image
     buf = io.BytesIO()

@@ -22,6 +22,7 @@
         <input hidden value="{{article.id}}" name="article_id" />
         <input class="comment-input-name" type="text" placeholder="{{ translate.enter_name }}" required name="author" />
         <textarea class="comment-input-text" placeholder="{{ translate.enter_comment }}" required name="text">{{ reply.author }}, </textarea>
+        {{ captcha_form.captcha }}
         <button class="comment-btn" type="submit">{{ translate.reply }}</button>
     </form>
 </div>
