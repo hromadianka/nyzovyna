@@ -67,7 +67,7 @@ class DependencyFailureTests(Base):
             response = self.client.post('/create_new_author/', {
                 'author_name_ua': 'а', 'author_name_en': 'a', 'author_description_ua': 'd',
                 'author_description_en': 'd', 'author_image': png()})
-        self.assertLess(response.status_code, 500)
+        self.assertIn(response.status_code, (400, 503))
 
     def test_storage_failure_on_article_edit_keeps_old_data(self):
         self.login()

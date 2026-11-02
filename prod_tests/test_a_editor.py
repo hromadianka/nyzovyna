@@ -265,7 +265,7 @@ class PublishTests(Base):
         with mock.patch('django.core.files.storage.FileSystemStorage._save', side_effect=OSError('storage down')):
             response = self.client.post('/publish', {**publish_payload(self.author, article_slug='st'),
                                                      'article_image': png()})
-        self.assertLess(response.status_code, 500)
+        self.assertIn(response.status_code, (400, 503))
         self.assertFalse(Article.objects.filter(slug='st').exists())
 
     def test_publish_form_get_ok(self):

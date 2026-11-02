@@ -1,4 +1,5 @@
 import hashlib
+import logging
 import json
 import uuid
 from datetime import datetime
@@ -28,6 +29,13 @@ from .ratelimit import client_id, hit
 from .sanitize import sanitize_html
 from .uploads import validate_image
 
+try:
+    from cloudinary.exceptions import Error as CloudinaryError
+except ImportError:  # pragma: no cover
+    CloudinaryError = OSError
+
+STORAGE_ERRORS = (OSError, CloudinaryError)
+logger = logging.getLogger(__name__)
 MAX_REPLY_DEPTH = 5
 PAGE_SIZE = 24
 MAX_COMMENT_LENGTH = 5000
@@ -259,6 +267,12 @@ def form_error(request, template, context, message):
     return render(request, template, {**context, 'error_message': message}, status=400)
 
 
+def storage_error(request, template, context):
+    logger.exception('image storage failed for %s', request.path)
+    return render(request, template, {**context, 'error_message': 'Не вдалося зберегти зображення. Спробуйте ще раз.'},
+                  status=503)
+
+
 def parse_article_form(request):
     """Validate the publish/edit form. Returns (values, error); nothing is written here."""
     name = clean_text(request, 'article_name', 1000)
@@ -329,9 +343,12 @@ def publish(request):
         article.slug = values['slug']
     if values['image']:
         article.image = values['image']
-    with transaction.atomic():
-        article.save()
-        article.categories.add(*values['categories'])
+    try:
+        with transaction.atomic():
+            article.save()
+            article.categories.add(*values['categories'])
+    except STORAGE_ERRORS:
+        return storage_error(request, 'editor-cabinet.html', context)
     return redirect('article', slug=article.slug)
 
 
@@ -397,9 +414,12 @@ def edit_article(request, slug):
         article.image = values['image']
         fields.append('image')
     article.slug = values['slug'] or article.slug
-    with transaction.atomic():
-        article.save(update_fields=fields)
-        article.categories.set(values['categories'])
+    try:
+        with transaction.atomic():
+            article.save(update_fields=fields)
+            article.categories.set(values['categories'])
+    except STORAGE_ERRORS:
+        return storage_error(request, 'edit_article.html', context)
     return redirect('article', slug=article.slug)
 
 
@@ -435,7 +455,10 @@ def create_new_author(request):
     author = Author(name_ua=name_ua, name_en=name_en, description_ua=description_ua, description_en=description_en)
     if image:
         author.image = image
-    author.save()
+    try:
+        author.save()
+    except STORAGE_ERRORS:
+        return storage_error(request, 'editor-cabinet.html', {})
     return redirect('editor_cabinet')
 
 
@@ -451,7 +474,10 @@ def edit_author(request, slug):
     author.name_ua, author.name_en, author.description_ua, author.description_en = fields
     if image:
         author.image = image
-    author.save()
+    try:
+        author.save()
+    except STORAGE_ERRORS:
+        return storage_error(request, 'edit_author.html', {'author': author})
     return redirect('author_detail', slug=author.slug)
 
 
