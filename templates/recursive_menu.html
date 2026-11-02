@@ -1,11 +1,11 @@
-{% for child_category in category.children.all %}
+{% for child_category in category.menu_children %}
 <li class="parent-category">
     {% if current_language == "en" %}
     <a href="{% url 'category_articles' child_category.slug %}" class="menu-link">{{ child_category.name_en }}</a>
     {% else %}
     <a href="{% url 'category_articles' child_category.slug %}" class="menu-link">{{ child_category.name_ua }}</a>
     {% endif %}
-    {% if child_category.children.all %}
+    {% if child_category.menu_children %}
     <ul class="sub-menu iteration">
         {% include 'recursive_menu.html' with category=child_category %}
     </ul>

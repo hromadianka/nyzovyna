@@ -25,22 +25,19 @@
                 </div>
                 <ul class="menu">
                     {% cache 3600 site_menu current_language %}
-                    {% for category in categories %}
-                    {% if not category.parent %}
+                    {% for category in menu_categories %}
                     <li class="parent-category">
                         {% if current_language == "en" %}
                         <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_en }}</a>
                         {% else %}
                         <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_ua }}</a>
                         {% endif %}
-                        {% if category.children.all %}
+                        {% if category.menu_children %}
                         <ul class="sub-menu">
                             {% include 'recursive_menu.html' with category=category %}
                         </ul>
-                       
                         {% endif %}
                     </li>
-                    {% endif %}
                     {% endfor %}
                     <li><a href="{% url 'authors' %}" class="menu-link">{% trans "Автори" %}</a></li>
                     <li><a href="{% url 'about_us' %}" class="menu-link">{% trans "Про нас" %}</a></li>
@@ -88,13 +85,11 @@
             </div>
             <div class="footer-row2">
                 {% cache 3600 footer_categories current_language %}
-                {% for category in categories %}
-                {% if not category.parent %}
+                {% for category in menu_categories %}
                 {% if current_language == "en" %}
-                <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_en }}</a>
+                <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_en }}</a>
                 {% else %}
-                <a href="{% url 'category_articles' category.id %}" class="menu-link">{{ category.name_ua }}</a>
-                {% endif %}
+                <a href="{% url 'category_articles' category.slug %}" class="menu-link">{{ category.name_ua }}</a>
                 {% endif %}
                 {% endfor %}
                 {% endcache %}

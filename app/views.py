@@ -16,6 +16,7 @@ from django.views.decorators.http import require_POST
 import json
 
 
+from .menu_cache import invalidate_menu_cache
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
 
 # Create your views here.
@@ -476,5 +477,7 @@ def update_category_order(request):
 
     for item in data:
         Category.objects.filter(id=item['id']).update(order=item['order'])
+
+    invalidate_menu_cache()  # queryset.update() sends no signals
 
     return JsonResponse({'status': 'ok'})
