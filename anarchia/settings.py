@@ -29,10 +29,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5m)2!aqsq-exanwdv5c2+x@%z-n90_*qqw^noaacc_hy$e@!j7'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG') == '1'
 
 ALLOWED_HOSTS = ['nyzovyna-e468a704bfb3.herokuapp.com', 'nyzovyna.com', 'www.nyzovyna.com', '127.0.0.1']
 
@@ -176,14 +176,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-django_heroku.settings(locals())
+django_heroku.settings(locals(), allowed_hosts=False)
 del DATABASES['default']['OPTIONS']['sslmode']
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'hscnkoqff',
-    'API_KEY': '367299551177912',
+    'API_KEY': os.environ['CLOUDINARY_API_KEY'],
     'API_SECRET': os.environ['CLOUDINARY_SECRET'],
 }
 
@@ -192,7 +192,8 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # CKEditor Settings
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 CKEDITOR_IMAGE_BACKEND = "pillow"
-CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js' 
+CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js'
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'full',
@@ -204,6 +205,9 @@ CKEDITOR_CONFIGS = {
 
 
 SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+LOGIN_URL = 'login'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_HSTS_SECONDS = 31536000 
@@ -211,8 +215,8 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 # Captcha Settings
-RECAPTCHA_PUBLIC_KEY = '6LfAfk8sAAAAAPo1-n1eDxuzg9sToQeJ6RfIpSTz'
-RECAPTCHA_PRIVATE_KEY = '6LfAfk8sAAAAABJCsNLBneERMqfn0jCbqvD7NVGV'
+RECAPTCHA_PUBLIC_KEY = os.environ['RECAPTCHA_PUBLIC_KEY']
+RECAPTCHA_PRIVATE_KEY = os.environ['RECAPTCHA_PRIVATE_KEY']
 
 # Sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
