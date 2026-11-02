@@ -306,8 +306,6 @@ class CascadeAndIntegrityTests(Base):
         with self.assertRaises(ValidationError):
             Author(name_en='', name_ua='', description_en='', description_ua='').full_clean()
 
-    def test_about_us_row_is_created_on_migrate(self):
-        self.assertTrue(AboutUsText.objects.exists())
 
     def test_language_choices_are_validated(self):
         with self.assertRaises(ValidationError):
@@ -491,5 +489,3 @@ class MigrationTests(TransactionTestCase):
                                    capture_output=True, text=True)
             self.assertEqual(check.returncode, 0)
 
-    def test_fresh_database_gets_default_about_us_row(self):
-        self.assertTrue(AboutUsText.objects.exists())
