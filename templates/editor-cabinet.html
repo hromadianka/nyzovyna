@@ -148,8 +148,7 @@
 </form>
 
 <ul class="toggle">
-    {% for category in categories %}
-    {% if not category.parent %}
+    {% for category in menu_categories %}
     <li>
         <details id="category-{{category.slug}}">
             <summary>
@@ -165,11 +164,10 @@
                 <button type="submit" class="btn">Створити</button>
             </form>
             <ul class="toggle">
-                {% include 'recursive_list.html' with categories=category.children.all %}
+                {% include 'recursive_list.html' with categories=category.menu_children %}
             </ul>
         </details>
     </li>
-    {% endif %}
     {% endfor %}
 </ul>
 

@@ -64,7 +64,7 @@
     <fieldset class="form">
         {% for category in categories %}
         <label>
-            <input type="checkbox" name="categories" value="{{ category.id }}" {% if category in article.categories.all %} checked {% endif %}>
+            <input type="checkbox" name="categories" value="{{ category.id }}" {% if category.id in selected_category_ids %} checked {% endif %}>
             <span class="form">{{ category.name_ua }}</span>
         </label>
         {% endfor %}

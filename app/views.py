@@ -351,7 +351,10 @@ def delete_category(request, slug):
 @editor_required
 def edit_article(request, slug):
     article = get_object_or_404(Article, slug=slug)
-    context = {'article': article, 'authors': Author.objects.all(), 'categories': Category.objects.all()}
+    context = {
+        'article': article, 'authors': Author.objects.all(), 'categories': Category.objects.all(),
+        'selected_category_ids': set(article.categories.values_list('id', flat=True)),
+    }
     if request.method != 'POST':
         return render(request, 'edit_article.html', context)
 
