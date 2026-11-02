@@ -59,6 +59,7 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'app.resilience.DatabaseUnavailableMiddleware',
     'app.middleware.LoginThrottleMiddleware',
     'app.middleware.PermissionsPolicyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -234,7 +235,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "BACKEND": "app.resilience.ResilientLocMemCache",
         "LOCATION": "site-menu-cache",
     }
 }

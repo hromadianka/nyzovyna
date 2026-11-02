@@ -20,13 +20,13 @@ class DependencyFailureTests(Base):
     def test_database_outage_returns_503_not_500(self):
         with mock.patch('django.db.backends.base.base.BaseDatabaseWrapper.ensure_connection',
                         side_effect=OperationalError('db down')):
-            response = self.client.get('/')
+            response = Client(raise_request_exception=False).get('/')
         self.assertEqual(response.status_code, 503)
 
     def test_database_outage_does_not_leak_stack_trace(self):
         with mock.patch('django.db.backends.base.base.BaseDatabaseWrapper.ensure_connection',
                         side_effect=OperationalError('db down secret-host')):
-            response = self.client.get('/')
+            response = Client(raise_request_exception=False).get('/')
         self.assertNotIn('secret-host', html_of(response))
 
     def test_cache_backend_failure_does_not_break_pages(self):
