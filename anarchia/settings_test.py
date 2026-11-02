@@ -30,7 +30,7 @@ PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 
 if os.environ.get('NYZ_DB') == 'mysql':
     DATABASES = {'default': {
-        'ENGINE': 'django.db.backends.mysql', 'NAME': 'nyz', 'USER': 'root', 'PASSWORD': 'rootpw',
+        'ENGINE': 'django.db.backends.mysql', 'NAME': os.environ.get('NYZ_DB_NAME', 'nyz'), 'USER': 'root', 'PASSWORD': 'rootpw',
         'HOST': '127.0.0.1', 'PORT': '33306',
         'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'", 'charset': 'utf8mb4'},
         'TEST': {'CHARSET': 'utf8mb4', 'COLLATION': 'utf8mb4_0900_ai_ci'},
