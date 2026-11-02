@@ -201,4 +201,3 @@ class ErrorPages(SecBase):
         self.assertNotIn('Traceback', body)
 
 
-known_open(ErrorPages, 'test_article_by_id_route_is_dead_code')

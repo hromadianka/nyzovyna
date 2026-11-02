@@ -153,8 +153,12 @@ class Article(models.Model):
 
     def save(self, *args, **kwargs):
         source = self.slug or self.name
+        previous = None if self._state.adding else Article.objects.filter(pk=self.pk).values_list('slug', flat=True).first()
         save_with_unique_slug(self, lambda: make_slug(source, 'article'), 200,
                               lambda: super(Article, self).save(*args, **kwargs))
+        ArticleSlugHistory.objects.filter(slug=self.slug).delete()
+        if previous and previous != self.slug:
+            ArticleSlugHistory.objects.update_or_create(slug=previous, defaults={'article': self})
 
     @property
     def image_url(self):
@@ -165,6 +169,13 @@ class Article(models.Model):
 
     def __str__(self):
         return self.name
+
+class ArticleSlugHistory(models.Model):
+    """Former slugs of an article, so links to the old URL keep working after the slug is edited."""
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='old_slugs')
+    slug = models.SlugField(max_length=200, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)

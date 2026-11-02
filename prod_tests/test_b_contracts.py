@@ -29,7 +29,8 @@ def top_level_names():
 
 
 def dummy_args(pattern):
-    return [DUMMY for _ in pattern.pattern.converters]
+    from django.urls.converters import UUIDConverter
+    return [DUMMY if isinstance(conv, UUIDConverter) else 'a-slug-1' for conv in pattern.pattern.converters.values()]
 
 
 def template_url_tags():
@@ -52,7 +53,7 @@ def python_reverse_calls():
             if '/' in match.group(2):
                 continue
             tail = match.group(3)
-            kwargs = len(re.findall(r'\b\w+=', tail))
+            kwargs = len([k for k in re.findall(r'\b(\w+)=', tail) if k != 'permanent'])
             args_match = re.search(r'args=\[(.*?)\]', tail)
             positional = 0 if kwargs and not args_match else (len(args_match.group(1).split(',')) if args_match else 0)
             found.append((path.name, match.group(2), kwargs or positional, bool(kwargs and not args_match)))

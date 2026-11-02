@@ -18,7 +18,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 
 from .forms import CommentCaptchaForm
 from .menu_cache import invalidate_menu_cache
-from .models import AboutUsText, Article, Author, Category, Comment, category_ancestors
+from .models import AboutUsText, Article, ArticleSlugHistory, Author, Category, Comment, category_ancestors
 from .permissions import editor_required, is_editor
 from .ratelimit import client_id, hit
 from .sanitize import sanitize_html
@@ -121,8 +121,19 @@ def attach_replies(comments):
             shown_parent[comment.id].reply_list.append(comment)
 
 
+def article_by_id(request, id):
+    article = get_object_or_404(Article, pk=id)
+    return redirect('article', slug=article.slug, permanent=True)
+
+
 def article_detail(request, slug):
-    article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
+    try:
+        article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
+    except Http404:
+        moved = ArticleSlugHistory.objects.filter(slug=slug).select_related('article').first()
+        if moved is None:
+            raise
+        return redirect('article', slug=moved.article.slug, permanent=True)
     is_preview = not (article.is_published and article.publish_at <= now())
     if is_preview and not is_editor(request.user):
         raise Http404
