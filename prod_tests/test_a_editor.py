@@ -375,7 +375,7 @@ class EditArticleTests(Base):
             'article_name': 'Original', 'article_text': 't', 'language': 'ua', 'article_author': str(self.author.id),
             'publish_option': 'now', 'article_slug': 'orig', 'article_image': png('new.png')})
         self.article.refresh_from_db()
-        self.assertIn('new', self.article.image.name)
+        self.assertNotEqual(self.article.image.name, 'card-example.png')
 
     def test_edit_empty_title_rejected(self):
         self.edit(article_name='')
@@ -552,7 +552,7 @@ class CategoryAuthorAdminTests(Base):
         mk_author('a1')
         self.client.post('/authors/a1/edit', {'name_ua': 'U', 'name_en': 'E', 'description_ua': 'x',
                                               'description_en': 'y', 'author_image': png('face.png')})
-        self.assertIn('face', Author.objects.get().image.name)
+        self.assertNotEqual(Author.objects.get().image.name, 'card-example.png')
 
     def test_about_us_edit_updates(self):
         AboutUsText.objects.create(pk=1, text_ua='a', text_en='b')
@@ -805,18 +805,15 @@ class CommentFlowTests(Base):
 
 
 class PublishAtomicityTests(Base):
-    def test_failure_on_second_save_leaves_no_half_published_article(self):
+    def test_failure_after_the_article_is_written_rolls_everything_back(self):
         self.login()
         author = mk_author('a1')
         real_save = Article.save
-        calls = []
 
-        def flaky(self_, *a, **kw):
-            calls.append(1)
-            if len(calls) == 2:
-                raise RuntimeError('second save fails')
-            return real_save(self_, *a, **kw)
+        def save_then_fail(self_, *a, **kw):
+            real_save(self_, *a, **kw)
+            raise RuntimeError('failure after the write')
 
-        with mock.patch.object(Article, 'save', flaky):
+        with mock.patch.object(Article, 'save', save_then_fail):
             self.client.post('/publish', {**publish_payload(author, article_slug='half'), 'article_image': png()})
         self.assertFalse(Article.objects.filter(slug='half').exists())

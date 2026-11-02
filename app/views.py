@@ -255,9 +255,10 @@ def parse_article_form(request):
         return None, 'Невірна категорія.'
     categories = with_ancestors(Category.objects.filter(pk__in=category_ids).select_related('parent'))
 
-    is_published, publish_at = True, now()
+    is_published, publish_at, scheduled = True, now(), False
     publish_datetime = request.POST.get('publish_datetime')
     if request.POST.get('publish_option') == 'schedule' and publish_datetime:
+        scheduled = True
         try:
             publish_at = make_aware(datetime.strptime(publish_datetime, '%Y-%m-%dT%H:%M'))
         except (ValueError, OverflowError):
@@ -272,6 +273,7 @@ def parse_article_form(request):
     return {
         'name': name, 'text': sanitize_html(text), 'language': language, 'author': author,
         'categories': categories, 'is_published': is_published, 'publish_at': publish_at, 'image': image,
+        'publish_now': not scheduled,
         'slug': (request.POST.get('article_slug') or '').strip(),
     }, None
 
@@ -364,12 +366,16 @@ def edit_article(request, slug):
 
     article.name, article.text, article.language = values['name'], values['text'], values['language']
     article.author = values['author']
-    article.is_published, article.publish_at = values['is_published'], values['publish_at']
+    still_live = article.is_published and article.publish_at <= now()
+    if not (values['publish_now'] and still_live):
+        article.is_published, article.publish_at = values['is_published'], values['publish_at']
+    fields = ['name', 'text', 'language', 'author', 'is_published', 'publish_at', 'slug']
     if values['image']:
         article.image = values['image']
-    article.slug = values['slug'] or None
+        fields.append('image')
+    article.slug = values['slug'] or article.slug
     with transaction.atomic():
-        article.save()
+        article.save(update_fields=fields)
         article.categories.set(values['categories'])
     return redirect('article', slug=article.slug)
 
