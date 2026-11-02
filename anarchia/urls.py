@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from app.ckeditor_views import ckeditor_upload
 from django.urls import path, include
-from app import views
+from app import ops_views, views
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.i18n import set_language
@@ -35,6 +35,8 @@ sitemaps = {
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('healthz', ops_views.healthz, name='healthz'),
+    path('robots.txt', ops_views.robots_txt, name='robots_txt'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('ckeditor/upload/', staff_member_required(ckeditor_upload), name='ckeditor_upload'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
