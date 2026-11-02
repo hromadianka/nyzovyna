@@ -98,3 +98,11 @@ class CabinetCardMarkupTests(Base):
     def test_cabinet_card_image_keeps_its_height_in_css(self):
         css = (BASE_DIR / 'static' / 'style.css').read_text(encoding='utf-8')
         self.assertIn('.card-content .card-image', css)
+
+
+class CardHeadingStyleTests(Base):
+    def test_card_heading_rules_cover_the_h2_used_in_cards(self):
+        css = (BASE_DIR / 'static' / 'style.css').read_text(encoding='utf-8')
+        for rule in ('.card-text h2, .card-text h2 a', '.article-card:hover h2 a', '.article-author h2 a'):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, css)
