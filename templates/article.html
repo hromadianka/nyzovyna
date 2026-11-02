@@ -61,7 +61,7 @@
         <div class="article">
             <div class="article-text">
                 <h1>{{ article.name }}</h1>
-                <p>{% autoescape off %}{{ article.text|safe }}{% endautoescape %}</p>
+                <div class="article-body">{{ article.text|sanitize_html }}</div>
             </div>
 
             {% if article.author %}
@@ -182,6 +182,10 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll("oembed[url]").forEach(element => {
+            if (!/^https:\/\//i.test(element.getAttribute("url"))) {
+                element.remove();
+                return;
+            }
             let iframe = document.createElement("iframe");
             iframe.setAttribute("src", element.getAttribute("url").replace("watch?v=", "embed/"));
             iframe.setAttribute("width", "560");

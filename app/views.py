@@ -17,6 +17,7 @@ import json
 
 
 from .permissions import editor_required
+from .sanitize import sanitize_html
 from .menu_cache import invalidate_menu_cache
 from .models import AboutUsText, Editor, Author, Category, Article, Comment, AboutUsText
 
@@ -213,7 +214,7 @@ def publish(request):
 
     if request.method == 'POST':
         article_name = request.POST.get('article_name')
-        article_text = request.POST.get('article_text')
+        article_text = sanitize_html(request.POST.get('article_text'))
         article_image = request.FILES.get('article_image')
         language = request.POST.get('language')
         category_ids = request.POST.getlist('categories')
@@ -332,7 +333,7 @@ def edit_article(request, slug):
 
     if request.method == 'POST':
         article_name = request.POST.get('article_name')
-        article_text = request.POST.get('article_text')
+        article_text = sanitize_html(request.POST.get('article_text'))
         article_image = request.FILES.get('article_image')
         author_id = request.POST.get('article_author')
         language = request.POST.get('language')
@@ -415,8 +416,8 @@ def edit_article(request, slug):
 @require_http_methods(['POST'])
 def about_us_edit(request):
     if request.method == 'POST':
-        new_text_ua = request.POST.get('new_text_ua')
-        new_text_en = request.POST.get('new_text_en')
+        new_text_ua = sanitize_html(request.POST.get('new_text_ua'))
+        new_text_en = sanitize_html(request.POST.get('new_text_en'))
         about_us_text = AboutUsText.objects.get(pk=1)
         about_us_text.text_ua = new_text_ua
         about_us_text.text_en = new_text_en
