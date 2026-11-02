@@ -36,6 +36,8 @@ sitemaps = {
 }
 
 
+handler500 = 'app.resilience.server_error'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('healthz', ops_views.healthz, name='healthz'),
