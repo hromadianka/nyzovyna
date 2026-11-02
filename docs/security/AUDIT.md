@@ -351,3 +351,22 @@ System check identified 5 issues (0 silenced).
 7. **Python**: `runtime.txt` = 3.13.7 при Django 4.2: понизить до 3.12 или обновить Django (5.x потребует миграции кода)?
 8. **Красные «Info»-тесты** (NYZ-023, часть NYZ-018): исправлять или перевести в `expectedFailure`/пометить как рекомендации?
 9. Порядок исправлений по умолчанию: NYZ-008/009 (конфигурация) → NYZ-003/004/005 → NYZ-010/012/013 → NYZ-006/007/011/014 → NYZ-019/018/022 → NYZ-020/021 → NYZ-015/016/017/023. Один коммит на тему (Conventional Commits).
+
+## 8. Статус исправлений (Фаза 4)
+
+Прогон `app.test_findings` + `app.security_tests`: 638 тестов, **OK (expected failures=51)**. Открытые находки помечены `expectedFailure` (при исправлении превратятся в «unexpected success»).
+
+| Находка | Статус | Коммит |
+|---------|--------|--------|
+| NYZ-001 | Секреты читаются из env. **Ротация и очистка истории за владельцем**, тесты истории остаются expectedFailure | `fix(settings)` |
+| NYZ-002 | `.pyc`, `db.sqlite3`, `.vs/`, `.idea/` убраны из индекса, `.gitignore` расширен; в истории остаются | `chore(git)` |
+| NYZ-003 | Исправлено: allowlist-санитайзер при сохранении и выводе, https-only oembed | `fix(xss)` |
+| NYZ-004, 005, 017, 019 (кроме CSRF-привязки) | Исправлено: `editor_required`, POST-удаления, `LOGIN_URL`, сессии в БД, маршрут `logout`, Secure-cookie | `fix(auth)`, `fix(settings)` |
+| NYZ-006, 007, 010, 011, 012, 013, 014, 015, 016 | Исправлено (лимиты хранятся в `LocMemCache` каждого воркера, для строгих лимитов нужен общий кэш) | `fix(models)`, `fix(uploads)`, `fix(views)` |
+| NYZ-008, 009 | Исправлено: `DEBUG` из `DJANGO_DEBUG`, `allowed_hosts=False` | `fix(settings)` |
+| NYZ-018 | Permissions-Policy добавлен. **CSP отложен**: нужны nonce для всех inline-скриптов и обработчиков и проверка редактора в браузере | – |
+| NYZ-020, 021 | **Не сделано**: меняют `requirements.txt`, нужно ваше решение | – |
+| NYZ-022 | jQuery для CKEditor обновлён и на https. SRI для CDN-скриптов и замена CKEditor 4 отложены (нужны хеши из сети) | `fix(settings)` |
+| NYZ-023 | Cache-Control `never_cache` для кабинета сделан; CSRF-токен в сессии (`CSRF_USE_SESSIONS`) и мёртвый маршрут оставлены | – |
+
+Перед деплоем задать переменные окружения: `SECRET_KEY` (новый), `CLOUDINARY_API_KEY`, `RECAPTCHA_PUBLIC_KEY`, `RECAPTCHA_PRIVATE_KEY` (новые). Без них приложение не стартует. Активные входы редакторов сбросятся из-за смены движка сессий.
