@@ -5,6 +5,7 @@ import logging
 
 from django.conf import settings
 from django.templatetags.static import static
+from django.utils.html import strip_tags
 from django.utils.timezone import now
 from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
@@ -140,6 +141,7 @@ class Article(models.Model):
     #slug = models.SlugField(max_length=200, blank=True, null=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True, null=True)
     text = RichTextField()
+    search_text = models.TextField(blank=True, default='', editable=False)
     image = models.ImageField(upload_to='images/', default='card-example.png')
     categories = models.ManyToManyField(Category, related_name='categories')
     language = models.CharField(max_length=2, choices=(('ua', 'Українська'), ('en', 'Англійська')), default='ua')
@@ -159,6 +161,9 @@ class Article(models.Model):
         ]
 
     def save(self, *args, **kwargs):
+        self.search_text = strip_tags(self.text or '')
+        if kwargs.get('update_fields') is not None and 'text' in kwargs['update_fields']:
+            kwargs['update_fields'] = {*kwargs['update_fields'], 'search_text'}
         source = self.slug or self.name
         previous = None if self._state.adding else Article.objects.filter(pk=self.pk).values_list('slug', flat=True).first()
         save_with_unique_slug(self, lambda: make_slug(source, 'article'), 200,

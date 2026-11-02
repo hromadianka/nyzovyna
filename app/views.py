@@ -298,7 +298,7 @@ def article_search(request):
 
     if query:
         matches = Article.objects.public().filter(language=get_language()).filter(
-            Q(name__icontains=query) | Q(text__icontains=query)).order_by('-publish_at', '-created_at')
+            Q(name__icontains=query) | Q(search_text__icontains=query)).order_by('-publish_at', '-created_at')
     else:
         matches = Article.objects.none()
     page = paginate(request, matches)

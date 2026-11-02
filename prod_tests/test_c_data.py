@@ -15,6 +15,11 @@ CYRILLIC_NAMES = ['Політика', 'Економіка', 'Культура', 
 SLUG_RE = re.compile(r'^[-a-zA-Z0-9_]+$')
 
 
+def raw_create(model, **kwargs):
+    """Insert a row without save(): the migration tests need rows whose slug is still empty."""
+    return model.objects.bulk_create([model(**kwargs)])[0]
+
+
 class ArticleSlugTests(Base):
     def test_ascii_title_slugified(self):
         self.assertEqual(Article.objects.create(name='Hello World!', text='x').slug, 'hello-world')
@@ -398,14 +403,14 @@ class MigrationTests(TransactionTestCase):
 
     def test_0007_fills_ascii_slugs(self):
         old = self.fake_back_to_0006()
-        old.get_model('app', 'Article').objects.create(name='Plain Title', text='x', slug=None)
+        raw_create(Article, name='Plain Title', text='x', slug=None)
         self.assertEqual(self.forward_0007().get_model('app', 'Article').objects.get().slug, 'plain-title')
 
     def test_0007_gives_cyrillic_categories_nonempty_unique_slugs(self):
         old = self.fake_back_to_0006()
         Cat = old.get_model('app', 'Category')
         for n in CYRILLIC_NAMES[:4]:
-            Cat.objects.create(name_ua=n, name_en=n, slug=None)
+            raw_create(Category, name_ua=n, name_en=n, slug=None)
         slugs = list(self.forward_0007().get_model('app', 'Category').objects.values_list('slug', flat=True))
         self.assertTrue(all(slugs), slugs)
         self.assertEqual(len(set(slugs)), len(slugs))
@@ -413,19 +418,19 @@ class MigrationTests(TransactionTestCase):
     def test_0007_gives_cyrillic_articles_nonempty_slugs(self):
         old = self.fake_back_to_0006()
         for n in CYRILLIC_NAMES[:3]:
-            old.get_model('app', 'Article').objects.create(name=n, text='x', slug=None)
+            raw_create(Article, name=n, text='x', slug=None)
         self.assertTrue(all(self.forward_0007().get_model('app', 'Article').objects.values_list('slug', flat=True)))
 
     def test_0007_gives_cyrillic_authors_nonempty_slugs(self):
         old = self.fake_back_to_0006()
         for n in CYRILLIC_NAMES[:3]:
-            old.get_model('app', 'Author').objects.create(name_en=n, name_ua=n, description_en='d',
+            raw_create(Author, name_en=n, name_ua=n, description_en='d',
                                                           description_ua='d', slug=None)
         self.assertTrue(all(self.forward_0007().get_model('app', 'Author').objects.values_list('slug', flat=True)))
 
     def test_0007_keeps_existing_slugs(self):
         old = self.fake_back_to_0006()
-        old.get_model('app', 'Article').objects.create(name='Name', text='x', slug='kept')
+        raw_create(Article, name='Name', text='x', slug='kept')
         self.assertEqual(self.forward_0007().get_model('app', 'Article').objects.get().slug, 'kept')
 
     def test_0007_on_empty_database_is_a_noop(self):
@@ -435,7 +440,7 @@ class MigrationTests(TransactionTestCase):
     def test_0007_slug_assignment_respects_max_length(self):
         old = self.fake_back_to_0006()
         for _ in range(2):
-            old.get_model('app', 'Category').objects.create(name_ua='a' * 100, name_en='x', slug=None)
+            raw_create(Category, name_ua='a' * 100, name_en='x', slug=None)
         slugs = self.forward_0007().get_model('app', 'Category').objects.values_list('slug', flat=True)
         self.assertTrue(all(len(s) <= 100 for s in slugs))
 
@@ -443,7 +448,7 @@ class MigrationTests(TransactionTestCase):
         from importlib import import_module
         module = import_module('app.migrations.0007_fill_slugs')
         apps = self.state('0007_fill_slugs')
-        apps.get_model('app', 'Article').objects.create(name='Again', text='x', slug=None)
+        raw_create(Article, name='Again', text='x', slug=None)
         module.fill_slugs(apps, None)
         first = apps.get_model('app', 'Article').objects.get().slug
         module.fill_slugs(apps, None)
