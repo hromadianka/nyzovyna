@@ -26,11 +26,11 @@ def index(request):
     latest_articles = Article.objects.filter(
         language = current_language, 
         is_published = True, 
-    ).order_by('-publish_at')[:5]
+    ).prefetch_related('categories').order_by('-publish_at')[:5]
     popular_articles = Article.objects.filter(
         language = current_language, 
         is_published = True, 
-    ).order_by('-views')[:10]
+    ).prefetch_related('categories').order_by('-views')[:10]
 
     return render(request, 'index.html', {'latest_articles': latest_articles, 'popular_articles': popular_articles})
 
@@ -187,8 +187,8 @@ def user_login(request):
 
 @login_required(login_url='/login')
 def editor_cabinet(request):
-    articles = Article.objects.filter(is_published = True)
-    unpublished_articles = Article.objects.filter(is_published = False)
+    articles = Article.objects.filter(is_published = True).prefetch_related('categories')
+    unpublished_articles = Article.objects.filter(is_published = False).prefetch_related('categories')
     about_us_text = AboutUsText.objects.get(pk=1)
     authors = Author.objects.all()
     
