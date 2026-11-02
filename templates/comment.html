@@ -2,7 +2,7 @@
 {% load i18n %}
 
 
-{% for reply in comment.replies.all reversed %}
+{% for reply in comment.reply_list %}
 <div class="comment" style="margin-left: 60px;">
     <div style="display: flex; align-items: center; gap: 32px">
         <p style="font-weight: bold">{{ reply.author }}</p>

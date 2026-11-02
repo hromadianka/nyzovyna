@@ -11,7 +11,7 @@ from django.utils.timezone import make_aware
 from datetime import datetime
 from .forms import CommentCaptchaForm
 from django.utils.text import slugify
-from django.db.models import Q
+from django.db.models import F, Q
 from django.views.decorators.http import require_POST
 import json
 
@@ -61,18 +61,29 @@ def all_articles(request):
     return render(request, 'category.html', {'articles': articles})
 
 def article_detail(request, slug):
-    article = get_object_or_404(Article, slug=slug)
+    article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
+    Article.objects.filter(pk=article.pk).update(views=F('views') + 1)
     article.views += 1
-    article.save()
     all_articles = Article.objects.filter(is_published=True).exclude(pk=article.pk).order_by('-views')[:2]
-    comments = Comment.objects.filter(article=article).order_by('-created_at')
-    comments_count = article.comments.count()
+
+    comments = list(Comment.objects.filter(article=article).order_by('-created_at'))
+    for comment in comments:
+        comment.reply_list = []
+    by_id = {comment.id: comment for comment in comments}
+    for comment in comments:
+        parent = by_id.get(comment.parent_comment_id)
+        if parent is not None:
+            parent.reply_list.append(comment)
+    comments_count = len(comments)
     captcha_form = CommentCaptchaForm()
+
     parent_category = None
-    if article.categories.exists():
-        parent_category = article.categories.first()
-        while parent_category.parent:
-            parent_category = parent_category.parent
+    article_categories = list(article.categories.all())
+    if article_categories:
+        parent_of = dict(Category.objects.values_list('id', 'parent_id'))
+        parent_category = article_categories[0].id
+        while parent_of.get(parent_category):
+            parent_category = parent_of[parent_category]
     recommended_articles = []
     if parent_category:
         recommended_articles = Article.objects.filter(

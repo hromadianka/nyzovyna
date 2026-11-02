@@ -41,7 +41,7 @@
                     </defs>
                 </svg>
 
-                <p>{{comments.count}}</p>
+                <p>{{ comments_count }}</p>
             </div>
         </a>
 
@@ -117,7 +117,7 @@
                             <div class="comments" id="comments">
                 <h2>{% trans "Коментарі" %}</h2>
                 {% for comment in comments %}
-                {% if not comment.parent_comment %}
+                {% if not comment.parent_comment_id %}
                 <div class="comment">
                     <div style="display: flex; align-items: center; gap: 32px">
                         <p style="font-weight: bold">{{ comment.author }}</p>
