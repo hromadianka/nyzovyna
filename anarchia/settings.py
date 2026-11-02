@@ -59,6 +59,7 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'app.resilience.DatabaseUnavailableMiddleware',
     'app.language.ContentLanguageMiddleware',
     'app.middleware.LoginThrottleMiddleware',
@@ -71,7 +72,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'anarchia.urls'
@@ -191,7 +191,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-django_heroku.settings(locals(), allowed_hosts=False)
+django_heroku.settings(locals(), allowed_hosts=False, staticfiles=False)
 del DATABASES['default']['OPTIONS']['sslmode']
 # django_heroku rebuilds DATABASES from DATABASE_URL and drops OPTIONS, so pin the connection here.
 DATABASES['default']['OPTIONS'].update({
@@ -239,6 +239,8 @@ SECURE_HSTS_PRELOAD = True
 # Captcha Settings
 RECAPTCHA_PUBLIC_KEY = os.environ['RECAPTCHA_PUBLIC_KEY']
 RECAPTCHA_PRIVATE_KEY = os.environ['RECAPTCHA_PRIVATE_KEY']
+# The default is 10 s; gunicorn kills a worker at 30 s, and the verification is a blocking call in the request.
+RECAPTCHA_VERIFY_REQUEST_TIMEOUT = 3
 
 # Sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.db"

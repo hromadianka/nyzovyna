@@ -63,6 +63,7 @@
                 <meta itemprop="datePublished" content="{{ article.publish_at|date:'c' }}">
                 <meta itemprop="inLanguage" content="{{ html_lang }}">
                 <meta itemprop="image" content="{{ meta.og_image }}">
+                {% if article.author %}<meta itemprop="author" content="{% if current_language == 'en' %}{{ article.author.name_en }}{% else %}{{ article.author.name_ua }}{% endif %}">{% endif %}
                 <h1 itemprop="headline">{{ article.name }}</h1>
                 <div class="article-body">{{ article.text|sanitize_html }}</div>
             </div>
@@ -194,6 +195,7 @@
         var captcha = document.getElementById('shared-captcha');
         if (!form) return;
         var opening = form.style.display === 'none';
+        document.querySelectorAll('.reply-form').forEach(function (other) { other.style.display = 'none'; });
         form.style.display = opening ? 'block' : 'none';
         var slot = opening ? document.getElementById('captcha-slot-' + id) : document.getElementById('main-captcha-slot');
         if (captcha && slot) slot.appendChild(captcha);
