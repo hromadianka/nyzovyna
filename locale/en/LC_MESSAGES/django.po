@@ -118,3 +118,7 @@ msgstr "Nothing found"
 #: templates/search.html
 msgid "Введіть запит у полі пошуку"
 msgstr "Enter a search query"
+
+#: app/views.py
+msgid "Підтвердіть, що ви не робот, і спробуйте ще раз."
+msgstr "Confirm that you are not a robot and try again."

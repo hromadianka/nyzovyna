@@ -111,12 +111,19 @@ class Category(models.Model):
         return self.name_ua
 
     def clean(self):
-        if self.parent_id:
-            chain = category_ancestors(self)
-            if self.pk in {ancestor.pk for ancestor in chain} or self.parent_id == self.pk:
+        if not self.parent_id:
+            return
+        if self.parent_id == self.pk:
+            raise ValidationError('A category cannot be its own ancestor.')
+        depth, seen, parent = 0, set(), self.parent
+        while parent is not None and parent.pk not in seen:
+            if parent.pk == self.pk:
                 raise ValidationError('A category cannot be its own ancestor.')
-            if len(chain) >= MAX_CATEGORY_DEPTH:
-                raise ValidationError(f'Categories can be nested at most {MAX_CATEGORY_DEPTH} levels deep.')
+            seen.add(parent.pk)
+            depth += 1
+            parent = parent.parent
+        if depth > MAX_CATEGORY_DEPTH:
+            raise ValidationError(f'Categories can be nested at most {MAX_CATEGORY_DEPTH} levels deep.')
 
     class Meta:
         ordering = ['order']
@@ -184,6 +191,13 @@ class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
     created_at = models.DateTimeField(auto_now_add=True)
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+
+    def clean(self):
+        if self.parent_comment_id:
+            if self.parent_comment_id == self.pk:
+                raise ValidationError('A comment cannot reply to itself.')
+            if self.parent_comment.article_id != self.article_id:
+                raise ValidationError('A reply must belong to the same article as its parent.')
 
 class AboutUsText(models.Model):
     text_ua = models.TextField(default='')

@@ -147,6 +147,10 @@
                     {% trans "Залишились питання або хочете щось сказати? —  Напишіть коментар!" %}
                 </p>
 
+{% for message in messages %}
+<p class="comment-description" role="alert">{{ message }}</p>
+{% endfor %}
+
 <form class="comment-form" method="POST" action="{% url 'comment' %}">
     {% csrf_token %}
     <input hidden value="{{ article.id }}" name="article_id" />

@@ -1,3 +1,4 @@
+import hashlib
 import json
 import uuid
 from datetime import datetime
@@ -188,6 +189,7 @@ def comment(request):
     article = get_object_or_404(Article.objects.public(), pk=article_id)
 
     if not CommentCaptchaForm(request.POST).is_valid():
+        messages.error(request, _('Підтвердіть, що ви не робот, і спробуйте ще раз.'))
         return redirect('article', slug=article.slug)
 
     author = clean_text(request, 'author', 100)
@@ -202,6 +204,10 @@ def comment(request):
         if parent_uuid is None:
             raise Http404
         parent_comment = get_object_or_404(Comment, pk=parent_uuid, article=article)
+
+    fingerprint = hashlib.sha256(f'{article.pk}|{parent_id}|{author}|{text}'.encode()).hexdigest()
+    if not cache.add(f'comment-dup:{client_id(request)}:{fingerprint}', 1, 60):
+        return redirect('article', slug=article.slug)
 
     Comment.objects.create(article=article, author=author, text=text, parent_comment=parent_comment)
     return redirect('article', slug=article.slug)
