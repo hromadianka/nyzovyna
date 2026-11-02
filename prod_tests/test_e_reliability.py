@@ -84,7 +84,7 @@ class DependencyFailureTests(Base):
         self.assertNotEqual(art.name, 'CHANGED')
 
     def test_unhandled_exception_returns_branded_500_page(self):
-        with mock.patch('app.views.index', side_effect=RuntimeError('boom')):
+        with mock.patch('app.views.render', side_effect=RuntimeError('boom')):
             response = self.client.get('/')
         self.assertEqual(response.status_code, 500)
         self.assertIn('Низовина', html_of(response))
