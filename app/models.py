@@ -4,6 +4,7 @@ import uuid
 import logging
 
 from django.conf import settings
+from django.core.files.storage import storages
 from django.templatetags.static import static
 from django.utils.html import strip_tags
 from django.utils.timezone import now
@@ -207,3 +208,69 @@ class Comment(models.Model):
 class AboutUsText(models.Model):
     text_ua = models.TextField(default='')
     text_en = models.TextField(default='')
+
+def book_storage():
+    """Django calls this when the model classes load; tests and local runs point the 'books' alias at the file system."""
+    return storages['books']
+
+
+def book_file_path(instance, filename):
+    return f'books/{instance.book.slug}-{uuid.uuid4().hex[:8]}.pdf'
+
+
+class Book(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    title = models.CharField(max_length=300)
+    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True)
+    book_author = models.CharField(max_length=200, blank=True)
+    summary = models.TextField(max_length=400)
+    annotation = RichTextField()
+    # No default file, unlike articles: a name that points to nothing in the storage gives a broken image.
+    cover = models.ImageField(upload_to='covers/', blank=True)
+    language = models.CharField(max_length=2, choices=(('ua', 'Українська'), ('en', 'Англійська')), default='ua')
+    is_published = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # The sitemap's lastmod: crawlers revisit a book only when this changes, not on its creation date.
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if self.slug:
+            return super().save(*args, **kwargs)
+        save_with_unique_slug(self, lambda: make_slug(self.title, 'book'), 200,
+                              lambda: super(Book, self).save(*args, **kwargs))
+
+    @property
+    def cover_url(self):
+        return safe_image_url(self.cover)
+
+    def get_absolute_url(self):
+        return reverse('book', args=[self.slug])
+
+    def __str__(self):
+        return self.title
+
+
+class BookFile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='files')
+    # 255, not Django's default 100: Cloudinary cuts the name to max_length and a raw file needs its extension
+    file = models.FileField(upload_to=book_file_path, storage=book_storage, max_length=255)
+    label = models.CharField(max_length=100)
+    # Stored at upload: asking Cloudinary for the size of every file would be a network call per page view.
+    size = models.PositiveIntegerField(default=0, editable=False)
+    downloads = models.PositiveIntegerField(default=0, editable=False)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'pk']
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and self.file:
+            self.size = self.file.size
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.label

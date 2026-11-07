@@ -1031,3 +1031,472 @@ main {
     align-items: center;
     margin-right: 5px;
 }
+
+/* Editor forms: article publish/edit and book create/edit share one layout */
+
+.back-link {
+    margin: 0 0 8px;
+}
+
+    .back-link a {
+        text-decoration: none;
+        opacity: .7;
+    }
+
+.section-title {
+    margin: 32px 0 16px;
+}
+
+.editor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 860px;
+    color: black;
+}
+
+    .editor-form .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .editor-form .field-label {
+        font-weight: 600;
+        font-size: 15px;
+    }
+
+    .field-hint {
+        font-size: 13px;
+        color: #6b6b6b;
+    }
+
+    .editor-form input[type=text],
+    .editor-form input[type=datetime-local],
+    .editor-form select,
+    .editor-form textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 14px;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: 6px;
+        background: white;
+        color: black;
+        font: inherit;
+        font-size: 16px;
+    }
+
+    .editor-form textarea {
+        resize: vertical;
+    }
+
+    .editor-form .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin: 0;
+        padding: 16px 20px 20px;
+        border: 1px solid rgba(0, 0, 0, .1);
+        border-radius: 8px;
+    }
+
+    .editor-form legend {
+        padding: 0 6px;
+        font-weight: 700;
+    }
+
+    .editor-form .ck-editor__editable {
+        min-height: 220px;
+    }
+
+.choice-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+    .choice-row label, label.choice-row span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+.cover-field {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cover-thumb {
+    width: 160px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.cover-thumb--portrait {
+    width: 90px;
+    height: 135px;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+    .form-actions .btn, .editor-form .btn {
+        margin-top: 0;
+    }
+
+.btn-secondary {
+    background: white;
+    color: black;
+    box-shadow: inset 0 0 0 1px black;
+}
+
+main a.btn-secondary {
+    color: black;
+}
+
+.file-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+}
+
+    .file-row input[type=text] {
+        flex: 1 1 220px;
+        width: auto;
+    }
+
+.file-name {
+    font-weight: 600;
+}
+
+.file-remove {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #b42318;
+}
+
+main a.danger-link {
+    color: #b42318;
+}
+
+.badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #fff4d6;
+    color: #7a5200;
+}
+
+/* Book page */
+
+.book-page {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+    align-items: start;
+    margin: 16px 0 64px;
+}
+
+.book-cover {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #1c1b1b;
+}
+
+.book-info h1 {
+    margin: 0 0 8px;
+}
+
+.book-author {
+    margin: 0 0 20px;
+    font-size: 18px;
+    opacity: .7;
+}
+
+.book-summary {
+    margin: 0 0 28px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.book-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-download {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #CE5050;
+    color: white;
+    border-radius: 8px;
+    padding: 12px 18px;
+}
+
+main a.btn-download {
+    color: white;
+}
+
+    .btn-download .btn-meta {
+        font-size: 13px;
+        font-weight: 400;
+        opacity: .85;
+    }
+
+.book-annotation {
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(253, 251, 238, .15);
+}
+
+    .book-annotation h2 {
+        margin: 0 0 12px;
+    }
+
+@media screen and (max-width: 800px) {
+    .book-page {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .book-cover {
+        max-width: 240px;
+    }
+
+    .cover-field {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Editor form fixes: `hidden` must win over flex, one border per button, no list indent */
+.editor-form [hidden] {
+    display: none !important;
+}
+
+.editor-form button.btn, .form-actions .btn {
+    border: 1px solid black;
+}
+
+.btn-secondary {
+    box-shadow: none;
+    border: 1px solid black;
+}
+
+.file-list li {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Editor cabinet: section navigation and compact admin lists (articles, books, authors) */
+
+.cabinet-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.link-button {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-size: 15px;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cabinet-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 8px;
+}
+
+    main .cabinet-nav a {
+        padding: 6px 12px;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: 999px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        main .cabinet-nav a:hover {
+            border-color: black;
+        }
+
+.cabinet-section {
+    margin-top: 40px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, .08);
+    scroll-margin-top: 16px;
+}
+
+.admin-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 860px;
+}
+
+    .admin-list > li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, .08);
+    }
+
+.admin-thumb {
+    width: 64px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+    background: #eee;
+}
+
+.admin-thumb--portrait {
+    width: 32px;
+    height: 48px;
+}
+
+.admin-thumb--round {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.admin-row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+main a.admin-row-title {
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.admin-actions {
+    display: inline-flex;
+    gap: 16px;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+.inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+    max-width: 860px;
+}
+
+    .inline-form[hidden] {
+        display: none;
+    }
+
+    .inline-form input[type=text] {
+        flex: 1 1 200px;
+        padding: 8px 12px;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: 6px;
+        font: inherit;
+    }
+
+    .inline-form .btn {
+        margin: 0;
+        border: 1px solid black;
+    }
+
+.category-tree summary {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.category-delete {
+    font-size: 14px;
+}
+
+.link-button + .inline-form, details > .link-button {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.add-panel {
+    margin-top: 16px;
+    max-width: 860px;
+}
+
+    .add-panel > summary {
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+
+@media screen and (max-width: 700px) {
+    .admin-list > li {
+        flex-wrap: wrap;
+    }
+
+    .admin-actions {
+        width: 100%;
+        padding-left: 78px;
+    }
+}
+
+/* The site-wide list indent does not belong in admin lists */
+.admin-list > li, .category-tree li {
+    margin-left: 0;
+}
+
+.category-tree summary {
+    list-style: none;
+}
+
+    .category-tree summary::before {
+        content: '▸';
+        width: 1em;
+        opacity: .6;
+    }
+
+.category-tree details[open] > summary::before {
+    content: '▾';
+}

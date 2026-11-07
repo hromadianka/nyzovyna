@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from .models import Article, Author, Category
+from .models import Article, Author, Book, Category
 
 
 class HttpsSitemap(Sitemap):
@@ -13,7 +13,7 @@ class StaticPagesSitemap(HttpsSitemap):
     priority = 0.7
 
     def items(self):
-        return ['home', 'all_articles', 'authors', 'about_us']
+        return ['home', 'all_articles', 'books', 'authors', 'about_us']
 
     def location(self, name):
         return reverse(name)
@@ -53,3 +53,18 @@ class AuthorSitemap(HttpsSitemap):
 
     def location(self, obj):
         return reverse('author_detail', args=[obj.slug])
+
+
+# Drafts are excluded: a sitemap entry for a page that answers 404 would be reported as an error.
+class BookSitemap(HttpsSitemap):
+    changefreq = 'monthly'
+    priority = 0.6
+
+    def items(self):
+        return Book.objects.filter(is_published=True, slug__isnull=False).order_by('pk')
+
+    def lastmod(self, obj):
+        return obj.updated_at
+
+    def location(self, obj):
+        return reverse('book', args=[obj.slug])

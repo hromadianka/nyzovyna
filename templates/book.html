@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load app_tags %}
+
+{% block content %}
+
+<p class="back-link"><a href="{% url 'books' %}">← {% trans "Бібліотека" %}</a></p>
+
+<article class="book-page" itemscope itemtype="https://schema.org/Book">
+    <img class="book-cover {% if not book.is_published %}unpublished{% endif %}" src="{{ book.cover_url }}" alt="{{ book.title }}" itemprop="image">
+
+    <div class="book-info">
+        <h1 itemprop="name">{{ book.title }}</h1>
+        {% if book.book_author %}<p class="book-author" itemprop="author">{{ book.book_author }}</p>{% endif %}
+        <p class="book-summary" itemprop="description">{{ book.summary }}</p>
+
+        {% with files=book.files.all %}
+        {% if files %}
+        <div class="book-files">
+            {% for book_file in files %}
+            <a class="btn btn-download" href="{% url 'book_download' book.slug book_file.pk %}" rel="nofollow">
+                {% trans "Завантажити" %}: {{ book_file.label }}
+                <span class="btn-meta">PDF, {{ book_file.size|filesizeformat }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <section class="book-annotation">
+            <h2>{% trans "Анотація" %}</h2>
+            <div class="article-body">{{ book.annotation|sanitize_html }}</div>
+        </section>
+    </div>
+</article>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>{% endblock %}
+
+{% block content %}
+
+<style>
+    main, body { background: none; }
+    main, main a { color: black; }
+</style>
+
+<p class="back-link"><a href="{% url 'book_cabinet' %}">← Усі книги</a></p>
+<h1>Редагувати книгу</h1>
+
+{% if error_message %}<div class="error">{{ error_message }}</div>{% endif %}
+
+<form method="POST" action="{% url 'book_edit' book.slug %}" enctype="multipart/form-data" class="editor-form">
+    {% csrf_token %}
+    {% include 'book_form_fields.html' %}
+    <div class="form-actions">
+        <button type="submit" class="btn">Зберегти</button>
+        <a class="btn btn-secondary" href="{% url 'book' book.slug %}">Переглянути книгу</a>
+    </div>
+</form>
+
+{% endblock %}

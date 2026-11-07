@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>{% endblock %}
+
+{% block content %}
+
+<style>
+    main, body { background: none; }
+    main, main a { color: black; }
+</style>
+
+<p class="back-link"><a href="{% url 'editor_cabinet' %}">← Кабінет редактора</a></p>
+<h1>Книги</h1>
+
+<h2 class="section-title">Додати книгу</h2>
+
+{% if error_message %}<div class="error">{{ error_message }}</div>{% endif %}
+
+<form method="POST" action="{% url 'book_cabinet' %}" enctype="multipart/form-data" class="editor-form">
+    {% csrf_token %}
+    {% include 'book_form_fields.html' %}
+    <div class="form-actions">
+        <button type="submit" class="btn">Зберегти книгу</button>
+    </div>
+</form>
+
+<h2 class="section-title">Усі книги</h2>
+<ul class="admin-list">
+    {% for book in books %}
+    <li id="book-{{ book.slug }}">
+        <img class="admin-thumb admin-thumb--portrait" src="{{ book.cover_url }}" alt="">
+        <div class="admin-row-main">
+            <a class="admin-row-title" href="{% url 'book' book.slug %}">{{ book.title }}</a>
+            <span class="field-hint">{% if not book.is_published %}<span class="badge">чернетка</span> {% endif %}{{ book.book_author|default:"" }}{% if book.book_author %} · {% endif %}{{ book.get_language_display }}</span>
+        </div>
+        <span class="admin-actions">
+            <a href="{% url 'book_edit' book.slug %}">Редагувати</a>
+            <a href="#" class="danger-link" onclick="confirmDeleteBook(event, '{{ book.slug }}')">Видалити</a>
+        </span>
+    </li>
+    {% empty %}
+    <li class="field-hint">Книг ще немає.</li>
+    {% endfor %}
+</ul>
+
+<script>
+    function confirmDeleteBook(event, slug) {
+        event.preventDefault();
+        if (!confirm('Ви впевнені, що хочете видалити книгу?')) return;
+        fetch('/editor-cabinet/books/' + slug + '/delete/', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}})
+            .then(function (response) {
+                if (!response.ok) throw new Error('delete failed');
+                document.getElementById('book-' + slug).remove();
+            })
+            .catch(function () { alert('Помилка видалення книги'); });
+    }
+</script>
+
+{% endblock %}

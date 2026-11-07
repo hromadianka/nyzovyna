@@ -327,10 +327,19 @@ def user_logout(request):
 
 # Editor views
 
+def repeat_key(request, scope, *parts):
+    fingerprint = hashlib.sha256('|'.join(str(part) for part in parts).encode()).hexdigest()
+    return f'repeat:{scope}:{client_id(request)}:{fingerprint}'
+
+
 def is_repeat(request, scope, *parts):
     """True when this client already sent the same form a moment ago (double click, retry after a timeout)."""
-    fingerprint = hashlib.sha256('|'.join(str(part) for part in parts).encode()).hexdigest()
-    return not cache.add(f'repeat:{scope}:{client_id(request)}:{fingerprint}', 1, 30)
+    return not cache.add(repeat_key(request, scope, *parts), 1, 30)
+
+
+def forget_repeat(request, scope, *parts):
+    """A submission that failed must not make the editor's retry look like a double click."""
+    cache.delete(repeat_key(request, scope, *parts))
 
 
 def form_error(request, template, context, message):

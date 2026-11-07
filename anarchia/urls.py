@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from app.ckeditor_views import ckeditor_upload
 from django.urls import path, include
-from app import ops_views, views
+from app import book_views, ops_views, views
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.i18n import set_language
@@ -26,13 +26,14 @@ from app.feeds import LatestPostsFeed
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.http import require_safe
 from django.views.generic import RedirectView
-from app.sitemaps import ArticleSitemap, AuthorSitemap, CategorySitemap, StaticPagesSitemap
+from app.sitemaps import ArticleSitemap, AuthorSitemap, BookSitemap, CategorySitemap, StaticPagesSitemap
 
 sitemaps = {
     'pages': StaticPagesSitemap,
     'categories': CategorySitemap,
     'articles': ArticleSitemap,
     'authors': AuthorSitemap,
+    'books': BookSitemap,
 }
 
 
@@ -60,6 +61,13 @@ urlpatterns = [
     path('category/<slug:slug>/delete/', views.delete_category, name='delete_category'),
     path('article/<uuid:id>/', views.article_by_id, name='article_by_id'),
     path('article/<slug:slug>/', views.article_detail, name='article'),
+    path('books', book_views.book_list, name='books'),
+    path('books/', RedirectView.as_view(pattern_name='books', permanent=True)),
+    path('books/<slug:slug>/', book_views.book_detail, name='book'),
+    path('books/<slug:slug>/download/<uuid:file_id>/', book_views.book_download, name='book_download'),
+    path('editor-cabinet/books/', book_views.book_cabinet, name='book_cabinet'),
+    path('editor-cabinet/books/<slug:slug>/edit/', book_views.book_edit, name='book_edit'),
+    path('editor-cabinet/books/<slug:slug>/delete/', book_views.book_delete, name='book_delete'),
     path('comment', views.comment, name='comment'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),

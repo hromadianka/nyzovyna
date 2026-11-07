@@ -184,6 +184,9 @@ STATICFILES_DIRS = [BASE_DIR / 'static',]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Largest PDF accepted for a book; Cloudinary's plan limit and the 30 s gunicorn timeout apply on top.
+BOOK_MAX_FILE_BYTES = 20 * 1024 * 1024
+
 
 
 # Default primary key field type
@@ -209,6 +212,8 @@ CLOUDINARY_STORAGE = {
 STORAGES = {
     'default': {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'},
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    # Cloudinary stores a PDF as 'raw'; the image storage above would try to process it as a picture.
+    'books': {'BACKEND': 'cloudinary_storage.storage.RawMediaCloudinaryStorage'},
 }
 
 # CKEditor Settings

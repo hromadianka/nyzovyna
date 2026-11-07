@@ -1,0 +1,86 @@
+{# Shared fields of the create and edit book forms; `book` is None on the create form. #}
+<fieldset class="form-group">
+    <legend>Основне</legend>
+    <label class="field">
+        <span class="field-label">Назва книги</span>
+        <input type="text" name="title" maxlength="300" required value="{{ book.title|default:'' }}" />
+    </label>
+    <label class="field">
+        <span class="field-label">Автор книги</span>
+        <input type="text" name="book_author" maxlength="200" value="{{ book.book_author|default:'' }}" />
+    </label>
+    <label class="field">
+        <span class="field-label">Короткий опис</span>
+        <textarea name="summary" maxlength="400" rows="3" required>{{ book.summary|default:'' }}</textarea>
+        <span class="field-hint">До 400 символів. Показується в картці книги та в пошуковиках.</span>
+    </label>
+</fieldset>
+
+<div class="field">
+    <span class="field-label">Анотація</span>
+    <textarea name="annotation" id="book_annotation">{{ book.annotation|default:'' }}</textarea>
+</div>
+
+<fieldset class="form-group">
+    <legend>Обкладинка</legend>
+    <div class="cover-field">
+        {% if book.cover %}<img class="cover-thumb cover-thumb--portrait" src="{{ book.cover_url }}" alt="Поточна обкладинка">{% endif %}
+        <div class="field">
+            <input type="file" name="cover" accept="image/*" />
+            <span class="field-hint">Вертикальне зображення, JPG, PNG, GIF або WEBP, до 5 МБ.{% if book.cover %} Нове зображення замінить поточне.{% endif %}</span>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <legend>Файли PDF</legend>
+    {% if book.created_at %}
+    <ul class="file-list">
+        {% for book_file in book.files.all %}
+        <li class="file-row">
+            <span class="file-name">{{ book_file.label }}</span>
+            <span class="field-hint">{{ book_file.size|filesizeformat }} · завантажень: {{ book_file.downloads }}</span>
+            <label class="file-remove"><input type="checkbox" name="delete_files" value="{{ book_file.pk }}"> Видалити</label>
+        </li>
+        {% empty %}
+        <li class="field-hint">Файлів ще немає.</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div id="book-files" class="file-inputs">
+        <div class="file-row book-file-row">
+            <input type="file" name="book_file_0" accept="application/pdf,.pdf" />
+            <input type="text" name="file_label_0" placeholder="Назва кнопки, напр. «Том 1»" maxlength="100" />
+        </div>
+    </div>
+    <div>
+        <button type="button" class="btn btn-secondary" onclick="addBookFileRow()">+ Додати ще файл</button>
+    </div>
+    <span class="field-hint">PDF до {{ book_max_mb }} МБ. Без назви кнопка отримає імʼя файлу.</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <legend>Мова і публікація</legend>
+    <div class="choice-row">
+        <label><input type="radio" name="language" value="ua" {% if book.language != "en" %}checked{% endif %}> Українська</label>
+        <label><input type="radio" name="language" value="en" {% if book.language == "en" %}checked{% endif %}> Англійська</label>
+    </div>
+    <label class="choice-row"><span><input type="checkbox" name="is_published" {% if book.is_published %}checked{% endif %}> Опублікувати (без позначки книга збережеться як чернетка)</span></label>
+</fieldset>
+
+<script>
+    // Each row gets its own number so a label stays with its file even when an earlier row is left empty.
+    var bookFileRows = 1;
+    function addBookFileRow() {
+        var rows = document.getElementById('book-files');
+        var row = rows.querySelector('.book-file-row').cloneNode(true);
+        row.querySelector('input[type=file]').name = 'book_file_' + bookFileRows;
+        row.querySelector('input[type=text]').name = 'file_label_' + bookFileRows;
+        row.querySelectorAll('input').forEach(function (input) { input.value = ''; });
+        bookFileRows += 1;
+        rows.appendChild(row);
+    }
+    ClassicEditor.create(document.querySelector('#book_annotation'), {
+        toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote']
+    }).catch(function (error) { console.error(error); });
+</script>

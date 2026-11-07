@@ -155,3 +155,12 @@ msgstr "Назад"
 
 msgid "Далі"
 msgstr "Далі"
+
+msgid "Бібліотека"
+msgstr "Бібліотека"
+
+msgid "Завантажити"
+msgstr "Завантажити"
+
+msgid "Анотація"
+msgstr "Анотація"
