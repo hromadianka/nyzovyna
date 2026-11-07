@@ -1,0 +1,15 @@
+<li id="article-{{ article.slug }}">
+    <img class="admin-thumb" src="{{ article.image_url }}" alt="">
+    <div class="admin-row-main">
+        <a class="admin-row-title" href="{% url 'article' article.slug %}">{{ article.name|striptags|truncatechars:110 }}</a>
+        <span class="field-hint">
+            {% if scheduled %}{% if article.is_published %}вийде {% else %}чернетка · {% endif %}{% endif %}{{ article.publish_at|date:"d.m.Y H:i" }}
+            · {{ article.get_language_display }}
+            {% for category in article.categories.all %}· {{ category.name_ua }} {% endfor %}
+        </span>
+    </div>
+    <span class="admin-actions">
+        <a href="{% url 'edit_article' article.slug %}">Редагувати</a>
+        <a href="#" class="danger-link" onclick="confirmDelete(event, '{{ article.slug }}')">Видалити</a>
+    </span>
+</li>

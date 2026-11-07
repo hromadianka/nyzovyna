@@ -397,8 +397,9 @@ def parse_article_form(request):
 @editor_required
 def editor_cabinet(request):
     return render(request, 'editor-cabinet.html', {
-        'articles': Article.objects.public().prefetch_related('categories'),
-        'unpublished_articles': Article.objects.exclude(is_published=True, publish_at__lte=now()).prefetch_related('categories'),
+        'articles': Article.objects.public().order_by('-publish_at', '-created_at').prefetch_related('categories'),
+        'unpublished_articles': Article.objects.exclude(is_published=True, publish_at__lte=now())
+                                               .order_by('publish_at', 'created_at').prefetch_related('categories'),
         'about_us_text': AboutUsText.objects.filter(pk=1).first(),
         'authors': Author.objects.all(),
     })

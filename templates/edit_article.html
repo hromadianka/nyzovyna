@@ -19,114 +19,20 @@
         }
 </style>
 
+<p class="back-link"><a href="{% url 'editor_cabinet' %}">← Кабінет редактора</a></p>
 <h1>Редагувати статтю</h1>
 
 {% if error_message %}
 <div class="error">{{ error_message }}</div>
 {% endif %}
 
-
-<form method="POST" action="{% url 'edit_article' article.slug %}" enctype="multipart/form-data" class="form">
+<form method="POST" action="{% url 'edit_article' article.slug %}" enctype="multipart/form-data" class="editor-form">
     {% csrf_token %}
-
-    <input type="text" name="article_name" placeholder="Заголовок статті" class="form" required value="{{ article.name }}" />
-
-    <select name="article_author" class="form" required>
-        <option value="" disabled>Виберіть автора</option>
-        {% for new_author in authors %}
-        <option value="{{ new_author.id }}" {% if article.author == new_author %} selected {% endif %}>{{ new_author.name_ua }}</option>
-        {% endfor %}
-    </select>
-
-    <input type="text"
-       name="article_slug"
-       id="article_slug"
-       class="form"
-       placeholder="Слаг"
-       value="{{ article.slug }}">
-
-    <textarea name="article_text" placeholder="Текст статті" id="article_text" class="form">{{ article.text }}</textarea>
-
-    {% if article.image %}
-    <img src="{{ article.image_url }}" alt="" style="max-width: 200px;">
-    {% endif %}
-    <input type="file" name="article_image" accept="image/*" class="form" />
-
-    <fieldset class="form">
-        <label class="form">
-            <input type="radio" name="language" value="ua" {% if article.language == "ua" %} checked {% endif %}>
-            <span class="form">Українська</span>
-        </label>
-        <label class="form">
-            <input type="radio" name="language" value="en" {% if article.language == "en" %} checked {% endif %}>
-            <span class="form">Англійська</span>
-        </label>
-    </fieldset>
-
-    <fieldset class="form">
-        {% for category in categories %}
-        <label>
-            <input type="checkbox" name="categories" value="{{ category.id }}" {% if category.id in selected_category_ids %} checked {% endif %}>
-            <span class="form">{{ category.name_ua }}</span>
-        </label>
-        {% endfor %}
-    </fieldset>
-
-    <fieldset class="form">
-        <label>
-            <input type="radio" name="publish_option" value="now" id="publish_now" {% if article.is_published %} checked {% endif %}>
-            <span class="form">Опублікувати зараз</span>
-        </label>
-        <label>
-            <input type="radio" name="publish_option" value="schedule" id="schedule_publication" {% if not article.is_published %} checked {% endif %}>
-            <span class="form">Відкласти публікацію</span>
-        </label>
-    </fieldset>
-
-    <!-- Поле вибору дати та часу -->
-    <input type="datetime-local" name="publish_datetime" id="publish_datetime" class="form" {% if article.is_published %} disabled {% endif %} value="{% if article.publish_at %}{{ article.publish_at|date:'Y-m-d\TH:i' }}{% endif %}">
-
-    <button type="submit" class="btn">Зберегти</button>
+    {% include 'article_form_fields.html' %}
+    <div class="form-actions">
+        <button type="submit" class="btn">Зберегти</button>
+        <a class="btn btn-secondary" href="{% url 'article' article.slug %}">Переглянути статтю</a>
+    </div>
 </form>
-
-
-<p style="margin-top: 20px"><a href="{% url 'editor_cabinet' %}">Назад до кабінету редактора</a></p>
-
-<script>
-    ClassicEditor
-        .create(document.querySelector('#article_text'), {
-            toolbar: [
-                'heading', '|', 'bold', 'italic', '|', 'link', 'imageUpload', 'mediaEmbed', '|',
-                'bulletedList', 'numberedList', 'blockQuote'
-            ],
-            ckfinder: {
-                uploadUrl: '/ckeditor/upload/'
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const publishNow = document.getElementById("publish_now");
-        const schedulePublication = document.getElementById("schedule_publication");
-        const publishDateTime = document.getElementById("publish_datetime");
-
-        function toggleDateTimeField() {
-            if (publishNow.checked) {
-                publishDateTime.disabled = true;
-                publishDateTime.value = "";
-            } else {
-                publishDateTime.disabled = false;
-            }
-        }
-
-        toggleDateTimeField();
-        publishNow.addEventListener("change", toggleDateTimeField);
-        schedulePublication.addEventListener("change", toggleDateTimeField);
-    });
-</script>
 
 {%endblock %}

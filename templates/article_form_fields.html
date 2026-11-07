@@ -1,0 +1,96 @@
+{# Shared fields of the publish and edit article forms; `article` is None on the publish form. #}
+<fieldset class="form-group">
+    <legend>Основне</legend>
+    <label class="field">
+        <span class="field-label">Заголовок</span>
+        <input type="text" name="article_name" id="article_name" required value="{{ article.name|default:'' }}" />
+    </label>
+    <label class="field">
+        <span class="field-label">Слаг (адреса сторінки)</span>
+        <input type="text" name="article_slug" id="article_slug" value="{{ article.slug|default:'' }}" />
+        <span class="field-hint">{% if article %}Зміна слагу змінить посилання; старе продовжить працювати.{% else %}Заповнюється із заголовка, можна змінити вручну.{% endif %}</span>
+    </label>
+    <label class="field">
+        <span class="field-label">Автор</span>
+        <select name="article_author" required>
+            <option value="" disabled {% if not article.author %}selected{% endif %}>Виберіть автора</option>
+            {% for new_author in authors %}
+            <option value="{{ new_author.id }}" {% if article.author == new_author %}selected{% endif %}>{{ new_author.name_ua }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</fieldset>
+
+<div class="field">
+    <span class="field-label">Текст статті</span>
+    <textarea name="article_text" id="article_text">{{ article.text|default:'' }}</textarea>
+</div>
+
+<fieldset class="form-group">
+    <legend>Обкладинка</legend>
+    <div class="cover-field">
+        {% if article.image %}<img class="cover-thumb" src="{{ article.image_url }}" alt="Поточна обкладинка">{% endif %}
+        <div class="field">
+            <input type="file" name="article_image" accept="image/*" />
+            <span class="field-hint">JPG, PNG, GIF або WEBP, до 5 МБ.{% if article.image %} Нове зображення замінить поточне.{% endif %}</span>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <legend>Мова</legend>
+    <div class="choice-row">
+        <label><input type="radio" name="language" value="ua" {% if article.language != "en" %}checked{% endif %}> Українська</label>
+        <label><input type="radio" name="language" value="en" {% if article.language == "en" %}checked{% endif %}> Англійська</label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <legend>Категорії</legend>
+    <div class="choice-row">
+        {% for category in categories %}
+        <label><input type="checkbox" name="categories" value="{{ category.id }}" {% if category.id in selected_category_ids %}checked{% endif %}> {{ category.name_ua }}</label>
+        {% empty %}
+        <span class="field-hint">Категорій ще немає.</span>
+        {% endfor %}
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <legend>Публікація</legend>
+    <div class="choice-row">
+        <label><input type="radio" name="publish_option" value="now" id="publish_now" {% if not article or article.is_published %}checked{% endif %}> Опублікувати зараз</label>
+        <label><input type="radio" name="publish_option" value="schedule" id="schedule_publication" {% if article and not article.is_published %}checked{% endif %}> Відкласти публікацію</label>
+    </div>
+    <label class="field" id="publish_datetime_field">
+        <span class="field-label">Дата і час (Київ)</span>
+        <input type="datetime-local" name="publish_datetime" id="publish_datetime" value="{% if article.publish_at %}{{ article.publish_at|date:'Y-m-d\TH:i' }}{% endif %}">
+    </label>
+</fieldset>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#article_text'), {
+            toolbar: [
+                'heading', '|', 'bold', 'italic', '|', 'link', 'imageUpload', 'mediaEmbed', '|',
+                'bulletedList', 'numberedList', 'blockQuote'
+            ],
+            ckfinder: {uploadUrl: '/ckeditor/upload/'}
+        })
+        .catch(function (error) { console.error(error); });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var publishNow = document.getElementById("publish_now");
+        var schedule = document.getElementById("schedule_publication");
+        var field = document.getElementById("publish_datetime_field");
+        var input = document.getElementById("publish_datetime");
+        // A disabled field is not submitted, so "publish now" cannot send a stale date.
+        function toggleDateTimeField() {
+            field.hidden = publishNow.checked;
+            input.disabled = publishNow.checked;
+        }
+        toggleDateTimeField();
+        publishNow.addEventListener("change", toggleDateTimeField);
+        schedule.addEventListener("change", toggleDateTimeField);
+    });
+</script>

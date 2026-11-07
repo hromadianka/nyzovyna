@@ -1,18 +1,23 @@
-    {% for category in categories %}
+{% for category in categories %}
 <li>
-    <details id="category-{{category.id}}">
-        <summary>{{ category.name_ua }} ({{ category.name_en }})</summary>
-        <button onclick="toggleForm('{{ category.id }}')" class="btn" style="color: black; background-color: white; border: none; margin-top: 8px; font-size: 14px">+ Додати підкатегорію</button>
-        <form id="form_{{ category.id }}" class="form categories-form" method="POST" action="{% url 'create_category' %}" style="display: none; margin-top: 8px">
+    <details id="category-{{ category.slug }}">
+        <summary>
+            <span>{{ category.name_ua }} <span class="field-hint">({{ category.name_en }})</span></span>
+            <a href="#" class="danger-link category-delete" onclick="confirmDeleteCategory(event, '{{ category.slug }}')">Видалити</a>
+        </summary>
+        <button type="button" onclick="toggleForm('{{ category.id }}')" class="link-button">+ Додати підкатегорію</button>
+        <form id="form_{{ category.id }}" class="inline-form" method="POST" action="{% url 'create_category' %}" hidden>
             {% csrf_token %}
             <input type="hidden" name="parent_id" value="{{ category.id }}">
-            <input type="text" name="name_ua" placeholder="Назва українською" class="form" required>
-            <input type="text" name="name_en" placeholder="Назва англійською" class="form" required>
+            <input type="text" name="name_ua" placeholder="Назва українською" aria-label="Назва українською" required>
+            <input type="text" name="name_en" placeholder="Назва англійською" aria-label="Назва англійською" required>
             <button type="submit" class="btn">Створити</button>
         </form>
+        {% if category.menu_children %}
         <ul class="toggle">
             {% include 'recursive_list.html' with categories=category.menu_children %}
         </ul>
+        {% endif %}
     </details>
 </li>
 {% endfor %}
