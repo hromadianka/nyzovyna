@@ -77,3 +77,17 @@ class DeploymentFilesTests(SimpleTestCase):
     def test_one_off_slug_rewrite_script_is_not_in_the_repository(self):
         from pathlib import Path
         self.assertFalse((Path(prod_settings().BASE_DIR) / 'fill_slugs.py').exists())
+
+
+class DependencyTests(SimpleTestCase):
+    def requirement_names(self):
+        from pathlib import Path
+
+        from django.conf import settings
+        lines = (Path(settings.BASE_DIR) / 'requirements.txt').read_text().splitlines()
+        return {line.split('==')[0].strip().lower() for line in lines if line.strip() and not line.startswith('#')}
+
+    def test_cryptography_is_pinned_because_pymysql_needs_it_for_mysql_8_login(self):
+        """MySQL 8 authenticates with caching_sha2_password; without cryptography PyMySQL raises RuntimeError on
+        every connection, so the whole site answers 500. A virtualenv that still has the package hides this."""
+        self.assertIn('cryptography', self.requirement_names())
