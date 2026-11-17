@@ -44,7 +44,7 @@
 
 | Зависимость | Где | Если упадёт |
 |---|---|---|
-| MySQL (PyMySQL) | все вью, `DATABASE_*` env (5 переменных, `DATABASE_URL` читается, но `django_heroku` перезаписывает DATABASES) | 500 на всём сайте |
+| MySQL (PyMySQL) | все вью, `DATABASE_*` env (5 переменных, `DATABASE_URL` читается, но `django_heroku` перезаписывает DATABASES); необязательная `DATABASE_SSL=1` включает TLS для управляемых БД, см. [database-cost.md](database-cost.md) | 500 на всём сайте |
 | LocMemCache | `{% cache %}` меню/футер, ключи по языку | кэш на процесс; после рестарта холодный старт; инвалидация сигналом работает только в том процессе, где был save |
 | Cloudinary | `DEFAULT_FILE_STORAGE`; `.url` у каждой карточки | `.url` строится локально (без сети), но загрузка при publish/edit — сетевой вызов, без таймаута/обработки |
 | reCAPTCHA | `CommentCaptchaForm`, siteverify на каждый корневой комментарий | синхронный HTTP внутри запроса; недоступность → форма невалидна, комментарий молча теряется (redirect без ошибки) |

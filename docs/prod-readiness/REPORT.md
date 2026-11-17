@@ -294,7 +294,7 @@ PYTHONDONTWRITEBYTECODE=1 NYZ_DB=mysql DJANGO_SETTINGS_MODULE=anarchia.settings_
 
 1. [ ] Закрыты 7 блокирующих находок; зелёные `test_findings` + `prod_tests` (кроме согласованных остатков).
 2. [ ] `DEBUG` из окружения (`False` в проде); `SECRET_KEY`, ключи Cloudinary/reCAPTCHA — из окружения (секреты в репозитории скомпрометированы: ротировать).
-3. [ ] `DATABASES`: единая конфигурация (убрать дублирование `DATABASE_URL`/`DATABASE_*`), `charset: utf8mb4`, `STRICT_TRANS_TABLES`; проверить, что `django_heroku` не затирает `OPTIONS`.
+3. [ ] `DATABASES`: единая конфигурация (убрать дублирование `DATABASE_URL`/`DATABASE_*`), `charset: utf8mb4`, `STRICT_TRANS_TABLES`; проверить, что `django_heroku` не затирает `OPTIONS`. *(Сделано частично: `OPTIONS` закреплены после `django_heroku`, добавлены `DATABASE_SSL` и `CONN_HEALTH_CHECKS`, см. [database-cost.md](database-cost.md); дублирование `DATABASE_URL`/`DATABASE_*` осталось.)*
 4. [ ] Требования: убрать неиспользуемые тяжёлые пакеты, `psycopg2`/`mysqlclient`; обновить Django и пакеты с уязвимостями; чистая установка на `python-3.13.7` проходит.
 5. [ ] Procfile: `release: python manage.py migrate --noinput`, `web: gunicorn anarchia.wsgi --workers N --timeout 30 --access-logfile -`; Heroku Scheduler на `python manage.py publish_articles`.
 6. [ ] `LOGGING` в stdout + Sentry (или ADMINS), `/healthz`, `404.html`/`500.html`, `robots.txt`.
