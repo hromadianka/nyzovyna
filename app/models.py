@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.functions import Substr
 import uuid
 import logging
 
@@ -130,9 +131,20 @@ class Category(models.Model):
     class Meta:
         ordering = ['order']
 
+EXCERPT_CHARS = 1000  # more than any template shows: cards cut the text at 160 or 700 characters
+
+
 class ArticleQuerySet(models.QuerySet):
     def public(self):
         return self.filter(is_published=True, publish_at__lte=now())
+
+    def card(self):
+        """For lists of cards: skip the full text and its search copy, fetch only the start of the plain text.
+
+        Every list page used to pull whole articles (about 2 MB for the home page) to show a 160-700 character
+        excerpt. Use Article.excerpt in the template; it falls back to the full text for objects loaded another way.
+        """
+        return self.defer('text', 'search_text').annotate(excerpt_src=Substr('search_text', 1, EXCERPT_CHARS))
 
 
 class Article(models.Model):
@@ -176,6 +188,12 @@ class Article(models.Model):
     @property
     def image_url(self):
         return safe_image_url(self.image)
+
+    @property
+    def excerpt(self):
+        """Text for a card: the short plain-text start when loaded with card(), otherwise the full text."""
+        source = self.__dict__.get('excerpt_src')
+        return source or self.text  # empty only for an article without text, or one saved without search_text
 
     def get_absolute_url(self):
         return reverse('article', args=[self.slug])

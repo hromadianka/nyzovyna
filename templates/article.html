@@ -98,7 +98,7 @@
                         </div>
                         <div class="card-text" style="color: black">
                             <h3><a href="{% url 'article' article.slug %}" style="text-decoration: none; color: black">{{ article.name|striptags|truncatechars:80 }}</a></h3>
-                            <p>{% autoescape off %}{{ article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+                            <p>{% autoescape off %}{{ article.excerpt|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
                         </div>
                     </div>
 
@@ -109,7 +109,7 @@
                         </div>
                         <div class="card-text" style="color: black">
                             <h3><a href="{% url 'article' any_article.slug %}" style="text-decoration: none; color: black">{{ any_article.name|striptags|truncatechars:80 }}</a></h3>
-                            <p>{% autoescape off %}{{ any_article.text|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
+                            <p>{% autoescape off %}{{ any_article.excerpt|linebreaks|striptags|truncatechars:160 }}{% endautoescape %}</p>
                         </div>
                     </div>
                     {% endfor %}

@@ -55,7 +55,7 @@
         </h3>
         <p>
             {% autoescape off %}
-            {{ article.text|linebreaks|striptags|truncatechars:700 }}
+            {{ article.excerpt|linebreaks|striptags|truncatechars:700 }}
             {% endautoescape %}
         </p>
     </div>
@@ -96,7 +96,7 @@
         </h3>
         <p>
             {% autoescape off %}
-            {{ article.text|linebreaks|striptags|truncatechars:160 }}
+            {{ article.excerpt|linebreaks|striptags|truncatechars:160 }}
             {% endautoescape %}
         </p>
     </div>
@@ -144,7 +144,7 @@
         </h3>
         <p>
             {% autoescape off %}
-            {{ article.text|linebreaks|striptags|truncatechars:700 }}
+            {{ article.excerpt|linebreaks|striptags|truncatechars:700 }}
             {% endautoescape %}
         </p>
     </div>
@@ -185,7 +185,7 @@
         </h3>
         <p>
             {% autoescape off %}
-            {{ article.text|linebreaks|striptags|truncatechars:160 }}
+            {{ article.excerpt|linebreaks|striptags|truncatechars:160 }}
             {% endautoescape %}
         </p>
     </div>

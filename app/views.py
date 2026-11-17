@@ -92,7 +92,7 @@ def paginate(request, queryset):
 
 @require_safe
 def index(request):
-    public = Article.objects.public().filter(language=get_language()).prefetch_related('categories')
+    public = Article.objects.public().card().filter(language=get_language()).prefetch_related('categories')
     return render(request, 'index.html', {
         'latest_articles': public.order_by('-publish_at')[:5],
         'popular_articles': public.order_by('-views')[:10],
@@ -118,7 +118,7 @@ def category_articles(request, slug):
     category = get_object_or_404(Category, slug=slug)
     if category.slug != slug:
         return redirect('category_articles', slug=category.slug, permanent=True)
-    articles = Article.objects.public().filter(
+    articles = Article.objects.public().card().filter(
         language=get_language(), categories__in=[category]).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
     title = category.name_en if get_language() == 'en' else category.name_ua
@@ -128,7 +128,7 @@ def category_articles(request, slug):
 
 @require_safe
 def all_articles(request):
-    articles = Article.objects.public().filter(language=get_language()).order_by('-publish_at', '-created_at')
+    articles = Article.objects.public().card().filter(language=get_language()).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
     return render(request, 'category.html', {'articles': page, 'page_obj': page,
                                              'meta': page_meta(request, _('Всі статті'))})
@@ -182,14 +182,14 @@ def article_meta(request, article):
 
 
 def article_by_id(request, id):
-    article = get_object_or_404(Article, pk=id)
+    article = get_object_or_404(Article.objects.only('slug'), pk=id)
     return redirect('article', slug=article.slug, permanent=True)
 
 
 @require_safe
 def article_detail(request, slug):
     try:
-        article = get_object_or_404(Article.objects.select_related('author'), slug=slug)
+        article = get_object_or_404(Article.objects.select_related('author').defer('search_text'), slug=slug)
         if article.slug != slug:
             return redirect('article', slug=article.slug, permanent=True)
     except Http404:
@@ -203,7 +203,7 @@ def article_detail(request, slug):
     if not is_preview and should_count_view(request, article):
         Article.objects.filter(pk=article.pk).update(views=F('views') + 1)
         article.views += 1
-    all_articles = Article.objects.public().exclude(pk=article.pk).order_by('-views')[:2]
+    all_articles = Article.objects.public().card().exclude(pk=article.pk).order_by('-views')[:2]
 
     comments, comments_page, comments_total = load_comment_page(request, article)
 
@@ -217,7 +217,7 @@ def article_detail(request, slug):
             parent_category = parent_of[parent_category]
     recommended_articles = []
     if parent_category:
-        recommended_articles = Article.objects.public().filter(
+        recommended_articles = Article.objects.public().card().filter(
             categories=parent_category).exclude(pk=article.pk).order_by('-views')[:2]
     translate = {
         'reply': _('Відповісти'),
@@ -247,7 +247,7 @@ def comment(request):
     article_id = parse_uuid(request.POST.get('article_id'))
     if article_id is None:
         raise Http404
-    article = get_object_or_404(Article.objects.public(), pk=article_id)
+    article = get_object_or_404(Article.objects.public().only('id', 'slug'), pk=article_id)
 
     if not CommentCaptchaForm(request.POST).is_valid():
         messages.error(request, gettext('Підтвердіть, що ви не робот, і спробуйте ще раз.'))
@@ -279,7 +279,7 @@ def author_detail(request, slug):
     author = get_object_or_404(Author, slug=slug)
     if author.slug != slug:
         return redirect('author_detail', slug=author.slug, permanent=True)
-    articles = Article.objects.public().filter(author=author).order_by('-publish_at', '-created_at')
+    articles = Article.objects.public().card().filter(author=author).order_by('-publish_at', '-created_at')
     page = paginate(request, articles)
     english = get_language() == 'en'
     return render(request, 'author_detail.html', {
@@ -297,7 +297,7 @@ def article_search(request):
     query = request.GET.get('q', '').strip()[:MAX_SEARCH_LENGTH]
 
     if query:
-        matches = Article.objects.public().filter(language=get_language()).filter(
+        matches = Article.objects.public().card().filter(language=get_language()).filter(
             Q(name__icontains=query) | Q(search_text__icontains=query)).order_by('-publish_at', '-created_at')
     else:
         matches = Article.objects.none()
@@ -397,8 +397,10 @@ def parse_article_form(request):
 @editor_required
 def editor_cabinet(request):
     return render(request, 'editor-cabinet.html', {
-        'articles': Article.objects.public().order_by('-publish_at', '-created_at').prefetch_related('categories'),
+        'articles': Article.objects.public().defer('text', 'search_text').order_by('-publish_at', '-created_at')
+                                    .prefetch_related('categories'),
         'unpublished_articles': Article.objects.exclude(is_published=True, publish_at__lte=now())
+                                               .defer('text', 'search_text')
                                                .order_by('publish_at', 'created_at').prefetch_related('categories'),
         'about_us_text': AboutUsText.objects.filter(pk=1).first(),
         'authors': Author.objects.all(),

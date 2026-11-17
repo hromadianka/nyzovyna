@@ -23,7 +23,7 @@ class LatestPostsFeed(Feed):
     description = 'New articles on Nyzovyna.'
 
     def items(self):
-        return Article.objects.public().filter(language=get_language()).order_by('-publish_at')[:5]
+        return Article.objects.public().defer('search_text').filter(language=get_language()).order_by('-publish_at')[:5]
 
     def item_title(self, item):
         return item.name

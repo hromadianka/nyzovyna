@@ -35,7 +35,7 @@ class ArticleSitemap(HttpsSitemap):
     priority = 0.8
 
     def items(self):
-        return Article.objects.public().order_by('pk')
+        return Article.objects.public().only('slug', 'publish_at').order_by('pk')
 
     def lastmod(self, obj):
         return obj.publish_at
