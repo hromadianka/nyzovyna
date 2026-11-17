@@ -201,6 +201,12 @@ DATABASES['default']['OPTIONS'].update({
     'charset': 'utf8mb4',
     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
 })
+# Managed databases such as TiDB Cloud accept TLS connections only; JawsDB keeps working without it.
+if os.environ.get('DATABASE_SSL') == '1':
+    import certifi
+    DATABASES['default']['OPTIONS']['ssl'] = {'ca': certifi.where()}
+# The connection is kept for 10 minutes; check it is still alive before reuse in case the server closed it while idle.
+DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 
 
 CLOUDINARY_STORAGE = {

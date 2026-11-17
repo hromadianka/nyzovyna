@@ -17,6 +17,47 @@ class ProductionSettingsTests(SimpleTestCase):
         self.assertIn('STRICT_TRANS_TABLES', options.get('init_command', ''))
 
 
+def settings_with_env(**overrides):
+    """Execute settings.py afresh, as if the process had been started with these environment variables."""
+    import importlib.util
+    import os
+    from unittest import mock
+
+    spec = importlib.util.spec_from_file_location('settings_under_test', prod_settings().__file__)
+    module = importlib.util.module_from_spec(spec)
+    env = {k: v for k, v in os.environ.items() if k != 'DATABASE_SSL'}
+    env.update(overrides)
+    with mock.patch.dict(os.environ, env, clear=True):
+        spec.loader.exec_module(module)
+    return module
+
+
+class DatabaseTlsTests(SimpleTestCase):
+    """A managed database such as TiDB Cloud accepts TLS connections only; JawsDB must keep working without it."""
+
+    def test_tls_is_off_unless_asked_for(self):
+        options = settings_with_env().DATABASES['default']['OPTIONS']
+        self.assertNotIn('ssl', options)
+
+    def test_tls_uses_the_bundled_ca_certificates_when_enabled(self):
+        import certifi
+        options = settings_with_env(DATABASE_SSL='1').DATABASES['default']['OPTIONS']
+        self.assertEqual(options.get('ssl'), {'ca': certifi.where()})
+
+    def test_tls_does_not_replace_the_pinned_connection_options(self):
+        options = settings_with_env(DATABASE_SSL='1').DATABASES['default']['OPTIONS']
+        self.assertEqual(options.get('charset'), 'utf8mb4')
+        self.assertIn('STRICT_TRANS_TABLES', options.get('init_command', ''))
+
+    def test_any_other_value_leaves_tls_off(self):
+        for value in ('', '0', 'false'):
+            options = settings_with_env(DATABASE_SSL=value).DATABASES['default']['OPTIONS']
+            self.assertNotIn('ssl', options, value)
+
+    def test_persistent_connections_are_checked_before_reuse(self):
+        self.assertTrue(settings_with_env().DATABASES['default'].get('CONN_HEALTH_CHECKS'))
+
+
 class ProductionLoggingTests(SimpleTestCase):
     def emit(self, logger_name, level):
         import contextlib
